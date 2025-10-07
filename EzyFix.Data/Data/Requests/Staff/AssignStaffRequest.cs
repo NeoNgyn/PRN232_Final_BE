@@ -1,4 +1,5 @@
-﻿using EzyFix.DAL.Data.Entities;
+﻿/*
+using EzyFix.DAL.Data.Entities;
 
 namespace EzyFix.DAL.Data.Requests.Staff
 {
@@ -9,3 +10,5 @@ namespace EzyFix.DAL.Data.Requests.Staff
         public ProjectRole ProjectRole { get; set; }
     }
 }
+
+*/

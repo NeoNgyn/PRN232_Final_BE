@@ -1,4 +1,5 @@
-﻿using EzyFix.BLL.Services.Interfaces;
+﻿/*
+using EzyFix.BLL.Services.Interfaces;
 using EzyFix.BLL.Utils;
 using EzyFix.DAL.Data.Entities;
 using EzyFix.DAL.Repositories.Interfaces;
@@ -44,7 +45,7 @@ namespace EzyFix.BLL.Services.Implements
                 {
                     using (var scope = _serviceScopeFactory.CreateScope())
                     {
-                        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork<ClaimRequestDbContext>>();
+                        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork<EzyFixDbContext>>();
                         var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
                         //var otpService = scope.ServiceProvider.GetRequiredService<IOtpService>();
 
@@ -68,7 +69,7 @@ namespace EzyFix.BLL.Services.Implements
                                 {
                                     using (var scope = _serviceScopeFactory.CreateScope())
                                     {
-                                        var scopedUnitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork<ClaimRequestDbContext>>();
+                                        var scopedUnitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork<EzyFixDbContext>>();
                                         var scopedOtpService = scope.ServiceProvider.GetRequiredService<IOtpService>();
                                         var scopedEmailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
 
@@ -109,3 +110,4 @@ namespace EzyFix.BLL.Services.Implements
         }
     }
 }
+*/

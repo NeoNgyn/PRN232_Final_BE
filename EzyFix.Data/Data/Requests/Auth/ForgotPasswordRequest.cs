@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/*
+using System.ComponentModel.DataAnnotations;
 
 namespace EzyFix.DAL.Data.Requests.Auth
 {
@@ -17,3 +18,5 @@ namespace EzyFix.DAL.Data.Requests.Auth
         public string Otp { get; set; }
     }
 }
+
+*/

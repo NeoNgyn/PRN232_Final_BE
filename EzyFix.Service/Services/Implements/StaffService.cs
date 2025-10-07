@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+/*
+using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
 using EzyFix.BLL.Extension;
@@ -23,7 +24,7 @@ namespace EzyFix.BLL.Services.Implements
         private readonly IConfiguration _configuration;
         private readonly ICloudinaryService _cloudinaryService;
         private const string DefaultProfilePicture = "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg";
-        public StaffService(IUnitOfWork<ClaimRequestDbContext> unitOfWork, ILogger<StaffService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, ICloudinaryService cloudinaryService) : base(unitOfWork, logger, mapper, httpContextAccessor)
+        public StaffService(IUnitOfWork<EzyFixDbContext> unitOfWork, ILogger<StaffService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, ICloudinaryService cloudinaryService) : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
             _configuration = configuration;
             _cloudinaryService = cloudinaryService;
@@ -429,3 +430,4 @@ namespace EzyFix.BLL.Services.Implements
         }
     }
 }
+*/

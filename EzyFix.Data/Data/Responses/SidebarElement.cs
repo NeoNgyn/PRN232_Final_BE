@@ -1,4 +1,5 @@
-﻿namespace EzyFix.DAL.Data.Responses
+﻿/*
+namespace EzyFix.DAL.Data.Responses
 {
     public class SidebarElement
     {
@@ -7,3 +8,4 @@
         public string Component { get; set; }
     }
 }
+*/

@@ -1,4 +1,5 @@
-﻿using EzyFix.DAL.Data.Responses.Staff;
+﻿/*
+using EzyFix.DAL.Data.Responses.Staff;
 
 namespace EzyFix.DAL.Data.Responses.Paging
 {
@@ -21,3 +22,5 @@ namespace EzyFix.DAL.Data.Responses.Paging
         public int PageSize { get; set; }
     }
 }
+
+*/

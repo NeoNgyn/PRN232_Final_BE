@@ -1,4 +1,5 @@
-﻿using EzyFix.BLL.Services.Interfaces;
+﻿/*
+using EzyFix.BLL.Services.Interfaces;
 using EzyFix.DAL.Data.Entities;
 using EzyFix.DAL.Data.Responses.Otp;
 using EzyFix.DAL.Repositories.Interfaces;
@@ -7,9 +8,9 @@ namespace EzyFix.BLL.Services.Implements
 {
     public class OtpService : IOtpService
     {
-        private readonly IUnitOfWork<ClaimRequestDbContext> _unitOfWork;
+        private readonly IUnitOfWork<EzyFixDbContext> _unitOfWork;
 
-        public OtpService(IUnitOfWork<ClaimRequestDbContext> unitOfWork)
+        public OtpService(IUnitOfWork<EzyFixDbContext> unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
@@ -96,3 +97,4 @@ namespace EzyFix.BLL.Services.Implements
         }
     }
 }
+*/

@@ -1,4 +1,5 @@
-﻿using EzyFix.DAL.Data.Requests.Paging;
+/*
+using EzyFix.DAL.Data.Requests.Paging;
 using EzyFix.DAL.Data.Requests.Staff;
 using EzyFix.DAL.Data.Responses.Paging;
 using EzyFix.DAL.Data.Responses.Staff;
@@ -19,3 +20,4 @@ namespace EzyFix.BLL.Services.Interfaces
         Task<PagingResponse<CreateStaffResponse>> GetPagedStaffs(PagingRequest pagingRequest);
     }
 }
+*/

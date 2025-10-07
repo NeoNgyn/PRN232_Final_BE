@@ -1,4 +1,5 @@
-﻿using EzyFix.DAL.Data.Entities;
+﻿/*
+using EzyFix.DAL.Data.Entities;
 using EzyFix.DAL.Data.Responses.Staff;
 
 namespace EzyFix.DAL.Data.Responses.Project
@@ -26,3 +27,5 @@ namespace EzyFix.DAL.Data.Responses.Project
         public List<ProjectStaffResponse> ProjectStaffs { get; set; }
     }
 }
+
+*/

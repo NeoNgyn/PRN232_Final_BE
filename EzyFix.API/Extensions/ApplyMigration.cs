@@ -1,4 +1,5 @@
-﻿using EzyFix.DAL.Data.Entities;
+﻿/*
+using EzyFix.DAL.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace EzyFix.API.Extensions
@@ -10,7 +11,7 @@ namespace EzyFix.API.Extensions
         public static void ApplyMigrations(this IApplicationBuilder app)
         {
             using IServiceScope scope = app.ApplicationServices.CreateScope();
-            using ClaimRequestDbContext context = scope.ServiceProvider.GetRequiredService<ClaimRequestDbContext>();
+            using EzyFixDbContext context = scope.ServiceProvider.GetRequiredService<EzyFixDbContext>();
 
             try
             {
@@ -37,10 +38,11 @@ namespace EzyFix.API.Extensions
             }
             catch (Exception ex)
             {
-                var logger = scope.ServiceProvider.GetRequiredService<ILogger<ClaimRequestDbContext>>();
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<EzyFixDbContext>>();
                 logger.LogError(ex, "An error occurred while migrating the database.");
                 throw;
             }
         }
     }
 }
+*/

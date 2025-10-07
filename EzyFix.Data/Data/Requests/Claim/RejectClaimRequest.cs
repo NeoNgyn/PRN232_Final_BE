@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/*
+using System.ComponentModel.DataAnnotations;
 
 namespace EzyFix.DAL.Data.Requests.Claim
 {
@@ -12,3 +13,5 @@ namespace EzyFix.DAL.Data.Requests.Claim
         public Guid ApproverId { get; set; }
     }
 }
+
+*/

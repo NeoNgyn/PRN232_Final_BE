@@ -1,4 +1,5 @@
-﻿using EzyFix.DAL.Data.Responses.Otp;
+/*
+using EzyFix.DAL.Data.Responses.Otp;
 
 namespace EzyFix.BLL.Services.Interfaces
 {
@@ -8,3 +9,4 @@ namespace EzyFix.BLL.Services.Interfaces
         Task<ValidateOtpResponse> ValidateOtp(string email, string otp);
     }
 }
+*/

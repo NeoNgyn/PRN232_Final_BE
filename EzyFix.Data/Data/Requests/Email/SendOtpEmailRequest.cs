@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/*
+using System.ComponentModel.DataAnnotations;
 
 namespace EzyFix.DAL.Data.Requests.Email
 {
@@ -9,3 +10,5 @@ namespace EzyFix.DAL.Data.Requests.Email
         public string Email { get; set; } = string.Empty;
     }
 }
+
+*/

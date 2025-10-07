@@ -1,4 +1,5 @@
-﻿namespace EzyFix.DAL.Data.Responses.Auth
+﻿/*
+namespace EzyFix.DAL.Data.Responses.Auth
 {
     public class ChangePasswordResponse
     {
@@ -6,3 +7,5 @@
         public int AttemptsLeft { get; set; }
     }
 }
+
+*/

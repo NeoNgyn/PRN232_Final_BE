@@ -1,7 +1,10 @@
-﻿namespace EzyFix.DAL.Data.Requests.Auth
+﻿/*
+namespace EzyFix.DAL.Data.Requests.Auth
 {
     public class RefreshTokenRequest
     {
         public string RefreshToken { get; set; }
     }
 }
+
+*/

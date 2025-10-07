@@ -1,4 +1,5 @@
-﻿using EzyFix.DAL.Data.Requests.Email;
+/*
+using EzyFix.DAL.Data.Requests.Email;
 using EzyFix.DAL.Data.Responses.Email;
 
 namespace EzyFix.BLL.Services.Interfaces
@@ -14,3 +15,4 @@ namespace EzyFix.BLL.Services.Interfaces
 
     }
 }
+*/

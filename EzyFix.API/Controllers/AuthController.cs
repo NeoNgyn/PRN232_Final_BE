@@ -1,4 +1,6 @@
-﻿using EzyFix.API.Constants;
+﻿/*
+/*
+using EzyFix.API.Constants;
 using EzyFix.BLL.Services.Interfaces;
 using EzyFix.DAL.Data.Exceptions;
 using EzyFix.DAL.Data.MetaDatas;
@@ -187,3 +189,5 @@ namespace EzyFix.API.Controllers
         }
     }
 }
+
+*/

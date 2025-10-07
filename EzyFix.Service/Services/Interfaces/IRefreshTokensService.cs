@@ -1,4 +1,5 @@
-﻿
+/*
+
 namespace EzyFix.BLL.Services.Interfaces
 {
     public interface IRefreshTokensService
@@ -8,3 +9,4 @@ namespace EzyFix.BLL.Services.Interfaces
         Task<bool> DeleteRefreshToken(string refreshToken);
     }
 }
+*/

@@ -1,4 +1,5 @@
-﻿using EzyFix.DAL.Data.Entities;
+﻿/*
+using EzyFix.DAL.Data.Entities;
 
 namespace EzyFix.DAL.Data.Responses.Claim
 {
@@ -11,3 +12,5 @@ namespace EzyFix.DAL.Data.Responses.Claim
         public DateTime UpdateAt { get; set; }
     }
 }
+
+*/

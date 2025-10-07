@@ -1,4 +1,5 @@
-﻿using EzyFix.DAL.Data.Requests.Auth;
+/*
+using EzyFix.DAL.Data.Requests.Auth;
 using EzyFix.DAL.Data.Responses.Auth;
 
 namespace EzyFix.BLL.Services.Interfaces
@@ -10,3 +11,4 @@ namespace EzyFix.BLL.Services.Interfaces
         Task<ChangePasswordResponse> ChangePassword(ChangePasswordRequest changePasswordRequest);
     }
 }
+*/

@@ -1,4 +1,5 @@
-﻿namespace EzyFix.DAL.Data.Responses.Staff
+﻿/*
+namespace EzyFix.DAL.Data.Responses.Staff
 {
     public class DeleteStaffResponse
     {
@@ -12,3 +13,5 @@
         }
     }
 }
+
+*/

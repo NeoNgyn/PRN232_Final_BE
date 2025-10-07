@@ -5,11 +5,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using EzyFix.DAL.Repositories.Interfaces;
-using EzyFix.DAL.Data.Entities;
 using AutoMapper;
 using EzyFix.BLL.Services.Interfaces;
 using System.Text.RegularExpressions;
 using System.Text;
+using EzyFix.DAL.Data;
+using EzyFix.DAL.Data.Entities;
 
 namespace EzyFix.BLL.Services.Implements
 {
@@ -21,7 +22,7 @@ namespace EzyFix.BLL.Services.Implements
         const long MaxImageSize = 5 * 1024 * 1024;
         const long MaxFileSize = 100 * 1024 * 1024;
 
-        public CloudinaryService(IUnitOfWork<ClaimRequestDbContext> unitOfWork, ILogger<CloudinaryService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        public CloudinaryService(IUnitOfWork<EzyFixDbContext> unitOfWork, ILogger<CloudinaryService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
             : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
             _configuration = configuration;
@@ -52,7 +53,7 @@ namespace EzyFix.BLL.Services.Implements
             if (string.IsNullOrEmpty(staffIdClaim) || !Guid.TryParse(staffIdClaim, out var staffId))
                 throw new UnauthorizedAccessException("Invalid token or missing staff ID.");
 
-            var staff = await _unitOfWork.GetRepository<Staff>().GetByIdAsync(staffId);
+            var staff = await _unitOfWork.GetRepository<Users>().GetByIdAsync(staffId);
             if (staff == null)
                 throw new KeyNotFoundException("Staff not found.");
 
@@ -60,7 +61,7 @@ namespace EzyFix.BLL.Services.Implements
             {
                 using var stream = file.OpenReadStream();
 
-                var sanitizedStaffName = RemoveVietnameseAccent(staff.Name).ToLower().Replace(" ", "_");
+                var sanitizedStaffName = RemoveVietnameseAccent(staff.FirstName).ToLower().Replace(" ", "_");
 
                 var vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 var vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
@@ -100,7 +101,7 @@ namespace EzyFix.BLL.Services.Implements
             if (string.IsNullOrEmpty(staffIdClaim) || !Guid.TryParse(staffIdClaim, out var staffId))
                 throw new UnauthorizedAccessException("Invalid token or missing staff ID.");
 
-            var staff = await _unitOfWork.GetRepository<Staff>().GetByIdAsync(staffId);
+            var staff = await _unitOfWork.GetRepository<Users>().GetByIdAsync(staffId);
             if (staff == null)
                 throw new KeyNotFoundException("Staff not found.");
 
@@ -108,7 +109,7 @@ namespace EzyFix.BLL.Services.Implements
             {
                 using var stream = file.OpenReadStream();
 
-                var sanitizedStaffName = RemoveVietnameseAccent(staff.Name).ToLower().Replace(" ", "_");
+                var sanitizedStaffName = RemoveVietnameseAccent(staff.FirstName).ToLower().Replace(" ", "_");
 
                 var vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 var vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);

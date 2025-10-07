@@ -1,4 +1,5 @@
-﻿namespace EzyFix.DAL.Data.Responses.Otp
+﻿/*
+namespace EzyFix.DAL.Data.Responses.Otp
 {
     public class ValidateOtpResponse
     {
@@ -6,3 +7,5 @@
         public int AttemptsLeft { get; set; }
     }
 }
+
+*/

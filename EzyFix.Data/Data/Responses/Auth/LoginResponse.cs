@@ -1,4 +1,5 @@
-﻿using EzyFix.DAL.Data.Entities;
+﻿/*
+using EzyFix.DAL.Data.Entities;
 
 namespace EzyFix.DAL.Data.Responses.Auth
 {
@@ -25,3 +26,5 @@ namespace EzyFix.DAL.Data.Responses.Auth
         }
     }
 }
+
+*/

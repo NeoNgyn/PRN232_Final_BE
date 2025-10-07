@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿/*
+using System.Linq.Expressions;
 using AutoMapper;
 using EzyFix.BLL.Extension;
 using EzyFix.BLL.Services.Interfaces;
@@ -20,7 +21,7 @@ namespace EzyFix.BLL.Services.Implements
         private readonly IRefreshTokensService _refreshTokensService;
 
         public AuthService(
-             IUnitOfWork<ClaimRequestDbContext> unitOfWork,
+             IUnitOfWork<EzyFixDbContext> unitOfWork,
              ILogger<AuthService> logger,
              IMapper mapper,
              IHttpContextAccessor httpContextAccessor,
@@ -160,3 +161,4 @@ namespace EzyFix.BLL.Services.Implements
         }
     }
 }
+*/

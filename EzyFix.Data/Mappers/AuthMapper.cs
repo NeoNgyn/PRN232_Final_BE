@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿/*
+using AutoMapper;
 using EzyFix.DAL.Data.Entities;
 using EzyFix.DAL.Data.Requests.Auth;
 using EzyFix.DAL.Data.Responses.Auth;
@@ -23,3 +24,5 @@ namespace EzyFix.DAL.Mappers
         }
     }
 }
+
+*/

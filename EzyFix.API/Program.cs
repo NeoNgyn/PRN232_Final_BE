@@ -6,7 +6,7 @@ using EzyFix.BLL.Services.Implements;
 using EzyFix.BLL.Services.Implements.VNPayService.Services;
 using EzyFix.BLL.Services.Interfaces;
 using EzyFix.BLL.Utils;
-using EzyFix.DAL.Data.Entities;
+using EzyFix.DAL.Data;
 using EzyFix.DAL.Data.MetaDatas;
 using EzyFix.DAL.Repositories.Implements;
 using EzyFix.DAL.Repositories.Interfaces;
@@ -44,7 +44,7 @@ void ConfigureServices()
     builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
     // Register Unit of Work pattern
-    builder.Services.AddScoped<IUnitOfWork<ClaimRequestDbContext>, UnitOfWork<ClaimRequestDbContext>>();
+    builder.Services.AddScoped<IUnitOfWork<EzyFixDbContext>, UnitOfWork<EzyFixDbContext>>();
 
     // Register utility services
     builder.Services.AddSingleton<JwtUtil>();
@@ -77,41 +77,57 @@ void ConfigureServices()
 // Method to register application services
 void RegisterApplicationServices()
 {
-    builder.Services.AddScoped<IClaimService, ClaimService>();
-    builder.Services.AddScoped<IStaffService, StaffService>();
-    builder.Services.AddScoped<IProjectService, ProjectService>();
-    builder.Services.AddScoped<IEmailService, EmailService>();
-    builder.Services.AddScoped<IAuthService, AuthService>();
-    builder.Services.AddScoped<IOtpService, OtpService>();
+    // builder.Services.AddScoped<IClaimService, ClaimService>();
+    // builder.Services.AddScoped<IStaffService, StaffService>();
+    // builder.Services.AddScoped<IProjectService, ProjectService>();
+    // builder.Services.AddScoped<IEmailService, EmailService>();
+    // builder.Services.AddScoped<IAuthService, AuthService>();
+    // builder.Services.AddScoped<IOtpService, OtpService>();
     builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
-    builder.Services.AddScoped<IEmailService, EmailService>();
-    builder.Services.AddHostedService<PasswordReminderService>();
-    builder.Services.AddHostedService<PendingReminderService>();
+    // builder.Services.AddScoped<IEmailService, EmailService>();
+    // builder.Services.AddHostedService<PasswordReminderService>();
+    // builder.Services.AddHostedService<PendingReminderService>();
+    
+
     builder.Services.AddScoped<IVnPayService, VnPayService>();
-    builder.Services.AddScoped<IWebNavigatorService, WebNavigatorService>(); // Register WebNavigatorService
-    builder.Services.AddScoped<IGenericRepository<Claim>, GenericRepository<Claim>>();
-    builder.Services.AddScoped<IGenericRepository<Payment>, GenericRepository<Payment>>();
-    builder.Services.AddScoped<IRefreshTokensService, RefreshTokensService>();
-    builder.Services.AddScoped<IPasswordReminderService, PasswordReminderService>();
-    builder.Services.AddScoped<IPendingReminderService, PendingReminderService>();
+    // builder.Services.AddScoped<IWebNavigatorService, WebNavigatorService>(); // Register WebNavigatorService
+    // builder.Services.AddScoped<IGenericRepository<Claim>, GenericRepository<Claim>>();
+    // builder.Services.AddScoped<IGenericRepository<Payment>, GenericRepository<Payment>>();
+    // builder.Services.AddScoped<IRefreshTokensService, RefreshTokensService>();
+    // builder.Services.AddScoped<IPasswordReminderService, PasswordReminderService>();
+    // builder.Services.AddScoped<IPendingReminderService, PendingReminderService>();
     builder.Services.AddScoped<IJwtUtil, JwtUtil>();
 }
 
 // Method to configure the database
 void ConfigureDatabase()
 {
-    builder.Services.AddDbContext<ClaimRequestDbContext>(options =>
+    builder.Services.AddDbContext<EzyFixDbContext>(options =>
     {
-        options.UseNpgsql(builder.Configuration.GetConnectionString("SupaBaseConnection"),
-            npgsqlOptionsAction: sqlOptions =>
-            {
-                sqlOptions.EnableRetryOnFailure(
-                    maxRetryCount: 5,
-                    maxRetryDelay: TimeSpan.FromSeconds(30),
-                    errorCodesToAdd: null);
-            });
+        options
+            .UseNpgsql(builder.Configuration.GetConnectionString("SupaBaseConnection"),
+                npgsqlOptionsAction: sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
+                        errorCodesToAdd: null);
+                })
+            .UseSnakeCaseNamingConvention();
+        if (builder.Environment.IsDevelopment())
+        {
+            options
+            .LogTo(Console.WriteLine, LogLevel.Information)
+            .EnableSensitiveDataLogging();
+        }
+        else
+        {
+            options
+            .LogTo(Console.WriteLine, LogLevel.Warning);
+        }
     });
 }
+
 
 // Method to configure authentication
 void ConfigureAuthentication()
@@ -174,7 +190,7 @@ void ConfigureAuthentication()
     // Add authorization policies
     builder.Services.AddAuthorization(options =>
     {
-        options.AddClaimRequestPolicies();
+        // options.AddClaimRequestPolicies(); // Commented out - template authorization policies
     });
 }
 

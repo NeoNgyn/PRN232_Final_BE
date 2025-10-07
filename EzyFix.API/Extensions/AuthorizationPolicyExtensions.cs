@@ -1,3 +1,4 @@
+/*
 using EzyFix.API.Constants;
 using EzyFix.DAL.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -96,3 +97,4 @@ namespace EzyFix.API.Extensions
         }
     }
 }
+*/
