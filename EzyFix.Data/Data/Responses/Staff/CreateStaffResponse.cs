@@ -1,4 +1,5 @@
-﻿namespace EzyFix.DAL.Data.Responses.Staff
+﻿/*
+namespace EzyFix.DAL.Data.Responses.Staff
 {
     // tao class response de tra thong tin ve cho client
     public class CreateStaffResponse
@@ -19,3 +20,5 @@
         public string? Avatar { get; set; }
     }
 }
+
+*/

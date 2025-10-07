@@ -1,4 +1,5 @@
-﻿namespace EzyFix.DAL.Data.Requests.Paging
+﻿/*
+namespace EzyFix.DAL.Data.Requests.Paging
 {
     public class PagingRequest
     {
@@ -6,3 +7,5 @@
         public int PageSize { get; set; } = 10;
     }
 }
+
+*/

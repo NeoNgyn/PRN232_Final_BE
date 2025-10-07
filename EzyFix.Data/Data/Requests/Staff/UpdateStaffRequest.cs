@@ -1,3 +1,4 @@
+﻿/*
 using System.ComponentModel.DataAnnotations;
 using EzyFix.DAL.Data.Entities;
 using Microsoft.AspNetCore.Http;
@@ -32,3 +33,5 @@ namespace EzyFix.DAL.Data.Requests.Staff
         public IFormFile? Avatar { get; set; }
     }
 }
+
+*/

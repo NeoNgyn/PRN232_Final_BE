@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+/*
+using System.Security.Claims;
 using System.Text.Json;
 using EzyFix.BLL.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -74,3 +75,4 @@ namespace EzyFix.BLL.Services.Implements
         }
     }
 }
+*/

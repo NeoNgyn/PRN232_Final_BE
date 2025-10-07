@@ -1,4 +1,5 @@
-﻿using EzyFix.DAL.Data.Entities;
+/*
+using EzyFix.DAL.Data.Entities;
 using EzyFix.DAL.Data.MetaDatas;
 using EzyFix.DAL.Data.Requests.Project;
 using EzyFix.DAL.Data.Responses.Project;
@@ -33,3 +34,4 @@ namespace EzyFix.BLL.Services.Interfaces
     Task<bool> DeleteProject(Guid id);
 }
 }
+*/

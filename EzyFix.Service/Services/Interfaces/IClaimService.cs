@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+/*
+using System.Security.Claims;
 using EzyFix.DAL.Data.Entities;
 using EzyFix.DAL.Data.MetaDatas;
 using EzyFix.DAL.Data.Requests.Claim;
@@ -26,3 +27,4 @@ namespace EzyFix.BLL.Services.Interfaces
         Task<List<ViewClaimResponse>> GetPendingClaimsAsync();
     }
 }
+*/

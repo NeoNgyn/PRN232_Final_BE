@@ -1,4 +1,5 @@
-﻿using EzyFix.API.Constants;
+﻿/*
+using EzyFix.API.Constants;
 using EzyFix.BLL.Services.Interfaces;
 using EzyFix.DAL.Data.MetaDatas;
 using EzyFix.DAL.Data.Requests.Paging;
@@ -174,3 +175,5 @@ namespace EzyFix.API.Controllers
 
     }
 }
+
+*/

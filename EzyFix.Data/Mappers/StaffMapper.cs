@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿/*
+using AutoMapper;
 using EzyFix.DAL.Data.Entities;
 using EzyFix.DAL.Data.Requests.Staff;
 using EzyFix.DAL.Data.Responses.Staff;
@@ -61,3 +62,4 @@ namespace EzyFix.DAL.Mappers
         }
     }
 }
+*/

@@ -1,4 +1,5 @@
-﻿namespace EzyFix.DAL.Data.Requests.Claim
+﻿/*
+namespace EzyFix.DAL.Data.Requests.Claim
 {
     public class DownloadClaimRequest
     {
@@ -6,3 +7,5 @@
 
     }
 }
+
+*/

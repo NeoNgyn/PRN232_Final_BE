@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿/*
+using System.Security.Cryptography;
 using EzyFix.BLL.Services.Interfaces;
 using EzyFix.BLL.Utils;
 using EzyFix.DAL.Data.Entities;
@@ -8,10 +9,10 @@ namespace EzyFix.BLL.Services.Implements
 {
     public class RefreshTokensService : IRefreshTokensService
     {
-        private readonly IUnitOfWork<ClaimRequestDbContext> _unitOfWork;
+        private readonly IUnitOfWork<EzyFixDbContext> _unitOfWork;
         private readonly IJwtUtil _jwtUtil;
 
-        public RefreshTokensService(IUnitOfWork<ClaimRequestDbContext> unitOfWork, IJwtUtil jwtUtil)
+        public RefreshTokensService(IUnitOfWork<EzyFixDbContext> unitOfWork, IJwtUtil jwtUtil)
         {
             _unitOfWork = unitOfWork;
             _jwtUtil = jwtUtil;
@@ -75,3 +76,4 @@ namespace EzyFix.BLL.Services.Implements
         }
     }
 }
+*/

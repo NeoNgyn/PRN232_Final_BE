@@ -20,7 +20,7 @@ namespace EzyFix.BLL.Utils
             _expired = double.Parse(configuration["Jwt:TokenValidityInMinutes"]);
         }
 
-        public string GenerateJwtToken(Staff staff, Tuple<string, Guid> guidClaimer, bool isResetPasswordOnly)
+        public string GenerateJwtToken(Users user, Tuple<string, Guid> guidClaimer, bool isResetPasswordOnly)
         {
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             SymmetricSecurityKey secrectKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtkey));
@@ -30,8 +30,8 @@ namespace EzyFix.BLL.Utils
             List<Claim> securityClaims = new List<Claim>()
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, staff.Email.ToString()),
-                new Claim(ClaimTypes.Role, staff.SystemRole.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email.ToString()),
+                new Claim(ClaimTypes.Role, user.RoleId.ToString()),
             };
 
             if (guidClaimer != null)

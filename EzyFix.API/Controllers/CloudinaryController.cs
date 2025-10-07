@@ -1,4 +1,5 @@
-﻿using EzyFix.API.Constants;
+﻿/*
+using EzyFix.API.Constants;
 using EzyFix.BLL.Services.Interfaces;
 using EzyFix.DAL.Data.Requests.Media;
 using Microsoft.AspNetCore.Authorization;
@@ -70,3 +71,5 @@ namespace EzyFix.API.Controllers
 
     }
 }
+
+*/

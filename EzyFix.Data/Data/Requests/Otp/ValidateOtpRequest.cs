@@ -1,4 +1,5 @@
-﻿namespace EzyFix.DAL.Data.Requests.Otp
+﻿/*
+namespace EzyFix.DAL.Data.Requests.Otp
 {
     public class ValidateOtpRequest
     {
@@ -10,3 +11,5 @@
         //public string Otp { get; set; }
     }
 }
+
+*/

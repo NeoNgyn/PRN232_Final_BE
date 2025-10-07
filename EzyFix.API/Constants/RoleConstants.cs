@@ -1,3 +1,4 @@
+/*
 using EzyFix.DAL.Data.Entities;
 
 namespace EzyFix.API.Constants
@@ -10,3 +11,4 @@ namespace EzyFix.API.Constants
                                                       .ToArray();
     }
 }
+*/

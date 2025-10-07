@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿/*
+using AutoMapper;
 using EzyFix.BLL.Extension;
 using EzyFix.BLL.Services.Interfaces;
 using EzyFix.DAL.Data.Entities;
@@ -31,7 +32,7 @@ namespace EzyFix.BLL.Services.Implements
         }
 
         public ClaimService(
-            IUnitOfWork<ClaimRequestDbContext> unitOfWork,
+            IUnitOfWork<EzyFixDbContext> unitOfWork,
             ILogger<Claim> logger,
             IMapper mapper,
             IHttpContextAccessor httpContextAccessor)
@@ -909,3 +910,4 @@ namespace EzyFix.BLL.Services.Implements
 
     }
 }
+*/

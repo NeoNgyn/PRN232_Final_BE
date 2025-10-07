@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿/*
+using AutoMapper;
 using EzyFix.BLL.Extension;
 using EzyFix.BLL.Services.Interfaces;
 using EzyFix.DAL.Data.Entities;
@@ -16,7 +17,7 @@ namespace EzyFix.BLL.Services.Implements
 {
     public class ProjectService : BaseService<Project>, IProjectService
     {
-        public ProjectService(IUnitOfWork<ClaimRequestDbContext> unitOfWork,
+        public ProjectService(IUnitOfWork<EzyFixDbContext> unitOfWork,
              ILogger<Project> logger,
              IMapper mapper,
              IHttpContextAccessor httpContextAccessor)
@@ -483,3 +484,4 @@ namespace EzyFix.BLL.Services.Implements
 
     }
 }
+*/

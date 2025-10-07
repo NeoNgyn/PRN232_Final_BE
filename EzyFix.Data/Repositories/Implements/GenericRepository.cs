@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using EzyFix.DAL.Data.Entities;
+using EzyFix.DAL.Data;
 using EzyFix.DAL.Data.MetaDatas;
 using EzyFix.DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +9,10 @@ namespace EzyFix.DAL.Repositories.Implements
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        protected readonly ClaimRequestDbContext _dbContext;
+        protected readonly EzyFixDbContext _dbContext;
         protected readonly DbSet<T> _dbSet;
 
-        public GenericRepository(ClaimRequestDbContext context)
+        public GenericRepository(EzyFixDbContext context)
         {
             _dbContext = context;
             _dbSet = context.Set<T>();

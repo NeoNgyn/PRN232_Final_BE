@@ -1,4 +1,5 @@
-﻿#define SMTP
+﻿/*
+#define SMTP
 //#define OAUTH
 using EzyFix.BLL.Services.Interfaces;
 using EzyFix.DAL.Data.Entities;
@@ -35,7 +36,7 @@ namespace EzyFix.BLL.Services.Implements
         public readonly int _port;
         public readonly string _password;
 
-        public EmailService(IUnitOfWork<ClaimRequestDbContext> unitOfWork, IConfiguration configuration, IClaimService claimService, ILogger<EmailService> logger, IProjectService projectService, IStaffService staffService, IOtpService otpService, OtpUtil otpUtil)
+        public EmailService(IUnitOfWork<EzyFixDbContext> unitOfWork, IConfiguration configuration, IClaimService claimService, ILogger<EmailService> logger, IProjectService projectService, IStaffService staffService, IOtpService otpService, OtpUtil otpUtil)
         {
 #if OAUTH
             _senderEmail = configuration["EmailSettings:SenderEmailOauth"];
@@ -359,4 +360,4 @@ namespace EzyFix.BLL.Services.Implements
         }
     }
 }
-
+*/

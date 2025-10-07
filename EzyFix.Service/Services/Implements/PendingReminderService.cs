@@ -1,4 +1,5 @@
-﻿using EzyFix.BLL.Services.Interfaces;
+﻿/*
+using EzyFix.BLL.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -96,3 +97,4 @@ namespace EzyFix.BLL.Services.Implements
         }
     }
 }
+*/

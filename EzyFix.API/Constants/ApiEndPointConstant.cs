@@ -87,5 +87,38 @@ namespace EzyFix.API.Constants
             public const string PendingReminderEndpoint = ApiEndpoint + "/pending-reminder";
         }
 
+        public static class Categories
+        {
+            public const string CategoriesEndpoint = ApiEndpoint + "/categories";
+            public const string CategoryEndpointById = CategoriesEndpoint + "/{id}";
+            public const string UpdateCategoryEndpoint = CategoryEndpointById + "/update";
+            public const string DeleteCategoryEndpoint = CategoryEndpointById + "/delete";
+        }
+
+        public static class Services
+        {
+            public const string ServicesEndpoint = ApiEndpoint + "/sevices";
+            public const string ServiceEndpointById = ServicesEndpoint + "/{id}";
+            public const string UpdateServiceEndpoint = ServiceEndpointById + "/update";
+            public const string DeleteServiceEndpoint = ServiceEndpointById + "/delete";
+        }
+
+        public static class ServiceRequests
+        {
+            public const string ServiceRequestsEndpoint = ApiEndpoint + "/seviceRequests";
+            //public const string ServiceRequestsEndpointByService = ServiceRequestsEndpoint + "/{serviceId}";
+            public const string ServiceRequestEndpointById = ServiceRequestsEndpoint + "/{id}";
+            public const string UpdateServiceRequestEndpoint = ServiceRequestEndpointById + "/update";
+            public const string UpdateServiceRequestStatusEndpoint = ServiceRequestEndpointById + "/status/update";
+            public const string DeleteServiceRequestEndpoint = ServiceRequestEndpointById + "/delete";
+        }
+
+        public static class Medias
+        {
+            public const string MediasEndpoint = ApiEndpoint + "/media";
+            public const string MediaEndpointById = MediasEndpoint + "/{id}";
+            public const string UpdateMediaEndpoint = MediaEndpointById + "/update";
+            public const string DeleteMediaEndpoint = MediaEndpointById + "/delete";
+        }
     }
 }

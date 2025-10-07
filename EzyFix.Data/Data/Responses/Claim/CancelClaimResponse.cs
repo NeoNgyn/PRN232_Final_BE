@@ -1,4 +1,5 @@
-﻿namespace EzyFix.DAL.Data.Responses.Claim
+﻿/*
+namespace EzyFix.DAL.Data.Responses.Claim
 {
     public class CancelClaimResponse
     {
@@ -11,3 +12,5 @@
         public Guid ClaimerId { get; set; }
     }
 }
+
+*/

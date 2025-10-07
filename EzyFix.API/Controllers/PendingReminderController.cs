@@ -1,4 +1,5 @@
-﻿using EzyFix.API.Constants;
+﻿/*
+using EzyFix.API.Constants;
 using EzyFix.BLL.Services.Interfaces;
 using EzyFix.DAL.Data.MetaDatas;
 using Microsoft.AspNetCore.Mvc;
@@ -42,3 +43,5 @@ namespace EzyFix.API.Controllers
         }
     }
 }
+
+*/

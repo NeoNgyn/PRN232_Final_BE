@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/*
+using System.ComponentModel.DataAnnotations;
 using EzyFix.DAL.Data.Entities;
 
 namespace EzyFix.DAL.Data.Requests.Project
@@ -42,3 +43,5 @@ namespace EzyFix.DAL.Data.Requests.Project
         }
     }
 }
+
+*/
