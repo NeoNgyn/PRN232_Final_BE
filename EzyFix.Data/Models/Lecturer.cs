@@ -20,6 +20,8 @@ public partial class Lecturer
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+    
+    public bool EmailConfirmed { get; set; }
 
     public virtual ICollection<GradingResult> GradingResults { get; set; } = new List<GradingResult>();
 

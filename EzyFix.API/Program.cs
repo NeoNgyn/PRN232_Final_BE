@@ -306,6 +306,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection")));
 
+builder.Services.AddScoped<IUnitOfWork<AppDbContext>, UnitOfWork<AppDbContext>>();
+
 // Register utilities
 builder.Services.AddSingleton<OtpUtil>();
 
@@ -316,6 +318,8 @@ builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<IKeywordRepository, KeywordRepository>();
 builder.Services.AddScoped<IKeywordService, KeywordService>();
+builder.Services.AddScoped<ILectureRepository, LectureRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
