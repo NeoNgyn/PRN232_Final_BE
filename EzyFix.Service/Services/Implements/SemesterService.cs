@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using EzyFix.BLL.Services.Interfaces;
+using EzyFix.DAL.Data.Exceptions;
 using EzyFix.DAL.Data.MetaDatas;
 using EzyFix.DAL.Data.Requests.Semesters;
 using EzyFix.DAL.Data.Responses.Semesters;
 using EzyFix.DAL.Models;
 using EzyFix.DAL.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,114 +15,124 @@ using System.Text;
 using System.Threading.Tasks;
 namespace EzyFix.BLL.Services.Implements
 {
-    public class SemesterService : ISemesterService
+    public class SemesterService : BaseService<SemesterService>, ISemesterService
     {
-        private readonly ISemesterRepository _semesterRepository;
-        private readonly IMapper _mapper;
-
-        public SemesterService(ISemesterRepository semesterRepository, IMapper mapper)
+        public SemesterService(
+     IUnitOfWork<AppDbContext> unitOfWork,
+     ILogger<SemesterService> logger,
+     IMapper mapper,
+     IHttpContextAccessor httpContextAccessor) // <-- 1. Thêm tham số vào đây
+     : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
-            _semesterRepository = semesterRepository;
-            _mapper = mapper;
         }
 
-        public async Task<ApiResponse<IEnumerable<SemesterResponseDto>>> GetAllSemestersAsync()
+        public async Task<IEnumerable<SemesterResponseDto>> GetAllSemestersAsync()
         {
             try
             {
-                var semesters = await _semesterRepository.GetAllAsync();
-                var responseDto = _mapper.Map<IEnumerable<SemesterResponseDto>>(semesters);
-                return ApiResponse<IEnumerable<SemesterResponseDto>>.SuccessResponse(responseDto, "Lấy danh sách học kỳ thành công.");
+                var semesters = await _unitOfWork.GetRepository<Semester>().GetListAsync();
+                return _mapper.Map<IEnumerable<SemesterResponseDto>>(semesters);
             }
             catch (Exception ex)
             {
-                return ApiResponse<IEnumerable<SemesterResponseDto>>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
+                _logger.LogError(ex, "Lỗi khi lấy danh sách học kỳ: {Message}", ex.Message);
+                throw; // Ném lỗi để middleware hoặc controller xử lý
             }
         }
 
-        public async Task<ApiResponse<SemesterResponseDto?>> GetSemesterByIdAsync(string id)
+        public async Task<SemesterResponseDto?> GetSemesterByIdAsync(string id)
         {
             try
             {
-                var semester = await _semesterRepository.GetByIdAsync(id);
+                var semester = await _unitOfWork.GetRepository<Semester>().SingleOrDefaultAsync(predicate: s => s.SemesterId == id);
+
                 if (semester == null)
                 {
-                    return ApiResponse<SemesterResponseDto?>.FailResponse($"Không tìm thấy học kỳ với ID: {id}", 404);
+                    // Ném một exception cụ thể để controller bắt và trả về 404
+                    throw new NotFoundException($"Không tìm thấy học kỳ với ID: {id}");
                 }
-                var responseDto = _mapper.Map<SemesterResponseDto>(semester);
-                return ApiResponse<SemesterResponseDto?>.SuccessResponse(responseDto, "Lấy thông tin học kỳ thành công.");
+
+                return _mapper.Map<SemesterResponseDto>(semester);
             }
             catch (Exception ex)
             {
-                return ApiResponse<SemesterResponseDto?>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
+                _logger.LogError(ex, "Lỗi khi lấy học kỳ theo ID {Id}: {Message}", id, ex.Message);
+                throw;
             }
         }
 
-        public async Task<ApiResponse<SemesterResponseDto>> CreateSemesterAsync(CreateSemesterRequestDto createDto)
+        public async Task<SemesterResponseDto> CreateSemesterAsync(CreateSemesterRequestDto createDto)
         {
             try
             {
-                // Kiểm tra xem ID đã tồn tại chưa (nếu cần)
-                var existing = await _semesterRepository.GetByIdAsync(createDto.SemesterId);
+                var existing = await _unitOfWork.GetRepository<Semester>().SingleOrDefaultAsync(predicate: s => s.SemesterId == createDto.SemesterId);
                 if (existing != null)
                 {
-                    return ApiResponse<SemesterResponseDto>.FailResponse($"Học kỳ với ID '{createDto.SemesterId}' đã tồn tại.", 409); // 409 Conflict
+                    throw new BadRequestException($"Học kỳ với ID '{createDto.SemesterId}' đã tồn tại.");
                 }
 
-                var semester = _mapper.Map<Semester>(createDto);
-                await _semesterRepository.AddAsync(semester);
-                await _semesterRepository.SaveChangesAsync();
-
-                var responseDto = _mapper.Map<SemesterResponseDto>(semester);
-                return ApiResponse<SemesterResponseDto>.SuccessResponse(responseDto, "Tạo học kỳ mới thành công.", 201); // 201 Created
+                return await _unitOfWork.ProcessInTransactionAsync(async () =>
+                {
+                    var semester = _mapper.Map<Semester>(createDto);
+                    await _unitOfWork.GetRepository<Semester>().InsertAsync(semester);
+                    await _unitOfWork.CommitAsync();
+                    return _mapper.Map<SemesterResponseDto>(semester);
+                });
             }
             catch (Exception ex)
             {
-                return ApiResponse<SemesterResponseDto>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
+                _logger.LogError(ex, "Lỗi khi tạo học kỳ mới: {Message}", ex.Message);
+                throw;
             }
         }
 
-        // Tương tự cho Update và Delete...
-        public async Task<ApiResponse<bool>> UpdateSemesterAsync(string id, UpdateSemesterRequestDto updateDto)
+        public async Task<SemesterResponseDto> UpdateSemesterAsync(string id, UpdateSemesterRequestDto updateDto)
         {
             try
             {
-                var semester = await _semesterRepository.GetByIdAsync(id);
-                if (semester == null)
+                return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
-                    return ApiResponse<bool>.FailResponse($"Không tìm thấy học kỳ với ID: {id}", 404);
-                }
+                    var semester = await _unitOfWork.GetRepository<Semester>().SingleOrDefaultAsync(predicate: s => s.SemesterId == id);
+                    if (semester == null)
+                    {
+                        throw new NotFoundException($"Không tìm thấy học kỳ với ID: {id} để cập nhật.");
+                    }
 
-                _mapper.Map(updateDto, semester);
-                _semesterRepository.Update(semester);
-                await _semesterRepository.SaveChangesAsync();
+                    _mapper.Map(updateDto, semester);
+                    _unitOfWork.GetRepository<Semester>().UpdateAsync(semester);
+                    await _unitOfWork.CommitAsync();
 
-                return ApiResponse<bool>.SuccessResponse(true, "Cập nhật học kỳ thành công.");
+                    return _mapper.Map<SemesterResponseDto>(semester);
+                });
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
+                _logger.LogError(ex, "Lỗi khi cập nhật học kỳ {Id}: {Message}", id, ex.Message);
+                throw;
             }
         }
 
-        public async Task<ApiResponse<bool>> DeleteSemesterAsync(string id)
+        public async Task<bool> DeleteSemesterAsync(string id)
         {
             try
             {
-                var semester = await _semesterRepository.GetByIdAsync(id);
-                if (semester == null)
+                return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
-                    return ApiResponse<bool>.FailResponse($"Không tìm thấy học kỳ với ID: {id}", 404);
-                }
+                    var semester = await _unitOfWork.GetRepository<Semester>().SingleOrDefaultAsync(predicate: s => s.SemesterId == id);
+                    if (semester == null)
+                    {
+                        throw new NotFoundException($"Không tìm thấy học kỳ với ID: {id} để xóa.");
+                    }
 
-                _semesterRepository.Delete(semester);
-                await _semesterRepository.SaveChangesAsync();
-
-                return ApiResponse<bool>.SuccessResponse(true, "Xóa học kỳ thành công.");
+                    _unitOfWork.GetRepository<Semester>().DeleteAsync(semester);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                });
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
+                _logger.LogError(ex, "Lỗi khi xóa học kỳ {Id}: {Message}", id, ex.Message);
+                throw;
             }
         }
     }

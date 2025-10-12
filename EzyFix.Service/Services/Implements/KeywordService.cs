@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using EzyFix.BLL.Services.Interfaces;
+using EzyFix.DAL.Data.Exceptions;
 using EzyFix.DAL.Data.MetaDatas;
 using EzyFix.DAL.Data.Requests.Keywords;
 using EzyFix.DAL.Data.Responses.Keywords;
 using EzyFix.DAL.Models;
 using EzyFix.DAL.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,107 +16,130 @@ using System.Threading.Tasks;
 
 namespace EzyFix.BLL.Services.Implements
 {
-    public class KeywordService : IKeywordService
+    public class KeywordService : BaseService<KeywordService>, IKeywordService
     {
-        private readonly IKeywordRepository _keywordRepository;
-        private readonly IMapper _mapper;
-
-        public KeywordService(IKeywordRepository keywordRepository, IMapper mapper)
+        public KeywordService(
+            IUnitOfWork<AppDbContext> unitOfWork,
+            ILogger<KeywordService> logger,
+            IMapper mapper,
+            IHttpContextAccessor httpContextAccessor)
+            : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
-            _keywordRepository = keywordRepository;
-            _mapper = mapper;
         }
 
-        public async Task<ApiResponse<IEnumerable<KeywordResponseDto>>> GetAllKeywordsAsync()
+        public async Task<IEnumerable<KeywordResponseDto>> GetAllKeywordsAsync()
         {
             try
             {
-                var keywords = await _keywordRepository.GetAllAsync();
-                var responseDto = _mapper.Map<IEnumerable<KeywordResponseDto>>(keywords);
-                return ApiResponse<IEnumerable<KeywordResponseDto>>.SuccessResponse(responseDto, "Lấy danh sách từ khóa thành công.");
+                var keywords = await _unitOfWork.GetRepository<Keyword>().GetListAsync();
+                return _mapper.Map<IEnumerable<KeywordResponseDto>>(keywords);
             }
             catch (Exception ex)
             {
-                return ApiResponse<IEnumerable<KeywordResponseDto>>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
+                _logger.LogError(ex, "Lỗi khi lấy danh sách từ khóa: {Message}", ex.Message);
+                throw;
             }
         }
 
-        public async Task<ApiResponse<KeywordResponseDto?>> GetKeywordByIdAsync(int keywordId)
+        public async Task<KeywordResponseDto?> GetKeywordByIdAsync(int id)
         {
             try
             {
-                var keyword = await _keywordRepository.GetByIdAsync(keywordId);
+                var keyword = await _unitOfWork.GetRepository<Keyword>()
+                    .SingleOrDefaultAsync(predicate: k => k.KeywordId == id);
+
                 if (keyword == null)
                 {
-                    return ApiResponse<KeywordResponseDto?>.FailResponse($"Không tìm thấy từ khóa với ID: {keywordId}", 404);
+                    throw new NotFoundException($"Không tìm thấy từ khóa với ID: {id}");
                 }
-                var responseDto = _mapper.Map<KeywordResponseDto>(keyword);
-                return ApiResponse<KeywordResponseDto?>.SuccessResponse(responseDto, "Lấy thông tin từ khóa thành công.");
+
+                return _mapper.Map<KeywordResponseDto>(keyword);
             }
             catch (Exception ex)
             {
-                return ApiResponse<KeywordResponseDto?>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
+                _logger.LogError(ex, "Lỗi khi lấy từ khóa theo ID {Id}: {Message}", id, ex.Message);
+                throw;
             }
         }
 
-        public async Task<ApiResponse<KeywordResponseDto>> CreateKeywordAsync(CreateKeywordRequestDto createDto)
+        public async Task<KeywordResponseDto> CreateKeywordAsync(CreateKeywordRequestDto createDto)
         {
             try
             {
-                // Lưu ý: Không có kiểm tra trùng lặp vì ID là tự tăng (int).
-                var keyword = _mapper.Map<Keyword>(createDto);
-                await _keywordRepository.AddAsync(keyword);
-                await _keywordRepository.SaveChangesAsync();
+                var existing = await _unitOfWork.GetRepository<Keyword>()
+                    .SingleOrDefaultAsync(predicate: k => k.Word == createDto.Word);
 
-                var responseDto = _mapper.Map<KeywordResponseDto>(keyword);
-                return ApiResponse<KeywordResponseDto>.SuccessResponse(responseDto, "Tạo từ khóa mới thành công.", 201);
-            }
-            catch (Exception ex)
-            {
-                return ApiResponse<KeywordResponseDto>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
-            }
-        }
-
-        public async Task<ApiResponse<bool>> UpdateKeywordAsync(int keywordId, UpdateKeywordRequestDto updateDto)
-        {
-            try
-            {
-                var keyword = await _keywordRepository.GetByIdAsync(keywordId);
-                if (keyword == null)
+                if (existing != null)
                 {
-                    return ApiResponse<bool>.FailResponse($"Không tìm thấy từ khóa với ID: {keywordId}", 404);
+                    throw new BadRequestException($"Từ khóa '{createDto.Word}' đã tồn tại.");
                 }
 
-                _mapper.Map(updateDto, keyword);
-                _keywordRepository.Update(keyword);
-                await _keywordRepository.SaveChangesAsync();
-
-                return ApiResponse<bool>.SuccessResponse(true, "Cập nhật từ khóa thành công.");
+                return await _unitOfWork.ProcessInTransactionAsync(async () =>
+                {
+                    var keyword = _mapper.Map<Keyword>(createDto);
+                    await _unitOfWork.GetRepository<Keyword>().InsertAsync(keyword);
+                    await _unitOfWork.CommitAsync();
+                    return _mapper.Map<KeywordResponseDto>(keyword);
+                });
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
+                _logger.LogError(ex, "Lỗi khi tạo từ khóa mới: {Message}", ex.Message);
+                throw;
             }
         }
 
-        public async Task<ApiResponse<bool>> DeleteKeywordAsync(int keywordId)
+        public async Task<KeywordResponseDto> UpdateKeywordAsync(int id, UpdateKeywordRequestDto updateDto)
         {
             try
             {
-                var keyword = await _keywordRepository.GetByIdAsync(keywordId);
-                if (keyword == null)
+                return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
-                    return ApiResponse<bool>.FailResponse($"Không tìm thấy từ khóa với ID: {keywordId}", 404);
-                }
+                    var keyword = await _unitOfWork.GetRepository<Keyword>()
+                        .SingleOrDefaultAsync(predicate: k => k.KeywordId == id);
 
-                _keywordRepository.Delete(keyword);
-                await _keywordRepository.SaveChangesAsync();
+                    if (keyword == null)
+                    {
+                        throw new NotFoundException($"Không tìm thấy từ khóa với ID: {id} để cập nhật.");
+                    }
 
-                return ApiResponse<bool>.SuccessResponse(true, "Xóa từ khóa thành công.");
+                    _mapper.Map(updateDto, keyword);
+                    _unitOfWork.GetRepository<Keyword>().UpdateAsync(keyword);
+                    await _unitOfWork.CommitAsync();
+
+                    return _mapper.Map<KeywordResponseDto>(keyword);
+                });
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
+                _logger.LogError(ex, "Lỗi khi cập nhật từ khóa {Id}: {Message}", id, ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteKeywordAsync(int id)
+        {
+            try
+            {
+                return await _unitOfWork.ProcessInTransactionAsync(async () =>
+                {
+                    var keyword = await _unitOfWork.GetRepository<Keyword>()
+                        .SingleOrDefaultAsync(predicate: k => k.KeywordId == id);
+
+                    if (keyword == null)
+                    {
+                        throw new NotFoundException($"Không tìm thấy từ khóa với ID: {id} để xóa.");
+                    }
+
+                    _unitOfWork.GetRepository<Keyword>().DeleteAsync(keyword);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi xóa từ khóa {Id}: {Message}", id, ex.Message);
+                throw;
             }
         }
     }

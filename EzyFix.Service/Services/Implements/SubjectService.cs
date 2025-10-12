@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using EzyFix.BLL.Services.Interfaces;
+using EzyFix.DAL.Data.Exceptions;
 using EzyFix.DAL.Data.MetaDatas;
 using EzyFix.DAL.Data.Requests.Subjects;
 using EzyFix.DAL.Data.Responses.Subjects;
 using EzyFix.DAL.Models;
 using EzyFix.DAL.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,112 +16,123 @@ using System.Threading.Tasks;
 
 namespace EzyFix.BLL.Services.Implements
 {
-    public class SubjectService : ISubjectService
+    public class SubjectService : BaseService<SubjectService>, ISubjectService
     {
-        private readonly ISubjectRepository _subjectRepository;
-        private readonly IMapper _mapper;
-
-        public SubjectService(ISubjectRepository subjectRepository, IMapper mapper)
+        public SubjectService(
+            IUnitOfWork<AppDbContext> unitOfWork,
+            ILogger<SubjectService> logger,
+            IMapper mapper,
+            IHttpContextAccessor httpContextAccessor)
+            : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
-            _subjectRepository = subjectRepository;
-            _mapper = mapper;
         }
 
-        public async Task<ApiResponse<IEnumerable<SubjectResponseDto>>> GetAllSubjectsAsync()
+        public async Task<IEnumerable<SubjectResponseDto>> GetAllSubjectsAsync()
         {
             try
             {
-                var subjects = await _subjectRepository.GetAllAsync();
-                var responseDto = _mapper.Map<IEnumerable<SubjectResponseDto>>(subjects);
-                return ApiResponse<IEnumerable<SubjectResponseDto>>.SuccessResponse(responseDto, "Lấy danh sách môn học thành công.");
+                var subjects = await _unitOfWork.GetRepository<Subject>().GetListAsync();
+                return _mapper.Map<IEnumerable<SubjectResponseDto>>(subjects);
             }
             catch (Exception ex)
             {
-                return ApiResponse<IEnumerable<SubjectResponseDto>>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
+                _logger.LogError(ex, "Lỗi khi lấy danh sách môn học: {Message}", ex.Message);
+                throw;
             }
         }
 
-        public async Task<ApiResponse<SubjectResponseDto?>> GetSubjectByIdAsync(string subjectId)
+        public async Task<SubjectResponseDto?> GetSubjectByIdAsync(string id)
         {
             try
             {
-                var subject = await _subjectRepository.GetByIdAsync(subjectId);
+                var subject = await _unitOfWork.GetRepository<Subject>().SingleOrDefaultAsync(predicate: s => s.SubjectId == id);
+
                 if (subject == null)
                 {
-                    return ApiResponse<SubjectResponseDto?>.FailResponse($"Không tìm thấy môn học với ID: {subjectId}", 404);
+                    throw new NotFoundException($"Không tìm thấy môn học với ID: {id}");
                 }
-                var responseDto = _mapper.Map<SubjectResponseDto>(subject);
-                return ApiResponse<SubjectResponseDto?>.SuccessResponse(responseDto, "Lấy thông tin môn học thành công.");
+
+                return _mapper.Map<SubjectResponseDto>(subject);
             }
             catch (Exception ex)
             {
-                return ApiResponse<SubjectResponseDto?>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
+                _logger.LogError(ex, "Lỗi khi lấy môn học theo ID {Id}: {Message}", id, ex.Message);
+                throw;
             }
         }
 
-        public async Task<ApiResponse<SubjectResponseDto>> CreateSubjectAsync(CreateSubjectRequestDto createSubjectDto)
+        public async Task<SubjectResponseDto> CreateSubjectAsync(CreateSubjectRequestDto createDto)
         {
             try
             {
-                var existingSubject = await _subjectRepository.GetByIdAsync(createSubjectDto.SubjectId);
-                if (existingSubject != null)
+                var existing = await _unitOfWork.GetRepository<Subject>().SingleOrDefaultAsync(predicate: s => s.SubjectId == createDto.SubjectId);
+                if (existing != null)
                 {
-                    return ApiResponse<SubjectResponseDto>.FailResponse($"Môn học với ID '{createSubjectDto.SubjectId}' đã tồn tại.", 409); // 409 Conflict
+                    throw new BadRequestException($"Môn học với ID '{createDto.SubjectId}' đã tồn tại.");
                 }
 
-                var subject = _mapper.Map<Subject>(createSubjectDto);
-                await _subjectRepository.AddAsync(subject);
-                await _subjectRepository.SaveChangesAsync(); // Lưu thay đổi vào DB
-
-                var responseDto = _mapper.Map<SubjectResponseDto>(subject);
-                return ApiResponse<SubjectResponseDto>.SuccessResponse(responseDto, "Tạo môn học mới thành công.", 201); // 201 Created
+                return await _unitOfWork.ProcessInTransactionAsync(async () =>
+                {
+                    var subject = _mapper.Map<Subject>(createDto);
+                    await _unitOfWork.GetRepository<Subject>().InsertAsync(subject);
+                    await _unitOfWork.CommitAsync();
+                    return _mapper.Map<SubjectResponseDto>(subject);
+                });
             }
             catch (Exception ex)
             {
-                return ApiResponse<SubjectResponseDto>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
+                _logger.LogError(ex, "Lỗi khi tạo môn học mới: {Message}", ex.Message);
+                throw;
             }
         }
 
-        public async Task<ApiResponse<bool>> UpdateSubjectAsync(string subjectId, UpdateSubjectRequestDto updateSubjectDto)
+        public async Task<SubjectResponseDto> UpdateSubjectAsync(string id, UpdateSubjectRequestDto updateDto)
         {
             try
             {
-                var subject = await _subjectRepository.GetByIdAsync(subjectId);
-                if (subject == null)
+                return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
-                    return ApiResponse<bool>.FailResponse($"Không tìm thấy môn học với ID: {subjectId}", 404);
-                }
+                    var subject = await _unitOfWork.GetRepository<Subject>().SingleOrDefaultAsync(predicate: s => s.SubjectId == id);
+                    if (subject == null)
+                    {
+                        throw new NotFoundException($"Không tìm thấy môn học với ID: {id} để cập nhật.");
+                    }
 
-                _mapper.Map(updateSubjectDto, subject);
-                _subjectRepository.Update(subject); // Chỉ đánh dấu là đã thay đổi
-                await _subjectRepository.SaveChangesAsync(); // Lưu thay đổi vào DB
+                    _mapper.Map(updateDto, subject);
+                    _unitOfWork.GetRepository<Subject>().UpdateAsync(subject);
+                    await _unitOfWork.CommitAsync();
 
-                return ApiResponse<bool>.SuccessResponse(true, "Cập nhật môn học thành công.");
+                    return _mapper.Map<SubjectResponseDto>(subject);
+                });
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
+                _logger.LogError(ex, "Lỗi khi cập nhật môn học {Id}: {Message}", id, ex.Message);
+                throw;
             }
         }
 
-        public async Task<ApiResponse<bool>> DeleteSubjectAsync(string subjectId)
+        public async Task<bool> DeleteSubjectAsync(string id)
         {
             try
             {
-                var subject = await _subjectRepository.GetByIdAsync(subjectId);
-                if (subject == null)
+                return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
-                    return ApiResponse<bool>.FailResponse($"Không tìm thấy môn học với ID: {subjectId}", 404);
-                }
+                    var subject = await _unitOfWork.GetRepository<Subject>().SingleOrDefaultAsync(predicate: s => s.SubjectId == id);
+                    if (subject == null)
+                    {
+                        throw new NotFoundException($"Không tìm thấy môn học với ID: {id} để xóa.");
+                    }
 
-                _subjectRepository.Delete(subject); // Chỉ đánh dấu là đã xóa
-                await _subjectRepository.SaveChangesAsync(); // Lưu thay đổi vào DB
-
-                return ApiResponse<bool>.SuccessResponse(true, "Xóa môn học thành công.");
+                    _unitOfWork.GetRepository<Subject>().DeleteAsync(subject);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                });
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.FailResponse($"Lỗi hệ thống: {ex.Message}", 500);
+                _logger.LogError(ex, "Lỗi khi xóa môn học {Id}: {Message}", id, ex.Message);
+                throw;
             }
         }
     }

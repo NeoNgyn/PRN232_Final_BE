@@ -120,5 +120,32 @@ namespace EzyFix.API.Constants
             public const string UpdateMediaEndpoint = MediaEndpointById + "/update";
             public const string DeleteMediaEndpoint = MediaEndpointById + "/delete";
         }
+
+        public static class Semesters
+        {
+            public const string SemestersEndpoint = "api/semesters";
+            public const string SemesterEndpointById = "api/semesters/{id}";
+            public const string UpdateSemesterEndpoint = "api/semesters/{id}";
+            public const string DeleteSemesterEndpoint = "api/semesters/delete/{id}";
+        }
+
+        public static class Subjects
+        {
+            private const string Prefix = "api/subjects";
+
+            public const string SubjectsEndpoint = $"{Prefix}";
+            public const string SubjectEndpointById = $"{Prefix}/{{id}}";
+            public const string UpdateSubjectEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteSubjectEndpoint = $"{Prefix}/delete/{{id}}";
+        }
+        public static class Keywords
+        {
+            private const string Prefix = "api/keywords";
+
+            public const string KeywordsEndpoint = $"{Prefix}";
+            public const string KeywordEndpointById = $"{Prefix}/{{id}}";
+            public const string UpdateKeywordEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteKeywordEndpoint = $"{Prefix}/delete/{{id}}";
+        }
     }
 }

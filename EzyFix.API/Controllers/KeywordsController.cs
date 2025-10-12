@@ -1,58 +1,120 @@
-﻿using EzyFix.BLL.Services.Interfaces;
+﻿using EzyFix.API.Constants;
+using EzyFix.BLL.Services.Interfaces;
+using EzyFix.DAL.Data.MetaDatas;
 using EzyFix.DAL.Data.Requests.Keywords;
+using EzyFix.DAL.Data.Responses.Keywords;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EzyFix.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class KeywordsController : ControllerBase
+    public class KeywordsController : BaseController<KeywordsController>
     {
         private readonly IKeywordService _keywordService;
 
-        public KeywordsController(IKeywordService keywordService)
+        public KeywordsController(ILogger<KeywordsController> logger, IKeywordService keywordService)
+            : base(logger)
         {
             _keywordService = keywordService;
         }
 
-        // GET: api/keywords
-        [HttpGet]
+        // ===============================
+        // 1️⃣ Lấy danh sách từ khóa
+        // ===============================
+        [HttpGet(ApiEndPointConstant.Keywords.KeywordsEndpoint)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<KeywordResponseDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllKeywords()
         {
-            var response = await _keywordService.GetAllKeywordsAsync();
-            return StatusCode(response.StatusCode, response);
+            var keywords = await _keywordService.GetAllKeywordsAsync();
+            return Ok(ApiResponseBuilder.BuildResponse(
+                StatusCodes.Status200OK,
+                "Danh sách từ khóa được lấy thành công",
+                keywords
+            ));
         }
 
-        // GET: api/keywords/{id}
-        [HttpGet("{id}")]
+        // ===============================
+        // 2️⃣ Lấy từ khóa theo ID
+        // ===============================
+        [HttpGet(ApiEndPointConstant.Keywords.KeywordEndpointById)]
+        [ProducesResponseType(typeof(ApiResponse<KeywordResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetKeywordById(int id)
         {
-            var response = await _keywordService.GetKeywordByIdAsync(id);
-            return StatusCode(response.StatusCode, response);
+            var keyword = await _keywordService.GetKeywordByIdAsync(id);
+            return Ok(ApiResponseBuilder.BuildResponse(
+                StatusCodes.Status200OK,
+                "Lấy thông tin từ khóa thành công",
+                keyword
+            ));
         }
 
-        // POST: api/keywords
-        [HttpPost]
-        public async Task<IActionResult> CreateKeyword([FromBody] CreateKeywordRequestDto createDto)
+        // ===============================
+        // 3️⃣ Tạo từ khóa mới
+        // ===============================
+        [HttpPost(ApiEndPointConstant.Keywords.KeywordsEndpoint)]
+        [ProducesResponseType(typeof(ApiResponse<KeywordResponseDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateKeyword([FromForm] CreateKeywordRequestDto request)
         {
-            var response = await _keywordService.CreateKeywordAsync(createDto);
-            return StatusCode(response.StatusCode, response);
+            var response = await _keywordService.CreateKeywordAsync(request);
+
+            if (response == null)
+            {
+                return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                    null,
+                    StatusCodes.Status400BadRequest,
+                    "Không thể tạo từ khóa mới",
+                    "Quá trình tạo từ khóa thất bại"
+                ));
+            }
+
+            return CreatedAtAction(
+                nameof(GetKeywordById),
+                new { id = response.KeywordId },
+                ApiResponseBuilder.BuildResponse(
+                    StatusCodes.Status201Created,
+                    "Tạo từ khóa thành công",
+                    response
+                )
+            );
         }
 
-        // PUT: api/keywords/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateKeyword(int id, [FromBody] UpdateKeywordRequestDto updateDto)
+        // ===============================
+        // 4️⃣ Cập nhật từ khóa
+        // ===============================
+        [HttpPut(ApiEndPointConstant.Keywords.UpdateKeywordEndpoint)]
+        [ProducesResponseType(typeof(ApiResponse<KeywordResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateKeyword(int id, [FromForm] UpdateKeywordRequestDto request)
         {
-            var response = await _keywordService.UpdateKeywordAsync(id, updateDto);
-            return StatusCode(response.StatusCode, response);
+            var updated = await _keywordService.UpdateKeywordAsync(id, request);
+            return Ok(ApiResponseBuilder.BuildResponse(
+                StatusCodes.Status200OK,
+                "Cập nhật từ khóa thành công",
+                updated
+            ));
         }
 
-        // DELETE: api/keywords/{id}
-        [HttpDelete("{id}")]
+        // ===============================
+        // 5️⃣ Xóa từ khóa
+        // ===============================
+        [HttpPut(ApiEndPointConstant.Keywords.DeleteKeywordEndpoint)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteKeyword(int id)
         {
-            var response = await _keywordService.DeleteKeywordAsync(id);
-            return StatusCode(response.StatusCode, response);
+            await _keywordService.DeleteKeywordAsync(id);
+            return Ok(ApiResponseBuilder.BuildResponse<object>(
+                StatusCodes.Status200OK,
+                "Xóa từ khóa thành công",
+                null
+            ));
         }
     }
 }

@@ -1,58 +1,120 @@
-﻿using EzyFix.BLL.Services.Interfaces;
+﻿using EzyFix.API.Constants;
+using EzyFix.BLL.Services.Interfaces;
+using EzyFix.DAL.Data.MetaDatas;
 using EzyFix.DAL.Data.Requests.Subjects;
+using EzyFix.DAL.Data.Responses.Subjects;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EzyFix.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class SubjectsController : ControllerBase
+    public class SubjectsController : BaseController<SubjectsController>
     {
         private readonly ISubjectService _subjectService;
 
-        public SubjectsController(ISubjectService subjectService)
+        public SubjectsController(ILogger<SubjectsController> logger, ISubjectService subjectService)
+            : base(logger)
         {
             _subjectService = subjectService;
         }
 
-        // GET: api/subjects
-        [HttpGet]
+        // ===============================
+        // 1️⃣ Lấy danh sách môn học
+        // ===============================
+        [HttpGet(ApiEndPointConstant.Subjects.SubjectsEndpoint)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<SubjectResponseDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllSubjects()
         {
-            var response = await _subjectService.GetAllSubjectsAsync();
-            return StatusCode(response.StatusCode, response);
+            var subjects = await _subjectService.GetAllSubjectsAsync();
+            return Ok(ApiResponseBuilder.BuildResponse(
+                StatusCodes.Status200OK,
+                "Danh sách môn học được lấy thành công",
+                subjects
+            ));
         }
 
-        // GET: api/subjects/{id}
-        [HttpGet("{id}")]
+        // ===============================
+        // 2️⃣ Lấy môn học theo ID
+        // ===============================
+        [HttpGet(ApiEndPointConstant.Subjects.SubjectEndpointById)]
+        [ProducesResponseType(typeof(ApiResponse<SubjectResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetSubjectById(string id)
         {
-            var response = await _subjectService.GetSubjectByIdAsync(id);
-            return StatusCode(response.StatusCode, response);
+            var subject = await _subjectService.GetSubjectByIdAsync(id);
+            return Ok(ApiResponseBuilder.BuildResponse(
+                StatusCodes.Status200OK,
+                "Lấy thông tin môn học thành công",
+                subject
+            ));
         }
 
-        // POST: api/subjects
-        [HttpPost]
-        public async Task<IActionResult> CreateSubject([FromBody] CreateSubjectRequestDto createDto)
+        // ===============================
+        // 3️⃣ Tạo môn học mới
+        // ===============================
+        [HttpPost(ApiEndPointConstant.Subjects.SubjectsEndpoint)]
+        [ProducesResponseType(typeof(ApiResponse<SubjectResponseDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateSubject([FromForm] CreateSubjectRequestDto request)
         {
-            var response = await _subjectService.CreateSubjectAsync(createDto);
-            return StatusCode(response.StatusCode, response);
+            var response = await _subjectService.CreateSubjectAsync(request);
+
+            if (response == null)
+            {
+                return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                    null,
+                    StatusCodes.Status400BadRequest,
+                    "Không thể tạo môn học mới",
+                    "Quá trình tạo môn học thất bại"
+                ));
+            }
+
+            return CreatedAtAction(
+                nameof(GetSubjectById),
+                new { id = response.SubjectId },
+                ApiResponseBuilder.BuildResponse(
+                    StatusCodes.Status201Created,
+                    "Tạo môn học thành công",
+                    response
+                )
+            );
         }
 
-        // PUT: api/subjects/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSubject(string id, [FromBody] UpdateSubjectRequestDto updateDto)
+        // ===============================
+        // 4️⃣ Cập nhật môn học
+        // ===============================
+        [HttpPut(ApiEndPointConstant.Subjects.UpdateSubjectEndpoint)]
+        [ProducesResponseType(typeof(ApiResponse<SubjectResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateSubject(string id, [FromForm] UpdateSubjectRequestDto request)
         {
-            var response = await _subjectService.UpdateSubjectAsync(id, updateDto);
-            return StatusCode(response.StatusCode, response);
+            var updated = await _subjectService.UpdateSubjectAsync(id, request);
+            return Ok(ApiResponseBuilder.BuildResponse(
+                StatusCodes.Status200OK,
+                "Cập nhật môn học thành công",
+                updated
+            ));
         }
 
-        // DELETE: api/subjects/{id}
-        [HttpDelete("{id}")]
+        // ===============================
+        // 5️⃣ Xóa môn học
+        // ===============================
+        [HttpPut(ApiEndPointConstant.Subjects.DeleteSubjectEndpoint)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteSubject(string id)
         {
-            var response = await _subjectService.DeleteSubjectAsync(id);
-            return StatusCode(response.StatusCode, response);
+            await _subjectService.DeleteSubjectAsync(id);
+            return Ok(ApiResponseBuilder.BuildResponse<object>(
+                StatusCodes.Status200OK,
+                "Xóa môn học thành công",
+                null
+            ));
         }
     }
 }
