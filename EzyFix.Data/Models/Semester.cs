@@ -7,7 +7,7 @@ namespace EzyFix.DAL.Models;
 
 public partial class Semester
 {
-    public string SemesterId { get; set; }
+    public Guid SemesterId { get; set; }
 
     public string Name { get; set; }
 

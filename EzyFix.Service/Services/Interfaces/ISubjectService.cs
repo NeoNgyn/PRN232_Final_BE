@@ -12,10 +12,10 @@ namespace EzyFix.BLL.Services.Interfaces
 {
     public interface ISubjectService
     {
-        Task<IEnumerable<SubjectResponseDto>> GetAllSubjectsAsync();
-        Task<SubjectResponseDto?> GetSubjectByIdAsync(string id);
-        Task<SubjectResponseDto> CreateSubjectAsync(CreateSubjectRequestDto createDto);
-        Task<SubjectResponseDto> UpdateSubjectAsync(string id, UpdateSubjectRequestDto updateDto);
-        Task<bool> DeleteSubjectAsync(string id);
+        Task<IEnumerable<SubjectResponse>> GetAllSubjectsAsync();
+        Task<SubjectResponse?> GetSubjectByIdAsync(Guid id);
+        Task<SubjectResponse> CreateSubjectAsync(CreateSubjectRequest createDto);
+        Task<SubjectResponse> UpdateSubjectAsync(Guid id, UpdateSubjectRequest updateDto);
+        Task<bool> DeleteSubjectAsync(Guid id);
     }
 }

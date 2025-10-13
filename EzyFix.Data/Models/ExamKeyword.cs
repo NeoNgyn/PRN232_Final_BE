@@ -7,11 +7,11 @@ namespace EzyFix.DAL.Models;
 
 public partial class ExamKeyword
 {
-    public string ExamKeywordId { get; set; }
+    public Guid ExamKeywordId { get; set; }
 
-    public string ExamId { get; set; }
+    public Guid ExamId { get; set; }
 
-    public int KeywordId { get; set; }
+    public Guid KeywordId { get; set; }
 
     public virtual Exam Exam { get; set; }
 

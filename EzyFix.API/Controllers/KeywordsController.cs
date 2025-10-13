@@ -22,7 +22,7 @@ namespace EzyFix.API.Controllers
         // 1️⃣ Lấy danh sách từ khóa
         // ===============================
         [HttpGet(ApiEndPointConstant.Keywords.KeywordsEndpoint)]
-        [ProducesResponseType(typeof(ApiResponse<IEnumerable<KeywordResponseDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<KeywordResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllKeywords()
         {
@@ -38,10 +38,10 @@ namespace EzyFix.API.Controllers
         // 2️⃣ Lấy từ khóa theo ID
         // ===============================
         [HttpGet(ApiEndPointConstant.Keywords.KeywordEndpointById)]
-        [ProducesResponseType(typeof(ApiResponse<KeywordResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<KeywordResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetKeywordById(int id)
+        public async Task<IActionResult> GetKeywordById(Guid id)
         {
             var keyword = await _keywordService.GetKeywordByIdAsync(id);
             return Ok(ApiResponseBuilder.BuildResponse(
@@ -55,10 +55,10 @@ namespace EzyFix.API.Controllers
         // 3️⃣ Tạo từ khóa mới
         // ===============================
         [HttpPost(ApiEndPointConstant.Keywords.KeywordsEndpoint)]
-        [ProducesResponseType(typeof(ApiResponse<KeywordResponseDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<KeywordResponse>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CreateKeyword([FromForm] CreateKeywordRequestDto request)
+        public async Task<IActionResult> CreateKeyword([FromForm] CreateKeywordRequest request)
         {
             var response = await _keywordService.CreateKeywordAsync(request);
 
@@ -87,10 +87,10 @@ namespace EzyFix.API.Controllers
         // 4️⃣ Cập nhật từ khóa
         // ===============================
         [HttpPut(ApiEndPointConstant.Keywords.UpdateKeywordEndpoint)]
-        [ProducesResponseType(typeof(ApiResponse<KeywordResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<KeywordResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateKeyword(int id, [FromForm] UpdateKeywordRequestDto request)
+        public async Task<IActionResult> UpdateKeyword(Guid id, [FromForm] UpdateKeywordRequest request)
         {
             var updated = await _keywordService.UpdateKeywordAsync(id, request);
             return Ok(ApiResponseBuilder.BuildResponse(
@@ -107,7 +107,7 @@ namespace EzyFix.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DeleteKeyword(int id)
+        public async Task<IActionResult> DeleteKeyword(Guid id)
         {
             await _keywordService.DeleteKeywordAsync(id);
             return Ok(ApiResponseBuilder.BuildResponse<object>(

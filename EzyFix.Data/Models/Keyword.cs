@@ -7,7 +7,7 @@ namespace EzyFix.DAL.Models;
 
 public partial class Keyword
 {
-    public int KeywordId { get; set; }
+    public Guid KeywordId { get; set; }
 
     public string Word { get; set; }
 

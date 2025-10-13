@@ -26,12 +26,12 @@ namespace EzyFix.BLL.Services.Implements
         {
         }
 
-        public async Task<IEnumerable<SemesterResponseDto>> GetAllSemestersAsync()
+        public async Task<IEnumerable<SemesterResponse>> GetAllSemestersAsync()
         {
             try
             {
                 var semesters = await _unitOfWork.GetRepository<Semester>().GetListAsync();
-                return _mapper.Map<IEnumerable<SemesterResponseDto>>(semesters);
+                return _mapper.Map<IEnumerable<SemesterResponse>>(semesters);
             }
             catch (Exception ex)
             {
@@ -40,7 +40,7 @@ namespace EzyFix.BLL.Services.Implements
             }
         }
 
-        public async Task<SemesterResponseDto?> GetSemesterByIdAsync(string id)
+        public async Task<SemesterResponse?> GetSemesterByIdAsync(Guid id)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace EzyFix.BLL.Services.Implements
                     throw new NotFoundException($"Không tìm thấy học kỳ với ID: {id}");
                 }
 
-                return _mapper.Map<SemesterResponseDto>(semester);
+                return _mapper.Map<SemesterResponse>(semester);
             }
             catch (Exception ex)
             {
@@ -61,22 +61,21 @@ namespace EzyFix.BLL.Services.Implements
             }
         }
 
-        public async Task<SemesterResponseDto> CreateSemesterAsync(CreateSemesterRequestDto createDto)
+        public async Task<SemesterResponse> CreateSemesterAsync(CreateSemesterRequest createDto)
         {
             try
             {
-                var existing = await _unitOfWork.GetRepository<Semester>().SingleOrDefaultAsync(predicate: s => s.SemesterId == createDto.SemesterId);
-                if (existing != null)
-                {
-                    throw new BadRequestException($"Học kỳ với ID '{createDto.SemesterId}' đã tồn tại.");
-                }
-
                 return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
                     var semester = _mapper.Map<Semester>(createDto);
+
+                    // 1. Tự sinh Guid mới cho ID
+                    semester.SemesterId = Guid.NewGuid();
+
                     await _unitOfWork.GetRepository<Semester>().InsertAsync(semester);
                     await _unitOfWork.CommitAsync();
-                    return _mapper.Map<SemesterResponseDto>(semester);
+
+                    return _mapper.Map<SemesterResponse>(semester);
                 });
             }
             catch (Exception ex)
@@ -86,12 +85,13 @@ namespace EzyFix.BLL.Services.Implements
             }
         }
 
-        public async Task<SemesterResponseDto> UpdateSemesterAsync(string id, UpdateSemesterRequestDto updateDto)
+        public async Task<SemesterResponse> UpdateSemesterAsync(Guid id, UpdateSemesterRequest updateDto)
         {
             try
             {
                 return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
+                    // SỬA: Cập nhật predicate
                     var semester = await _unitOfWork.GetRepository<Semester>().SingleOrDefaultAsync(predicate: s => s.SemesterId == id);
                     if (semester == null)
                     {
@@ -99,10 +99,10 @@ namespace EzyFix.BLL.Services.Implements
                     }
 
                     _mapper.Map(updateDto, semester);
-                    _unitOfWork.GetRepository<Semester>().UpdateAsync(semester);
+                    _unitOfWork.GetRepository<Semester>().UpdateAsync(semester); // Dùng Update đồng bộ
                     await _unitOfWork.CommitAsync();
 
-                    return _mapper.Map<SemesterResponseDto>(semester);
+                    return _mapper.Map<SemesterResponse>(semester);
                 });
             }
             catch (Exception ex)
@@ -112,19 +112,20 @@ namespace EzyFix.BLL.Services.Implements
             }
         }
 
-        public async Task<bool> DeleteSemesterAsync(string id)
+        public async Task<bool> DeleteSemesterAsync(Guid id)
         {
             try
             {
                 return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
+                    // SỬA: Cập nhật predicate
                     var semester = await _unitOfWork.GetRepository<Semester>().SingleOrDefaultAsync(predicate: s => s.SemesterId == id);
                     if (semester == null)
                     {
                         throw new NotFoundException($"Không tìm thấy học kỳ với ID: {id} để xóa.");
                     }
 
-                    _unitOfWork.GetRepository<Semester>().DeleteAsync(semester);
+                    _unitOfWork.GetRepository<Semester>().DeleteAsync(semester); // Dùng Delete đồng bộ
                     await _unitOfWork.CommitAsync();
                     return true;
                 });

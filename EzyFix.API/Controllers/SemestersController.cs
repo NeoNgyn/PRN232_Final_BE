@@ -23,7 +23,7 @@ namespace EzyFix.API.Controllers
         // 1️⃣ Lấy danh sách học kỳ
         // ===============================
         [HttpGet(ApiEndPointConstant.Semesters.SemestersEndpoint)]
-        [ProducesResponseType(typeof(ApiResponse<IEnumerable<SemesterResponseDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<SemesterResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllSemesters()
         {
@@ -39,10 +39,10 @@ namespace EzyFix.API.Controllers
         // 2️⃣ Lấy học kỳ theo ID
         // ===============================
         [HttpGet(ApiEndPointConstant.Semesters.SemesterEndpointById)]
-        [ProducesResponseType(typeof(ApiResponse<SemesterResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<SemesterResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetSemesterById(string id)
+        public async Task<IActionResult> GetSemesterById(Guid id)
         {
             var semester = await _semesterService.GetSemesterByIdAsync(id);
             return Ok(ApiResponseBuilder.BuildResponse(
@@ -56,10 +56,10 @@ namespace EzyFix.API.Controllers
         // 3️⃣ Tạo học kỳ mới
         // ===============================
         [HttpPost(ApiEndPointConstant.Semesters.SemestersEndpoint)]
-        [ProducesResponseType(typeof(ApiResponse<SemesterResponseDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<SemesterResponse>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CreateSemester([FromForm] CreateSemesterRequestDto request)
+        public async Task<IActionResult> CreateSemester([FromForm] CreateSemesterRequest request)
         {
             var response = await _semesterService.CreateSemesterAsync(request);
 
@@ -88,10 +88,10 @@ namespace EzyFix.API.Controllers
         // 4️⃣ Cập nhật học kỳ
         // ===============================
         [HttpPut(ApiEndPointConstant.Semesters.UpdateSemesterEndpoint)]
-        [ProducesResponseType(typeof(ApiResponse<SemesterResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<SemesterResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateSemester(string id, [FromForm] UpdateSemesterRequestDto request)
+        public async Task<IActionResult> UpdateSemester(Guid id, [FromForm] UpdateSemesterRequest request)
         {
             var updated = await _semesterService.UpdateSemesterAsync(id, request);
             return Ok(ApiResponseBuilder.BuildResponse(
@@ -108,7 +108,7 @@ namespace EzyFix.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DeleteSemester(string id)
+        public async Task<IActionResult> DeleteSemester(Guid id)
         {
             await _semesterService.DeleteSemesterAsync(id);
             return Ok(ApiResponseBuilder.BuildResponse<object>(

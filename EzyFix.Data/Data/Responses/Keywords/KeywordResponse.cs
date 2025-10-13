@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace EzyFix.DAL.Data.Responses.Keywords
 {
-    public class KeywordResponseDto
+    public class KeywordResponse
     {
-        public int KeywordId { get; set; }
+        public Guid KeywordId { get; set; }
         public string Word { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿/*
+﻿
 namespace EzyFix.DAL.Data.Responses.Otp
 {
     public class ValidateOtpResponse
@@ -8,4 +8,4 @@ namespace EzyFix.DAL.Data.Responses.Otp
     }
 }
 
-*/
+

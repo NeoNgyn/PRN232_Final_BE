@@ -22,7 +22,7 @@ namespace EzyFix.API.Controllers
         // 1️⃣ Lấy danh sách môn học
         // ===============================
         [HttpGet(ApiEndPointConstant.Subjects.SubjectsEndpoint)]
-        [ProducesResponseType(typeof(ApiResponse<IEnumerable<SubjectResponseDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<SubjectResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllSubjects()
         {
@@ -38,10 +38,10 @@ namespace EzyFix.API.Controllers
         // 2️⃣ Lấy môn học theo ID
         // ===============================
         [HttpGet(ApiEndPointConstant.Subjects.SubjectEndpointById)]
-        [ProducesResponseType(typeof(ApiResponse<SubjectResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<SubjectResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetSubjectById(string id)
+        public async Task<IActionResult> GetSubjectById(Guid id)
         {
             var subject = await _subjectService.GetSubjectByIdAsync(id);
             return Ok(ApiResponseBuilder.BuildResponse(
@@ -55,10 +55,10 @@ namespace EzyFix.API.Controllers
         // 3️⃣ Tạo môn học mới
         // ===============================
         [HttpPost(ApiEndPointConstant.Subjects.SubjectsEndpoint)]
-        [ProducesResponseType(typeof(ApiResponse<SubjectResponseDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<SubjectResponse>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CreateSubject([FromForm] CreateSubjectRequestDto request)
+        public async Task<IActionResult> CreateSubject([FromForm] CreateSubjectRequest request)
         {
             var response = await _subjectService.CreateSubjectAsync(request);
 
@@ -87,10 +87,10 @@ namespace EzyFix.API.Controllers
         // 4️⃣ Cập nhật môn học
         // ===============================
         [HttpPut(ApiEndPointConstant.Subjects.UpdateSubjectEndpoint)]
-        [ProducesResponseType(typeof(ApiResponse<SubjectResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<SubjectResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateSubject(string id, [FromForm] UpdateSubjectRequestDto request)
+        public async Task<IActionResult> UpdateSubject(Guid id, [FromForm] UpdateSubjectRequest request)
         {
             var updated = await _subjectService.UpdateSubjectAsync(id, request);
             return Ok(ApiResponseBuilder.BuildResponse(
@@ -107,7 +107,7 @@ namespace EzyFix.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DeleteSubject(string id)
+        public async Task<IActionResult> DeleteSubject(Guid id)
         {
             await _subjectService.DeleteSubjectAsync(id);
             return Ok(ApiResponseBuilder.BuildResponse<object>(

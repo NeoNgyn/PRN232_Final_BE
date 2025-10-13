@@ -11,10 +11,10 @@ namespace EzyFix.BLL.Services.Interfaces
 {
     public interface IKeywordService
     {
-        Task<IEnumerable<KeywordResponseDto>> GetAllKeywordsAsync();
-        Task<KeywordResponseDto?> GetKeywordByIdAsync(int id);
-        Task<KeywordResponseDto> CreateKeywordAsync(CreateKeywordRequestDto createDto);
-        Task<KeywordResponseDto> UpdateKeywordAsync(int id, UpdateKeywordRequestDto updateDto);
-        Task<bool> DeleteKeywordAsync(int id);
+        Task<IEnumerable<KeywordResponse>> GetAllKeywordsAsync();
+        Task<KeywordResponse?> GetKeywordByIdAsync(Guid id);
+        Task<KeywordResponse> CreateKeywordAsync(CreateKeywordRequest createDto);
+        Task<KeywordResponse> UpdateKeywordAsync(Guid id, UpdateKeywordRequest updateDto);
+        Task<bool> DeleteKeywordAsync(Guid id);
     }
 }

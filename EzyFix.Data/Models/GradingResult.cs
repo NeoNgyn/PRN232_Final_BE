@@ -2,12 +2,13 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EzyFix.DAL.Models;
 
 public partial class GradingResult
 {
-    public string ResultId { get; set; }
+    public Guid ResultId { get; set; }
 
     public decimal? TotalMark { get; set; }
 
@@ -15,12 +16,12 @@ public partial class GradingResult
 
     public string Note { get; set; }
 
-    public string LecturerId { get; set; }
+    public Guid LecturerId { get; set; }
 
-    public string AssignmentId { get; set; }
-
+    public Guid AssignmentId { get; set; }
+    [Column(TypeName = "timestamp with time zone")]
     public DateTime? CreatedAt { get; set; }
-
+    [Column(TypeName = "timestamp with time zone")]
     public DateTime? UpdatedAt { get; set; }
 
     public virtual Assignment Assignment { get; set; }

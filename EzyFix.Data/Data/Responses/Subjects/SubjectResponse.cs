@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace EzyFix.DAL.Data.Responses.Subjects
 {
-    public class SubjectResponseDto
+    public class SubjectResponse
     {
-        public string SubjectId { get; set; }
+        public Guid SubjectId { get; set; } // SỬA: Đổi từ string sang Guid
         public string Name { get; set; }
     }
 }

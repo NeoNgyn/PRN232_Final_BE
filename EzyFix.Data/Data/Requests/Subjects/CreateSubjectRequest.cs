@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EzyFix.DAL.Data.Requests.Subjects
 {
-    public class UpdateSubjectRequestDto
+    public class CreateSubjectRequest
     {
         [Required(ErrorMessage = "Tên môn học không được để trống.")]
         [StringLength(100, ErrorMessage = "Tên môn học không được vượt quá 100 ký tự.")]

@@ -7,7 +7,7 @@ namespace EzyFix.DAL.Models;
 
 public partial class Subject
 {
-    public string SubjectId { get; set; }
+    public Guid SubjectId { get; set; }
 
     public string Name { get; set; }
 
