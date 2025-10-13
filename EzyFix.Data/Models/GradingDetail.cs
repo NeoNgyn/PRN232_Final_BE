@@ -7,11 +7,11 @@ namespace EzyFix.DAL.Models;
 
 public partial class GradingDetail
 {
-    public int DetailId { get; set; }
+    public Guid DetailId { get; set; }
 
-    public string ScoreId { get; set; }
+    public Guid ScoreId { get; set; }
 
-    public int ColumnId { get; set; }
+    public Guid ColumnId { get; set; }
 
     public decimal? Mark { get; set; }
 

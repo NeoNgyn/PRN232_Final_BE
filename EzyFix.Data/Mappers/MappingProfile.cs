@@ -18,17 +18,17 @@ namespace EzyFix.DAL.Mappers
     {
         public MappingProfile()
         {
-            CreateMap<Semester, SemesterResponseDto>();
-            CreateMap<CreateSemesterRequestDto, Semester>();
-            CreateMap<UpdateSemesterRequestDto, Semester>();
+            CreateMap<Semester, SemesterResponse>();
+            CreateMap<CreateSemesterRequest, Semester>();
+            CreateMap<UpdateSemesterRequest, Semester>();
 
-            CreateMap<Subject, SubjectResponseDto>();
-            CreateMap<CreateSubjectRequestDto, Subject>();
-            CreateMap<UpdateSubjectRequestDto, Subject>();
+            CreateMap<Subject, SubjectResponse>();
+            CreateMap<CreateSubjectRequest, Subject>();
+            CreateMap<UpdateSubjectRequest, Subject>();
 
-            CreateMap<Keyword, KeywordResponseDto>();
-            CreateMap<CreateKeywordRequestDto, Keyword>();
-            CreateMap<UpdateKeywordRequestDto, Keyword>();
+            CreateMap<Keyword, KeywordResponse>();
+            CreateMap<CreateKeywordRequest, Keyword>();
+            CreateMap<UpdateKeywordRequest, Keyword>();
         }
     }
 }

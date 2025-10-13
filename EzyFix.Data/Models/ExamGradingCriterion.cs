@@ -7,11 +7,11 @@ namespace EzyFix.DAL.Models;
 
 public partial class ExamGradingCriterion
 {
-    public int CriteriaId { get; set; }
+    public Guid CriteriaId { get; set; }
 
-    public string ExamId { get; set; }
+    public Guid ExamId { get; set; }
 
-    public int ColumnId { get; set; }
+    public Guid ColumnId { get; set; }
 
     public decimal MaxMark { get; set; }
 

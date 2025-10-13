@@ -138,6 +138,7 @@ namespace EzyFix.API.Constants
             public const string UpdateSubjectEndpoint = $"{Prefix}/update/{{id}}";
             public const string DeleteSubjectEndpoint = $"{Prefix}/delete/{{id}}";
         }
+
         public static class Keywords
         {
             private const string Prefix = "api/keywords";

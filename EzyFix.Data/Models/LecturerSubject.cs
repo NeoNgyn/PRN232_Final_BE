@@ -2,23 +2,24 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EzyFix.DAL.Models;
 
 public partial class LecturerSubject
 {
-    public string LecturerSubjectId { get; set; }
+    public Guid LecturerSubjectId { get; set; }
 
-    public string LecturerId { get; set; }
+    public Guid LecturerId { get; set; }
 
-    public string SubjectId { get; set; }
+    public Guid SubjectId { get; set; }
 
-    public string SemesterId { get; set; }
+    public Guid SemesterId { get; set; }
 
     public bool? IsPrincipal { get; set; }
-
+    [Column(TypeName = "timestamp with time zone")]
     public DateTime? AssignedAt { get; set; }
-
+    [Column(TypeName = "timestamp with time zone")]
     public DateTime? UpdatedAt { get; set; }
 
     public virtual ICollection<Exam> Exams { get; set; } = new List<Exam>();

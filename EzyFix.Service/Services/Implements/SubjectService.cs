@@ -27,12 +27,12 @@ namespace EzyFix.BLL.Services.Implements
         {
         }
 
-        public async Task<IEnumerable<SubjectResponseDto>> GetAllSubjectsAsync()
+        public async Task<IEnumerable<SubjectResponse>> GetAllSubjectsAsync()
         {
             try
             {
                 var subjects = await _unitOfWork.GetRepository<Subject>().GetListAsync();
-                return _mapper.Map<IEnumerable<SubjectResponseDto>>(subjects);
+                return _mapper.Map<IEnumerable<SubjectResponse>>(subjects);
             }
             catch (Exception ex)
             {
@@ -41,7 +41,7 @@ namespace EzyFix.BLL.Services.Implements
             }
         }
 
-        public async Task<SubjectResponseDto?> GetSubjectByIdAsync(string id)
+        public async Task<SubjectResponse?> GetSubjectByIdAsync(Guid id)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace EzyFix.BLL.Services.Implements
                     throw new NotFoundException($"Không tìm thấy môn học với ID: {id}");
                 }
 
-                return _mapper.Map<SubjectResponseDto>(subject);
+                return _mapper.Map<SubjectResponse>(subject);
             }
             catch (Exception ex)
             {
@@ -61,22 +61,21 @@ namespace EzyFix.BLL.Services.Implements
             }
         }
 
-        public async Task<SubjectResponseDto> CreateSubjectAsync(CreateSubjectRequestDto createDto)
+        public async Task<SubjectResponse> CreateSubjectAsync(CreateSubjectRequest createDto)
         {
             try
             {
-                var existing = await _unitOfWork.GetRepository<Subject>().SingleOrDefaultAsync(predicate: s => s.SubjectId == createDto.SubjectId);
-                if (existing != null)
-                {
-                    throw new BadRequestException($"Môn học với ID '{createDto.SubjectId}' đã tồn tại.");
-                }
-
                 return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
                     var subject = _mapper.Map<Subject>(createDto);
+
+                    // SỬA: Tự sinh Guid mới cho ID
+                    subject.SubjectId = Guid.NewGuid();
+
                     await _unitOfWork.GetRepository<Subject>().InsertAsync(subject);
                     await _unitOfWork.CommitAsync();
-                    return _mapper.Map<SubjectResponseDto>(subject);
+
+                    return _mapper.Map<SubjectResponse>(subject);
                 });
             }
             catch (Exception ex)
@@ -86,13 +85,13 @@ namespace EzyFix.BLL.Services.Implements
             }
         }
 
-        public async Task<SubjectResponseDto> UpdateSubjectAsync(string id, UpdateSubjectRequestDto updateDto)
+        public async Task<SubjectResponse> UpdateSubjectAsync(Guid id, UpdateSubjectRequest updateDto)
         {
             try
             {
                 return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
-                    var subject = await _unitOfWork.GetRepository<Subject>().SingleOrDefaultAsync(predicate: s => s.SubjectId == id);
+                    var subject = await _unitOfWork.GetRepository<Subject>().SingleOrDefaultAsync(predicate: s => s.SubjectId == id); // SỬA: Cập nhật predicate
                     if (subject == null)
                     {
                         throw new NotFoundException($"Không tìm thấy môn học với ID: {id} để cập nhật.");
@@ -102,7 +101,7 @@ namespace EzyFix.BLL.Services.Implements
                     _unitOfWork.GetRepository<Subject>().UpdateAsync(subject);
                     await _unitOfWork.CommitAsync();
 
-                    return _mapper.Map<SubjectResponseDto>(subject);
+                    return _mapper.Map<SubjectResponse>(subject);
                 });
             }
             catch (Exception ex)
@@ -112,13 +111,13 @@ namespace EzyFix.BLL.Services.Implements
             }
         }
 
-        public async Task<bool> DeleteSubjectAsync(string id)
+        public async Task<bool> DeleteSubjectAsync(Guid id)
         {
             try
             {
                 return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
-                    var subject = await _unitOfWork.GetRepository<Subject>().SingleOrDefaultAsync(predicate: s => s.SubjectId == id);
+                    var subject = await _unitOfWork.GetRepository<Subject>().SingleOrDefaultAsync(predicate: s => s.SubjectId == id); // SỬA: Cập nhật predicate
                     if (subject == null)
                     {
                         throw new NotFoundException($"Không tìm thấy môn học với ID: {id} để xóa.");

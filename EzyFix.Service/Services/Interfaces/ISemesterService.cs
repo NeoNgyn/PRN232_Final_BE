@@ -11,10 +11,10 @@ namespace EzyFix.BLL.Services.Interfaces
 {
     public interface ISemesterService
     {
-        Task<IEnumerable<SemesterResponseDto>> GetAllSemestersAsync();
-        Task<SemesterResponseDto?> GetSemesterByIdAsync(string id);
-        Task<SemesterResponseDto> CreateSemesterAsync(CreateSemesterRequestDto createDto);
-        Task<SemesterResponseDto> UpdateSemesterAsync(string id, UpdateSemesterRequestDto updateDto);
-        Task<bool> DeleteSemesterAsync(string id);
+        Task<IEnumerable<SemesterResponse>> GetAllSemestersAsync();
+        Task<SemesterResponse?> GetSemesterByIdAsync(Guid id);
+        Task<SemesterResponse> CreateSemesterAsync(CreateSemesterRequest createDto);
+        Task<SemesterResponse> UpdateSemesterAsync(Guid id, UpdateSemesterRequest updateDto);
+        Task<bool> DeleteSemesterAsync(Guid id);
     }
 }

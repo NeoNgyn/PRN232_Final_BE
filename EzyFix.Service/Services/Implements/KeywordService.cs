@@ -27,12 +27,12 @@ namespace EzyFix.BLL.Services.Implements
         {
         }
 
-        public async Task<IEnumerable<KeywordResponseDto>> GetAllKeywordsAsync()
+        public async Task<IEnumerable<KeywordResponse>> GetAllKeywordsAsync()
         {
             try
             {
                 var keywords = await _unitOfWork.GetRepository<Keyword>().GetListAsync();
-                return _mapper.Map<IEnumerable<KeywordResponseDto>>(keywords);
+                return _mapper.Map<IEnumerable<KeywordResponse>>(keywords);
             }
             catch (Exception ex)
             {
@@ -41,19 +41,18 @@ namespace EzyFix.BLL.Services.Implements
             }
         }
 
-        public async Task<KeywordResponseDto?> GetKeywordByIdAsync(int id)
+        public async Task<KeywordResponse?> GetKeywordByIdAsync(Guid id)
         {
             try
             {
                 var keyword = await _unitOfWork.GetRepository<Keyword>()
-                    .SingleOrDefaultAsync(predicate: k => k.KeywordId == id);
+                    .SingleOrDefaultAsync(predicate: k => k.KeywordId == id); // SỬA: Cập nhật predicate
 
                 if (keyword == null)
                 {
                     throw new NotFoundException($"Không tìm thấy từ khóa với ID: {id}");
                 }
-
-                return _mapper.Map<KeywordResponseDto>(keyword);
+                return _mapper.Map<KeywordResponse>(keyword);
             }
             catch (Exception ex)
             {
@@ -62,12 +61,13 @@ namespace EzyFix.BLL.Services.Implements
             }
         }
 
-        public async Task<KeywordResponseDto> CreateKeywordAsync(CreateKeywordRequestDto createDto)
+        public async Task<KeywordResponse> CreateKeywordAsync(CreateKeywordRequest createDto)
         {
             try
             {
+                // Kiểm tra từ khóa trùng lặp vẫn hợp lệ
                 var existing = await _unitOfWork.GetRepository<Keyword>()
-                    .SingleOrDefaultAsync(predicate: k => k.Word == createDto.Word);
+                    .SingleOrDefaultAsync(predicate: k => k.Word.ToLower() == createDto.Word.ToLower());
 
                 if (existing != null)
                 {
@@ -77,9 +77,14 @@ namespace EzyFix.BLL.Services.Implements
                 return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
                     var keyword = _mapper.Map<Keyword>(createDto);
+
+                    // SỬA: Tự sinh Guid mới cho ID
+                    keyword.KeywordId = Guid.NewGuid();
+
                     await _unitOfWork.GetRepository<Keyword>().InsertAsync(keyword);
                     await _unitOfWork.CommitAsync();
-                    return _mapper.Map<KeywordResponseDto>(keyword);
+
+                    return _mapper.Map<KeywordResponse>(keyword);
                 });
             }
             catch (Exception ex)
@@ -89,14 +94,14 @@ namespace EzyFix.BLL.Services.Implements
             }
         }
 
-        public async Task<KeywordResponseDto> UpdateKeywordAsync(int id, UpdateKeywordRequestDto updateDto)
+        public async Task<KeywordResponse> UpdateKeywordAsync(Guid id, UpdateKeywordRequest updateDto)
         {
             try
             {
                 return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
                     var keyword = await _unitOfWork.GetRepository<Keyword>()
-                        .SingleOrDefaultAsync(predicate: k => k.KeywordId == id);
+                        .SingleOrDefaultAsync(predicate: k => k.KeywordId == id); // SỬA: Cập nhật predicate
 
                     if (keyword == null)
                     {
@@ -107,7 +112,7 @@ namespace EzyFix.BLL.Services.Implements
                     _unitOfWork.GetRepository<Keyword>().UpdateAsync(keyword);
                     await _unitOfWork.CommitAsync();
 
-                    return _mapper.Map<KeywordResponseDto>(keyword);
+                    return _mapper.Map<KeywordResponse>(keyword);
                 });
             }
             catch (Exception ex)
@@ -117,14 +122,14 @@ namespace EzyFix.BLL.Services.Implements
             }
         }
 
-        public async Task<bool> DeleteKeywordAsync(int id)
+        public async Task<bool> DeleteKeywordAsync(Guid id)
         {
             try
             {
                 return await _unitOfWork.ProcessInTransactionAsync(async () =>
                 {
                     var keyword = await _unitOfWork.GetRepository<Keyword>()
-                        .SingleOrDefaultAsync(predicate: k => k.KeywordId == id);
+                        .SingleOrDefaultAsync(predicate: k => k.KeywordId == id); // SỬA: Cập nhật predicate
 
                     if (keyword == null)
                     {

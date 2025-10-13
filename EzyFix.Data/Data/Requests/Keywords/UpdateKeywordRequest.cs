@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EzyFix.DAL.Data.Requests.Keywords
 {
-    public class CreateKeywordRequestDto
+    public class UpdateKeywordRequest
     {
         [Required(ErrorMessage = "Từ khóa không được để trống.")]
         [StringLength(100, ErrorMessage = "Từ khóa không được vượt quá 100 ký tự.")]

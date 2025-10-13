@@ -7,7 +7,7 @@ namespace EzyFix.DAL.Models;
 
 public partial class Assignment
 {
-    public string AssignmentId { get; set; }
+    public Guid AssignmentId { get; set; }
 
     public string Name { get; set; }
 
@@ -19,9 +19,9 @@ public partial class Assignment
 
     public string Status { get; set; }
 
-    public string StudentId { get; set; }
+    public Guid StudentId { get; set; }
 
-    public string ExamId { get; set; }
+    public Guid ExamId { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

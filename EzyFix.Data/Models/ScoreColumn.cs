@@ -7,7 +7,7 @@ namespace EzyFix.DAL.Models;
 
 public partial class ScoreColumn
 {
-    public int ColumnId { get; set; }
+    public Guid ColumnId { get; set; }
 
     public string Name { get; set; }
 

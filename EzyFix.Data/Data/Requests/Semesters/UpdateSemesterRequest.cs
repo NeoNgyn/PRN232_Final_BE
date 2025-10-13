@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EzyFix.DAL.Data.Requests.Semesters
 {
-    public class UpdateSemesterRequestDto
+    public class UpdateSemesterRequest
     {
         public string Name { get; set; }
         public DateTime? StartDate { get; set; }
