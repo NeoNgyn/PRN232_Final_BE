@@ -29,7 +29,7 @@ namespace EzyFix.API.Controllers
             var subjects = await _subjectService.GetAllSubjectsAsync();
             return Ok(ApiResponseBuilder.BuildResponse(
                 StatusCodes.Status200OK,
-                "Danh sách môn học được lấy thành công",
+                "Subject list is retrieved successfully!",
                 subjects
             ));
         }
@@ -46,7 +46,7 @@ namespace EzyFix.API.Controllers
             var subject = await _subjectService.GetSubjectByIdAsync(id);
             return Ok(ApiResponseBuilder.BuildResponse(
                 StatusCodes.Status200OK,
-                "Lấy thông tin môn học thành công",
+                "Subject is retrieved successfully!",
                 subject
             ));
         }
@@ -67,8 +67,8 @@ namespace EzyFix.API.Controllers
                 return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
                     null,
                     StatusCodes.Status400BadRequest,
-                    "Không thể tạo môn học mới",
-                    "Quá trình tạo môn học thất bại"
+                    "Cannot create new subject",
+                    "Subject creation failed!"
                 ));
             }
 
@@ -77,7 +77,7 @@ namespace EzyFix.API.Controllers
                 new { id = response.SubjectId },
                 ApiResponseBuilder.BuildResponse(
                     StatusCodes.Status201Created,
-                    "Tạo môn học thành công",
+                    "Subject is created successfully!",
                     response
                 )
             );
@@ -95,7 +95,7 @@ namespace EzyFix.API.Controllers
             var updated = await _subjectService.UpdateSubjectAsync(id, request);
             return Ok(ApiResponseBuilder.BuildResponse(
                 StatusCodes.Status200OK,
-                "Cập nhật môn học thành công",
+                "Subject is updated successfully!",
                 updated
             ));
         }
@@ -103,7 +103,7 @@ namespace EzyFix.API.Controllers
         // ===============================
         // 5️⃣ Xóa môn học
         // ===============================
-        [HttpPut(ApiEndPointConstant.Subjects.DeleteSubjectEndpoint)]
+        [HttpDelete(ApiEndPointConstant.Subjects.DeleteSubjectEndpoint)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
@@ -112,7 +112,7 @@ namespace EzyFix.API.Controllers
             await _subjectService.DeleteSubjectAsync(id);
             return Ok(ApiResponseBuilder.BuildResponse<object>(
                 StatusCodes.Status200OK,
-                "Xóa môn học thành công",
+                "Subject is deleted successfully!",
                 null
             ));
         }

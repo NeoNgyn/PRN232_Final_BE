@@ -29,7 +29,7 @@ namespace EzyFix.API.Controllers
             var keywords = await _keywordService.GetAllKeywordsAsync();
             return Ok(ApiResponseBuilder.BuildResponse(
                 StatusCodes.Status200OK,
-                "Danh sách từ khóa được lấy thành công",
+                "Keyword list is retrieved successfully!",
                 keywords
             ));
         }
@@ -46,7 +46,7 @@ namespace EzyFix.API.Controllers
             var keyword = await _keywordService.GetKeywordByIdAsync(id);
             return Ok(ApiResponseBuilder.BuildResponse(
                 StatusCodes.Status200OK,
-                "Lấy thông tin từ khóa thành công",
+                "Keyword is retrieved successfully!",
                 keyword
             ));
         }
@@ -67,8 +67,8 @@ namespace EzyFix.API.Controllers
                 return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
                     null,
                     StatusCodes.Status400BadRequest,
-                    "Không thể tạo từ khóa mới",
-                    "Quá trình tạo từ khóa thất bại"
+                    "Cannot create new keyword!",
+                    "Keyword creation failed!"
                 ));
             }
 
@@ -77,7 +77,7 @@ namespace EzyFix.API.Controllers
                 new { id = response.KeywordId },
                 ApiResponseBuilder.BuildResponse(
                     StatusCodes.Status201Created,
-                    "Tạo từ khóa thành công",
+                    "Keyword is created successfully!",
                     response
                 )
             );
@@ -95,7 +95,7 @@ namespace EzyFix.API.Controllers
             var updated = await _keywordService.UpdateKeywordAsync(id, request);
             return Ok(ApiResponseBuilder.BuildResponse(
                 StatusCodes.Status200OK,
-                "Cập nhật từ khóa thành công",
+                "Keyword is updated successfully!",
                 updated
             ));
         }
@@ -103,7 +103,7 @@ namespace EzyFix.API.Controllers
         // ===============================
         // 5️⃣ Xóa từ khóa
         // ===============================
-        [HttpPut(ApiEndPointConstant.Keywords.DeleteKeywordEndpoint)]
+        [HttpDelete(ApiEndPointConstant.Keywords.DeleteKeywordEndpoint)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
@@ -112,7 +112,7 @@ namespace EzyFix.API.Controllers
             await _keywordService.DeleteKeywordAsync(id);
             return Ok(ApiResponseBuilder.BuildResponse<object>(
                 StatusCodes.Status200OK,
-                "Xóa từ khóa thành công",
+                "Keyword is deleted successfully!",
                 null
             ));
         }
