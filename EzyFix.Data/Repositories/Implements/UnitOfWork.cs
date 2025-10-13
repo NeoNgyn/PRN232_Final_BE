@@ -1,4 +1,5 @@
 ﻿using EzyFix.DAL.Data;
+using EzyFix.DAL.Models;
 using EzyFix.DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -6,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EzyFix.DAL.Repositories.Implements
 {
-    public class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : EzyFixDbContext
+    public class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : AppDbContext
     {
         public TContext Context { get; }
         private Dictionary<Type, object> _repositories;

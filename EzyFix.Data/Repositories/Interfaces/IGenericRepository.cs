@@ -74,3 +74,4 @@ namespace EzyFix.DAL.Repositories.Interfaces
         void DeleteRangeAsync(IEnumerable<T> entities);
     }
 }
+

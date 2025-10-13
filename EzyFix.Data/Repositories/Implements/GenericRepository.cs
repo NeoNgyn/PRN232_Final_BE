@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using EzyFix.DAL.Data;
 using EzyFix.DAL.Data.MetaDatas;
+using EzyFix.DAL.Models;
 using EzyFix.DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -9,10 +10,10 @@ namespace EzyFix.DAL.Repositories.Implements
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        protected readonly EzyFixDbContext _dbContext;
+        protected readonly AppDbContext _dbContext;
         protected readonly DbSet<T> _dbSet;
 
-        public GenericRepository(EzyFixDbContext context)
+        public GenericRepository(AppDbContext context)
         {
             _dbContext = context;
             _dbSet = context.Set<T>();
