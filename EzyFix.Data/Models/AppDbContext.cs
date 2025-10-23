@@ -502,12 +502,13 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<GradingDetail> GradingDetails { get; set; }
     public virtual DbSet<GradingResult> GradingResults { get; set; }
     public virtual DbSet<Keyword> Keywords { get; set; }
-    public virtual DbSet<Lecturer> Lecturers { get; set; }
+    public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<LecturerSubject> LecturerSubjects { get; set; }
     public virtual DbSet<ScoreColumn> ScoreColumns { get; set; }
     public virtual DbSet<Semester> Semesters { get; set; }
     public virtual DbSet<Student> Students { get; set; }
     public virtual DbSet<Subject> Subjects { get; set; }
+    public virtual DbSet<Role> Roles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -587,12 +588,12 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.AssignmentId).IsRequired().HasMaxLength(20).IsUnicode(false).HasColumnName("assignment_id");
             entity.Property(e => e.CheckedAt).HasColumnType("timestamp with time zone").HasColumnName("checkedAt");
             entity.Property(e => e.CreatedAt).HasColumnType("timestamp with time zone").HasColumnName("createdAt");
-            entity.Property(e => e.LecturerId).IsRequired().HasMaxLength(10).IsUnicode(false).HasColumnName("lecturer_id");
+            entity.Property(e => e.UserId).IsRequired().HasMaxLength(10).IsUnicode(false).HasColumnName("user_id");
             entity.Property(e => e.Note).HasMaxLength(500).HasColumnName("note");
             entity.Property(e => e.TotalMark).HasColumnType("decimal(5, 2)").HasColumnName("total_mark");
             entity.Property(e => e.UpdatedAt).HasColumnType("timestamp with time zone").HasColumnName("updatedAt");
             entity.HasOne(d => d.Assignment).WithMany(p => p.GradingResults).HasForeignKey(d => d.AssignmentId).OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__GradingRe__assig__5AEE82B9");
-            entity.HasOne(d => d.Lecturer).WithMany(p => p.GradingResults).HasForeignKey(d => d.LecturerId).OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__GradingRe__lectu__59FA5E80");
+            entity.HasOne(d => d.User).WithMany(p => p.GradingResults).HasForeignKey(d => d.UserId).OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__GradingRe__lectu__59FA5E80");
         });
 
         modelBuilder.Entity<Keyword>(entity =>
@@ -603,19 +604,76 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Word).IsRequired().HasMaxLength(100).HasColumnName("word");
         });
 
-        modelBuilder.Entity<Lecturer>(entity =>
+        modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.LecturerId).HasName("PK__Lecturer__D4D1DAB1CC25A84F");
-            entity.ToTable("Lecturer");
-            entity.HasIndex(e => e.Email, "UQ__Lecturer__AB6E61643BDB4DEC").IsUnique();
-            entity.Property(e => e.LecturerId).HasMaxLength(10).IsUnicode(false).HasColumnName("lecturer_id");
-            entity.Property(e => e.CreatedAt).HasColumnType("timestamp with time zone").HasColumnName("createdAt");
-            entity.Property(e => e.Email).IsRequired().HasMaxLength(50).IsUnicode(false).HasColumnName("email");
-            entity.Property(e => e.EmailConfirmed).IsRequired().HasColumnName("email_confirmed");
-            entity.Property(e => e.IsActive).HasColumnName("is_active");
-            entity.Property(e => e.Name).IsRequired().HasMaxLength(50).HasColumnName("name");
-            entity.Property(e => e.Password).IsRequired().HasMaxLength(255).IsUnicode(false).HasColumnName("password");
-            entity.Property(e => e.UpdatedAt).HasColumnType("timestamp with time zone").HasColumnName("updatedAt");
+            entity.HasKey(e => e.UserId).HasName("PK_User");
+            entity.ToTable("User");
+
+            entity.HasIndex(e => e.Email)
+                  .IsUnique();
+
+            entity.Property(e => e.UserId)
+                      .HasColumnName("user_id")
+                      .HasDefaultValueSql("gen_random_uuid()");
+
+            entity.Property(e => e.Name)
+                  .IsRequired()
+                  .HasMaxLength(50)
+                  .HasColumnName("name");
+
+            entity.Property(e => e.Password)
+                  .IsRequired()
+                  .HasMaxLength(255)
+                  .IsUnicode(false)
+                  .HasColumnName("password");
+
+            entity.Property(e => e.Email)
+                  .IsRequired()
+                  .HasMaxLength(50)
+                  .IsUnicode(false)
+                  .HasColumnName("email");
+
+            entity.Property(e => e.EmailConfirmed)
+                  .HasColumnName("email_confirmed");
+
+            entity.Property(e => e.IsActive)
+                  .HasColumnName("is_active");
+
+            entity.Property(e => e.CreatedAt)
+                  .HasColumnType("timestamp with time zone")
+                  .HasColumnName("createdAt");
+
+            entity.Property(e => e.UpdatedAt)
+                  .HasColumnType("timestamp with time zone")
+                  .HasColumnName("updatedAt");
+
+            entity.Property(e => e.RoleId)
+                  .HasColumnName("role_id");
+
+            entity.HasOne(d => d.Role)
+                  .WithMany(p => p.Users)
+                  .HasForeignKey(d => d.RoleId)
+                  .OnDelete(DeleteBehavior.SetNull)
+                  .HasConstraintName("FK_User_Role");
+        });
+
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(e => e.RoleId).HasName("PK__Role__760965CC");
+            entity.ToTable("Role");
+
+            entity.Property(e => e.RoleId)
+                      .HasColumnName("role_id")
+                      .HasDefaultValueSql("gen_random_uuid()");
+
+            entity.Property(e => e.RoleName)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasColumnName("role_name");
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(200)
+                .HasColumnName("description");
         });
 
         modelBuilder.Entity<LecturerSubject>(entity =>
@@ -625,11 +683,11 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.LecturerSubjectId).HasMaxLength(20).IsUnicode(false).HasColumnName("lecturer_subject_id");
             entity.Property(e => e.AssignedAt).HasColumnType("timestamp with time zone").HasColumnName("assignedAt");
             entity.Property(e => e.IsPrincipal).HasColumnName("is_principal");
-            entity.Property(e => e.LecturerId).IsRequired().HasMaxLength(10).IsUnicode(false).HasColumnName("lecturer_id");
+            entity.Property(e => e.UserId).IsRequired().HasMaxLength(10).IsUnicode(false).HasColumnName("user_id");
             entity.Property(e => e.SemesterId).IsRequired().HasMaxLength(20).IsUnicode(false).HasColumnName("semester_id");
             entity.Property(e => e.SubjectId).IsRequired().HasMaxLength(10).IsUnicode(false).HasColumnName("subject_id");
             entity.Property(e => e.UpdatedAt).HasColumnType("timestamp with time zone").HasColumnName("updatedAt");
-            entity.HasOne(d => d.Lecturer).WithMany(p => p.LecturerSubjects).HasForeignKey(d => d.LecturerId).OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__LecturerS__lectu__5070F446");
+            entity.HasOne(d => d.User).WithMany(p => p.LecturerSubjects).HasForeignKey(d => d.UserId).OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__LecturerS__lectu__5070F446");
             entity.HasOne(d => d.Semester).WithMany(p => p.LecturerSubjects).HasForeignKey(d => d.SemesterId).OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__LecturerS__semes__52593CB8");
             entity.HasOne(d => d.Subject).WithMany(p => p.LecturerSubjects).HasForeignKey(d => d.SubjectId).OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__LecturerS__subje__5165187F");
         });

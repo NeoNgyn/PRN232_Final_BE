@@ -32,7 +32,7 @@ namespace EzyFix.BLL.Services.Implements
             try
             {
                 var lecturerSubjects = await _unitOfWork.GetRepository<LecturerSubject>().GetListAsync(
-                    include: q => q.Include(ls => ls.Lecturer)
+                    include: q => q.Include(ls => ls.User)
                                   .Include(ls => ls.Subject)
                                   .Include(ls => ls.Semester)
                                   .Include(ls => ls.Exams)
@@ -41,7 +41,7 @@ namespace EzyFix.BLL.Services.Implements
                 var responses = lecturerSubjects.Select(ls =>
                 {
                     var response = _mapper.Map<LecturerSubjectResponse>(ls);
-                    response.LecturerName = ls.Lecturer?.Name ?? "Unknown Lecturer";
+                    response.LecturerName = ls.User?.Name ?? "Unknown Lecturer";
                     response.SubjectName = ls.Subject?.Name ?? "Unknown Subject";
                     response.SemesterName = ls.Semester?.Name ?? "Unknown Semester";
                     response.ExamCount = ls.Exams?.Count ?? 0;
@@ -63,7 +63,7 @@ namespace EzyFix.BLL.Services.Implements
             {
                 var lecturerSubject = await _unitOfWork.GetRepository<LecturerSubject>().SingleOrDefaultAsync(
                     predicate: ls => ls.LecturerSubjectId == id,
-                    include: q => q.Include(ls => ls.Lecturer)
+                    include: q => q.Include(ls => ls.User)
                                   .Include(ls => ls.Subject)
                                   .Include(ls => ls.Semester)
                                   .Include(ls => ls.Exams)
@@ -76,7 +76,7 @@ namespace EzyFix.BLL.Services.Implements
                 }
 
                 var response = _mapper.Map<LecturerSubjectResponse>(lecturerSubject);
-                response.LecturerName = lecturerSubject.Lecturer?.Name ?? "Unknown Lecturer";
+                response.LecturerName = lecturerSubject.User?.Name ?? "Unknown Lecturer";
                 response.SubjectName = lecturerSubject.Subject?.Name ?? "Unknown Subject";
                 response.SemesterName = lecturerSubject.Semester?.Name ?? "Unknown Semester";
                 response.ExamCount = lecturerSubject.Exams?.Count ?? 0;
@@ -99,7 +99,7 @@ namespace EzyFix.BLL.Services.Implements
 
                 // Check for duplicate assignment (same LecturerId, SubjectId, and SemesterId)
                 var existingAssignment = await _unitOfWork.GetRepository<LecturerSubject>()
-                    .SingleOrDefaultAsync(predicate: ls => ls.LecturerId == createDto.LecturerId && 
+                    .SingleOrDefaultAsync(predicate: ls => ls.UserId == createDto.LecturerId && 
                                                           ls.SubjectId == createDto.SubjectId && 
                                                           ls.SemesterId == createDto.SemesterId);
 
@@ -123,14 +123,14 @@ namespace EzyFix.BLL.Services.Implements
                     // Get the created assignment with related data
                     var createdAssignment = await _unitOfWork.GetRepository<LecturerSubject>().SingleOrDefaultAsync(
                         predicate: ls => ls.LecturerSubjectId == lecturerSubject.LecturerSubjectId,
-                        include: q => q.Include(ls => ls.Lecturer)
+                        include: q => q.Include(ls => ls.User)
                                       .Include(ls => ls.Subject)
                                       .Include(ls => ls.Semester)
                                       .Include(ls => ls.Exams)
                     );
 
                     var response = _mapper.Map<LecturerSubjectResponse>(createdAssignment);
-                    response.LecturerName = createdAssignment.Lecturer?.Name ?? "Unknown Lecturer";
+                    response.LecturerName = createdAssignment.User?.Name ?? "Unknown Lecturer";
                     response.SubjectName = createdAssignment.Subject?.Name ?? "Unknown Subject";
                     response.SemesterName = createdAssignment.Semester?.Name ?? "Unknown Semester";
                     response.ExamCount = createdAssignment.Exams?.Count ?? 0;
@@ -154,7 +154,7 @@ namespace EzyFix.BLL.Services.Implements
                     // S?A: C?p nh?t predicate
                     var lecturerSubject = await _unitOfWork.GetRepository<LecturerSubject>().SingleOrDefaultAsync(
                         predicate: ls => ls.LecturerSubjectId == id,
-                        include: q => q.Include(ls => ls.Lecturer)
+                        include: q => q.Include(ls => ls.User)
                                       .Include(ls => ls.Subject)
                                       .Include(ls => ls.Semester)
                                       .Include(ls => ls.Exams)
@@ -168,19 +168,19 @@ namespace EzyFix.BLL.Services.Implements
                     // Validate new references if they are being changed
                     if (updateDto.LecturerId.HasValue || updateDto.SubjectId.HasValue || updateDto.SemesterId.HasValue)
                     {
-                        var newLecturerId = updateDto.LecturerId ?? lecturerSubject.LecturerId;
+                        var newLecturerId = updateDto.LecturerId ?? lecturerSubject.UserId;
                         var newSubjectId = updateDto.SubjectId ?? lecturerSubject.SubjectId;
                         var newSemesterId = updateDto.SemesterId ?? lecturerSubject.SemesterId;
                         
                         await ValidateLecturerSubjectSemesterExistAsync(newLecturerId, newSubjectId, newSemesterId);
 
                         // Check for duplicate if combination is being changed
-                        if (newLecturerId != lecturerSubject.LecturerId || 
+                        if (newLecturerId != lecturerSubject.UserId || 
                             newSubjectId != lecturerSubject.SubjectId || 
                             newSemesterId != lecturerSubject.SemesterId)
                         {
                             var existingAssignment = await _unitOfWork.GetRepository<LecturerSubject>()
-                                .SingleOrDefaultAsync(predicate: ls => ls.LecturerId == newLecturerId && 
+                                .SingleOrDefaultAsync(predicate: ls => ls.UserId == newLecturerId && 
                                                                       ls.SubjectId == newSubjectId && 
                                                                       ls.SemesterId == newSemesterId && 
                                                                       ls.LecturerSubjectId != id);
@@ -201,14 +201,14 @@ namespace EzyFix.BLL.Services.Implements
                     // Get updated assignment with related data
                     var updatedAssignment = await _unitOfWork.GetRepository<LecturerSubject>().SingleOrDefaultAsync(
                         predicate: ls => ls.LecturerSubjectId == id,
-                        include: q => q.Include(ls => ls.Lecturer)
+                        include: q => q.Include(ls => ls.User)
                                       .Include(ls => ls.Subject)
                                       .Include(ls => ls.Semester)
                                       .Include(ls => ls.Exams)
                     );
 
                     var response = _mapper.Map<LecturerSubjectResponse>(updatedAssignment);
-                    response.LecturerName = updatedAssignment.Lecturer?.Name ?? "Unknown Lecturer";
+                    response.LecturerName = updatedAssignment.User?.Name ?? "Unknown Lecturer";
                     response.SubjectName = updatedAssignment.Subject?.Name ?? "Unknown Subject";
                     response.SemesterName = updatedAssignment.Semester?.Name ?? "Unknown Semester";
                     response.ExamCount = updatedAssignment.Exams?.Count ?? 0;
@@ -262,8 +262,8 @@ namespace EzyFix.BLL.Services.Implements
             try
             {
                 var lecturerSubjects = await _unitOfWork.GetRepository<LecturerSubject>().GetListAsync(
-                    predicate: ls => ls.LecturerId == lecturerId,
-                    include: q => q.Include(ls => ls.Lecturer)
+                    predicate: ls => ls.UserId == lecturerId,
+                    include: q => q.Include(ls => ls.User)
                                   .Include(ls => ls.Subject)
                                   .Include(ls => ls.Semester)
                                   .Include(ls => ls.Exams)
@@ -272,7 +272,7 @@ namespace EzyFix.BLL.Services.Implements
                 var responses = lecturerSubjects.Select(ls =>
                 {
                     var response = _mapper.Map<LecturerSubjectResponse>(ls);
-                    response.LecturerName = ls.Lecturer?.Name ?? "Unknown Lecturer";
+                    response.LecturerName = ls.User?.Name ?? "Unknown Lecturer";
                     response.SubjectName = ls.Subject?.Name ?? "Unknown Subject";
                     response.SemesterName = ls.Semester?.Name ?? "Unknown Semester";
                     response.ExamCount = ls.Exams?.Count ?? 0;
@@ -294,7 +294,7 @@ namespace EzyFix.BLL.Services.Implements
             {
                 var lecturerSubjects = await _unitOfWork.GetRepository<LecturerSubject>().GetListAsync(
                     predicate: ls => ls.SubjectId == subjectId,
-                    include: q => q.Include(ls => ls.Lecturer)
+                    include: q => q.Include(ls => ls.User)
                                   .Include(ls => ls.Subject)
                                   .Include(ls => ls.Semester)
                                   .Include(ls => ls.Exams)
@@ -303,7 +303,7 @@ namespace EzyFix.BLL.Services.Implements
                 var responses = lecturerSubjects.Select(ls =>
                 {
                     var response = _mapper.Map<LecturerSubjectResponse>(ls);
-                    response.LecturerName = ls.Lecturer?.Name ?? "Unknown Lecturer";
+                    response.LecturerName = ls.User?.Name ?? "Unknown Lecturer";
                     response.SubjectName = ls.Subject?.Name ?? "Unknown Subject";
                     response.SemesterName = ls.Semester?.Name ?? "Unknown Semester";
                     response.ExamCount = ls.Exams?.Count ?? 0;
@@ -325,7 +325,7 @@ namespace EzyFix.BLL.Services.Implements
             {
                 var lecturerSubjects = await _unitOfWork.GetRepository<LecturerSubject>().GetListAsync(
                     predicate: ls => ls.SemesterId == semesterId,
-                    include: q => q.Include(ls => ls.Lecturer)
+                    include: q => q.Include(ls => ls.User)
                                   .Include(ls => ls.Subject)
                                   .Include(ls => ls.Semester)
                                   .Include(ls => ls.Exams)
@@ -334,7 +334,7 @@ namespace EzyFix.BLL.Services.Implements
                 var responses = lecturerSubjects.Select(ls =>
                 {
                     var response = _mapper.Map<LecturerSubjectResponse>(ls);
-                    response.LecturerName = ls.Lecturer?.Name ?? "Unknown Lecturer";
+                    response.LecturerName = ls.User?.Name ?? "Unknown Lecturer";
                     response.SubjectName = ls.Subject?.Name ?? "Unknown Subject";
                     response.SemesterName = ls.Semester?.Name ?? "Unknown Semester";
                     response.ExamCount = ls.Exams?.Count ?? 0;
@@ -353,8 +353,8 @@ namespace EzyFix.BLL.Services.Implements
         private async Task ValidateLecturerSubjectSemesterExistAsync(Guid lecturerId, Guid subjectId, Guid semesterId)
         {
             // Validate that the Lecturer exists
-            var lecturerExists = await _unitOfWork.GetRepository<Lecturer>()
-                .SingleOrDefaultAsync(predicate: l => l.LecturerId == lecturerId) != null;
+            var lecturerExists = await _unitOfWork.GetRepository<User>()
+                .SingleOrDefaultAsync(predicate: l => l.UserId == lecturerId) != null;
 
             if (!lecturerExists)
             {
