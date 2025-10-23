@@ -160,5 +160,15 @@ namespace EzyFix.API.Constants
             public const string AssignmentsByStudentEndpoint = $"{Prefix}/student/{{studentId}}";
             public const string AssignmentsByExamEndpoint = $"{Prefix}/exam/{{examId}}";
         }
+
+        public static class Files
+        {
+            private const string Prefix = "api/files";
+            public const string FilesEndpoint = $"{Prefix}";
+            public const string FileEndpointById = $"{Prefix}/{{id}}";
+            public const string UpdateFileEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteFileEndpoint = $"{Prefix}/delete/{{id}}";
+        }
+
     }
 }

@@ -285,6 +285,7 @@ using EzyFix.DAL.Models;
 using EzyFix.DAL.Repositories.Implements;
 using EzyFix.DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -319,6 +320,15 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<ISemesterService, SemesterService>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<IKeywordService, KeywordService>();
+builder.Services.AddScoped<IAssignmentService, AssignmentService>();
+
+
+//Odata
+builder.Services.AddControllers().AddOData(options =>
+{
+    options.Select().Filter().OrderBy().Expand().SetMaxTop(100).Count();
+});
+
 
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

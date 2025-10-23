@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using EzyFix.DAL.Data.Requests.Assignments;
 using EzyFix.DAL.Data.Requests.Keywords;
 using EzyFix.DAL.Data.Requests.Semesters;
 using EzyFix.DAL.Data.Requests.Subjects;
+using EzyFix.DAL.Data.Responses.Assignments;
 using EzyFix.DAL.Data.Responses.Keywords;
 using EzyFix.DAL.Data.Responses.Semesters;
 using EzyFix.DAL.Data.Responses.Subjects;
@@ -29,6 +31,10 @@ namespace EzyFix.DAL.Mappers
             CreateMap<Keyword, KeywordResponse>();
             CreateMap<CreateKeywordRequest, Keyword>();
             CreateMap<UpdateKeywordRequest, Keyword>();
+
+            CreateMap<Assignment, AssignmentResponse>();
+            CreateMap<CreateAssignmentRequest, Assignment>();
+            CreateMap<UpdateAssignmentRequest, Assignment>();
         }
     }
 }
