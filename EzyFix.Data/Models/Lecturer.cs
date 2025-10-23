@@ -16,6 +16,8 @@ public partial class Lecturer
 
     public string Email { get; set; }
 
+    public string LecturerCode { get; set; }
+
     public bool EmailConfirmed { get; set; }
 
     public bool? IsActive { get; set; }

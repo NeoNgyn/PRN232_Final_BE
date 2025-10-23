@@ -319,6 +319,11 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<ISemesterService, SemesterService>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<IKeywordService, KeywordService>();
+builder.Services.AddScoped<IScoreColumnService, ScoreColumnService>();
+builder.Services.AddScoped<IExamGradingCriterionService, ExamGradingCriterionService>();
+builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<IGradingDetailService, GradingDetailService>();
+builder.Services.AddScoped<ILecturerSubjectService, LecturerSubjectService>();
 
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
