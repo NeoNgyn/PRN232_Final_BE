@@ -225,5 +225,22 @@ namespace EzyFix.API.Constants
             public const string DeleteFileEndpoint = $"{Prefix}/delete/{{id}}";
         }
 
+        public static class Exams
+        {
+            private const string Prefix = "api/exams";
+
+            public const string ExamsEndpoint = $"{Prefix}";
+            public const string ExamEndpointById = $"{Prefix}/{{id}}";
+            public const string CreateExamEndpoint = $"{Prefix}";
+            public const string UpdateExamEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteExamEndpoint = $"{Prefix}/delete/{{id}}";
+
+            public const string UploadExamFile = $"{Prefix}/{{id}}/upload-file";
+            public const string DownloadExamFile = $"{Prefix}/{{id}}/download";
+            public const string ExtractedPathEndpoint = $"{Prefix}/{{id}}/extracted";
+        }
+
+
+
     }
 }
