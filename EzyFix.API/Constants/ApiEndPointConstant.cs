@@ -148,5 +148,60 @@ namespace EzyFix.API.Constants
             public const string UpdateKeywordEndpoint = $"{Prefix}/update/{{id}}";
             public const string DeleteKeywordEndpoint = $"{Prefix}/delete/{{id}}";
         }
+
+        public static class ScoreColumns
+        {
+            private const string Prefix = "api/score-columns";
+
+            public const string ScoreColumnsEndpoint = $"{Prefix}";
+            public const string ScoreColumnEndpointById = $"{Prefix}/{{id}}";
+            public const string UpdateScoreColumnEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteScoreColumnEndpoint = $"{Prefix}/delete/{{id}}";
+        }
+
+        public static class ExamGradingCriteria
+        {
+            private const string Prefix = "api/exam-grading-criteria";
+
+            public const string ExamGradingCriteriaEndpoint = $"{Prefix}";
+            public const string ExamGradingCriterionEndpointById = $"{Prefix}/{{id}}";
+            public const string UpdateExamGradingCriterionEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteExamGradingCriterionEndpoint = $"{Prefix}/delete/{{id}}";
+        }
+
+        public static class Students
+        {
+            private const string Prefix = "api/students";
+
+            public const string StudentsEndpoint = $"{Prefix}";
+            public const string StudentEndpointById = $"{Prefix}/{{id}}";
+            public const string UpdateStudentEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteStudentEndpoint = $"{Prefix}/delete/{{id}}";
+        }
+
+        public static class GradingDetails
+        {
+            private const string Prefix = "api/grading-details";
+
+            public const string GradingDetailsEndpoint = $"{Prefix}";
+            public const string GradingDetailEndpointById = $"{Prefix}/{{id}}";
+            public const string UpdateGradingDetailEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteGradingDetailEndpoint = $"{Prefix}/delete/{{id}}";
+            public const string GradingDetailsByScoreEndpoint = $"{Prefix}/score/{{scoreId}}";
+            public const string GradingDetailsByColumnEndpoint = $"{Prefix}/column/{{columnId}}";
+        }
+
+        public static class LecturerSubjects
+        {
+            private const string Prefix = "api/lecturer-subjects";
+
+            public const string LecturerSubjectsEndpoint = $"{Prefix}";
+            public const string LecturerSubjectEndpointById = $"{Prefix}/{{id}}";
+            public const string UpdateLecturerSubjectEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteLecturerSubjectEndpoint = $"{Prefix}/delete/{{id}}";
+            public const string LecturerSubjectsByLecturerEndpoint = $"{Prefix}/lecturer/{{lecturerId}}";
+            public const string LecturerSubjectsBySubjectEndpoint = $"{Prefix}/subject/{{subjectId}}";
+            public const string LecturerSubjectsBySemesterEndpoint = $"{Prefix}/semester/{{semesterId}}";
+        }
     }
 }

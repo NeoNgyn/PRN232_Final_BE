@@ -9,6 +9,6 @@ namespace EzyFix.BLL.Utils
 {
     public interface IJwtUtil
     {
-        string GenerateJwtToken(Lecturer user, Tuple<string, Guid> tuple, bool flag);
+        string GenerateJwtToken(User user, Tuple<string, Guid> tuple, bool flag);
     }
 }
