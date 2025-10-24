@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EzyFix.DAL.Data.Requests.Assignments;
 using EzyFix.DAL.Data.Requests.ExamGradingCriteria;
+using EzyFix.DAL.Data.Requests.ExamKeyword;
 using EzyFix.DAL.Data.Requests.Exams;
 using EzyFix.DAL.Data.Requests.GradingDetails;
 using EzyFix.DAL.Data.Requests.Keywords;
@@ -12,6 +13,7 @@ using EzyFix.DAL.Data.Requests.Students;
 using EzyFix.DAL.Data.Requests.Subjects;
 using EzyFix.DAL.Data.Responses.Assignments;
 using EzyFix.DAL.Data.Responses.ExamGradingCriteria;
+using EzyFix.DAL.Data.Responses.ExamKeyword;
 using EzyFix.DAL.Data.Responses.Exams;
 using EzyFix.DAL.Data.Responses.GradingDetails;
 using EzyFix.DAL.Data.Responses.Keywords;
@@ -77,6 +79,10 @@ namespace EzyFix.DAL.Mappers
             CreateMap<Role, RoleResponse>();
             CreateMap<CreateRoleRequest, Role>();
             CreateMap<UpdateRoleRequest, Role>();
+
+            CreateMap<ExamKeyword, ExamKeywordResponse>();
+            CreateMap<CreateExamKeywordRequest, ExamKeyword>();
+            CreateMap<UpdateExamKeywordRequest, ExamKeyword>();
         }
     } 
 }

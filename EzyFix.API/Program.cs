@@ -328,6 +328,7 @@ builder.Services.AddScoped<ILecturerSubjectService, LecturerSubjectService>();
 builder.Services.AddScoped<IAssignmentService, AssignmentService>();
 builder.Services.AddScoped<IExamService, ExamService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IExamKeywordService, ExamKeywordService>();
 
 //Odata
 builder.Services.AddControllers().AddOData(options =>
