@@ -250,5 +250,18 @@ namespace EzyFix.API.Constants
             public const string DeleteRoleEndpoint = $"{Prefix}/delete/{{id}}";
         }
 
+        public static class ExamKeywords
+        {
+            private const string Prefix = "api/exam-keywords";
+
+            public const string ExamKeywordsEndpoint = $"{Prefix}";
+            public const string ExamKeywordEndpointById = $"{Prefix}/{{id}}";
+            public const string UpdateExamKeywordEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteExamKeywordEndpoint = $"{Prefix}/delete/{{id}}";
+            public const string ExamKeywordsByExamEndpoint = $"{Prefix}/exam/{{examId}}";
+            public const string ExamKeywordsByKeywordEndpoint = $"{Prefix}/keyword/{{keywordId}}";
+            public const string DeleteExamKeywordsByExamEndpoint = $"{Prefix}/exam/{{examId}}/delete-all";
+        }
+
     }
 }
