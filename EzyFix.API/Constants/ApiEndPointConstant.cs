@@ -240,7 +240,15 @@ namespace EzyFix.API.Constants
             public const string ExtractedPathEndpoint = $"{Prefix}/{{id}}/extracted";
         }
 
+        public static class Roles
+        {
+            private const string Prefix = "api/roles";
 
+            public const string RolesEndpoint = $"{Prefix}";
+            public const string RoleEndpointById = $"{Prefix}/{{id}}";
+            public const string UpdateRoleEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteRoleEndpoint = $"{Prefix}/delete/{{id}}";
+        }
 
     }
 }

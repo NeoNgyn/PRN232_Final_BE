@@ -327,7 +327,7 @@ builder.Services.AddScoped<IGradingDetailService, GradingDetailService>();
 builder.Services.AddScoped<ILecturerSubjectService, LecturerSubjectService>();
 builder.Services.AddScoped<IAssignmentService, AssignmentService>();
 builder.Services.AddScoped<IExamService, ExamService>();
-
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 //Odata
 builder.Services.AddControllers().AddOData(options =>
