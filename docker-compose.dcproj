@@ -15,5 +15,7 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="EzyFix.BLL\Services\Implements\FileService.cs" />
+    <None Include="EzyFix.DAL\Data\Responses\Files\ExportResponse.cs" />
   </ItemGroup>
 </Project>
