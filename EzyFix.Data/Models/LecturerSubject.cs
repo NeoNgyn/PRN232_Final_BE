@@ -10,7 +10,7 @@ public partial class LecturerSubject
 {
     public Guid LecturerSubjectId { get; set; }
 
-    public Guid LecturerId { get; set; }
+    public Guid UserId { get; set; }
 
     public Guid SubjectId { get; set; }
 
@@ -24,7 +24,7 @@ public partial class LecturerSubject
 
     public virtual ICollection<Exam> Exams { get; set; } = new List<Exam>();
 
-    public virtual Lecturer Lecturer { get; set; }
+    public virtual User User { get; set; }
 
     public virtual Semester Semester { get; set; }
 

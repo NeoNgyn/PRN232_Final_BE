@@ -16,7 +16,7 @@ public partial class GradingResult
 
     public string Note { get; set; }
 
-    public Guid LecturerId { get; set; }
+    public Guid UserId { get; set; }
 
     public Guid AssignmentId { get; set; }
     [Column(TypeName = "timestamp with time zone")]
@@ -28,5 +28,5 @@ public partial class GradingResult
 
     public virtual ICollection<GradingDetail> GradingDetails { get; set; } = new List<GradingDetail>();
 
-    public virtual Lecturer Lecturer { get; set; }
+    public virtual User User { get; set; }
 }

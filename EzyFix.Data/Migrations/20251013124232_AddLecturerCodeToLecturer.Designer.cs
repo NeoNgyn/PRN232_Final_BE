@@ -3,6 +3,7 @@ using System;
 using EzyFix.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EzyFix.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251013124232_AddLecturerCodeToLecturer")]
+    partial class AddLecturerCodeToLecturer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -261,6 +264,12 @@ namespace EzyFix.DAL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("createdAt");
 
+                    b.Property<Guid>("LecturerId")
+                        .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("uuid")
+                        .HasColumnName("lecturer_id");
+
                     b.Property<string>("Note")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
@@ -274,18 +283,12 @@ namespace EzyFix.DAL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updatedAt");
 
-                    b.Property<Guid>("UserId")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
                     b.HasKey("ResultId")
                         .HasName("PK__GradingR__AFB3C316C9F23B79");
 
                     b.HasIndex("AssignmentId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("LecturerId");
 
                     b.ToTable("GradingResult", (string)null);
                 });
@@ -309,6 +312,63 @@ namespace EzyFix.DAL.Migrations
                     b.ToTable("Keyword", (string)null);
                 });
 
+            modelBuilder.Entity("EzyFix.DAL.Models.Lecturer", b =>
+                {
+                    b.Property<Guid>("LecturerId")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("uuid")
+                        .HasColumnName("lecturer_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("createdAt");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("email");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("email_confirmed");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("LecturerCode")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("password");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updatedAt");
+
+                    b.HasKey("LecturerId")
+                        .HasName("PK__Lecturer__D4D1DAB1CC25A84F");
+
+                    b.HasIndex(new[] { "Email" }, "UQ__Lecturer__AB6E61643BDB4DEC")
+                        .IsUnique();
+
+                    b.ToTable("Lecturer", (string)null);
+                });
+
             modelBuilder.Entity("EzyFix.DAL.Models.LecturerSubject", b =>
                 {
                     b.Property<Guid>("LecturerSubjectId")
@@ -326,6 +386,12 @@ namespace EzyFix.DAL.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_principal");
 
+                    b.Property<Guid>("LecturerId")
+                        .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("uuid")
+                        .HasColumnName("lecturer_id");
+
                     b.Property<Guid>("SemesterId")
                         .HasMaxLength(20)
                         .IsUnicode(false)
@@ -342,48 +408,16 @@ namespace EzyFix.DAL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updatedAt");
 
-                    b.Property<Guid>("UserId")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
                     b.HasKey("LecturerSubjectId")
                         .HasName("PK__Lecturer__E621407CF17AF786");
+
+                    b.HasIndex("LecturerId");
 
                     b.HasIndex("SemesterId");
 
                     b.HasIndex("SubjectId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("LecturerSubject", (string)null);
-                });
-
-            modelBuilder.Entity("EzyFix.DAL.Models.Role", b =>
-                {
-                    b.Property<Guid>("RoleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("role_id")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("description");
-
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("role_name");
-
-                    b.HasKey("RoleId")
-                        .HasName("PK__Role__760965CC");
-
-                    b.ToTable("Role", (string)null);
                 });
 
             modelBuilder.Entity("EzyFix.DAL.Models.ScoreColumn", b =>
@@ -499,68 +533,6 @@ namespace EzyFix.DAL.Migrations
                     b.ToTable("Subject", (string)null);
                 });
 
-            modelBuilder.Entity("EzyFix.DAL.Models.User", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("createdAt");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("email");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean")
-                        .HasColumnName("email_confirmed");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
-
-                    b.Property<string>("LecturerCode")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("password");
-
-                    b.Property<Guid?>("RoleId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("role_id");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updatedAt");
-
-                    b.HasKey("UserId")
-                        .HasName("PK_User");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("User", (string)null);
-                });
-
             modelBuilder.Entity("EzyFix.DAL.Models.Assignment", b =>
                 {
                     b.HasOne("EzyFix.DAL.Models.Exam", "Exam")
@@ -656,19 +628,25 @@ namespace EzyFix.DAL.Migrations
                         .IsRequired()
                         .HasConstraintName("FK__GradingRe__assig__5AEE82B9");
 
-                    b.HasOne("EzyFix.DAL.Models.User", "User")
+                    b.HasOne("EzyFix.DAL.Models.Lecturer", "Lecturer")
                         .WithMany("GradingResults")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("LecturerId")
                         .IsRequired()
                         .HasConstraintName("FK__GradingRe__lectu__59FA5E80");
 
                     b.Navigation("Assignment");
 
-                    b.Navigation("User");
+                    b.Navigation("Lecturer");
                 });
 
             modelBuilder.Entity("EzyFix.DAL.Models.LecturerSubject", b =>
                 {
+                    b.HasOne("EzyFix.DAL.Models.Lecturer", "Lecturer")
+                        .WithMany("LecturerSubjects")
+                        .HasForeignKey("LecturerId")
+                        .IsRequired()
+                        .HasConstraintName("FK__LecturerS__lectu__5070F446");
+
                     b.HasOne("EzyFix.DAL.Models.Semester", "Semester")
                         .WithMany("LecturerSubjects")
                         .HasForeignKey("SemesterId")
@@ -681,28 +659,11 @@ namespace EzyFix.DAL.Migrations
                         .IsRequired()
                         .HasConstraintName("FK__LecturerS__subje__5165187F");
 
-                    b.HasOne("EzyFix.DAL.Models.User", "User")
-                        .WithMany("LecturerSubjects")
-                        .HasForeignKey("UserId")
-                        .IsRequired()
-                        .HasConstraintName("FK__LecturerS__lectu__5070F446");
+                    b.Navigation("Lecturer");
 
                     b.Navigation("Semester");
 
                     b.Navigation("Subject");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EzyFix.DAL.Models.User", b =>
-                {
-                    b.HasOne("EzyFix.DAL.Models.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("FK_User_Role");
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("EzyFix.DAL.Models.Assignment", b =>
@@ -729,14 +690,16 @@ namespace EzyFix.DAL.Migrations
                     b.Navigation("ExamKeywords");
                 });
 
+            modelBuilder.Entity("EzyFix.DAL.Models.Lecturer", b =>
+                {
+                    b.Navigation("GradingResults");
+
+                    b.Navigation("LecturerSubjects");
+                });
+
             modelBuilder.Entity("EzyFix.DAL.Models.LecturerSubject", b =>
                 {
                     b.Navigation("Exams");
-                });
-
-            modelBuilder.Entity("EzyFix.DAL.Models.Role", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("EzyFix.DAL.Models.ScoreColumn", b =>
@@ -758,13 +721,6 @@ namespace EzyFix.DAL.Migrations
 
             modelBuilder.Entity("EzyFix.DAL.Models.Subject", b =>
                 {
-                    b.Navigation("LecturerSubjects");
-                });
-
-            modelBuilder.Entity("EzyFix.DAL.Models.User", b =>
-                {
-                    b.Navigation("GradingResults");
-
                     b.Navigation("LecturerSubjects");
                 });
 #pragma warning restore 612, 618

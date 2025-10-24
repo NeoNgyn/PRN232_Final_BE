@@ -1,11 +1,21 @@
 ﻿using AutoMapper;
 using EzyFix.DAL.Data.Requests.Assignments;
+using EzyFix.DAL.Data.Requests.ExamGradingCriteria;
+using EzyFix.DAL.Data.Requests.GradingDetails;
 using EzyFix.DAL.Data.Requests.Keywords;
+using EzyFix.DAL.Data.Requests.LecturerSubjects;
+using EzyFix.DAL.Data.Requests.ScoreColumns;
 using EzyFix.DAL.Data.Requests.Semesters;
+using EzyFix.DAL.Data.Requests.Students;
 using EzyFix.DAL.Data.Requests.Subjects;
 using EzyFix.DAL.Data.Responses.Assignments;
+using EzyFix.DAL.Data.Responses.ExamGradingCriteria;
+using EzyFix.DAL.Data.Responses.GradingDetails;
 using EzyFix.DAL.Data.Responses.Keywords;
+using EzyFix.DAL.Data.Responses.LecturerSubjects;
+using EzyFix.DAL.Data.Responses.ScoreColumns;
 using EzyFix.DAL.Data.Responses.Semesters;
+using EzyFix.DAL.Data.Responses.Students;
 using EzyFix.DAL.Data.Responses.Subjects;
 using EzyFix.DAL.Models;
 using System;
@@ -31,6 +41,26 @@ namespace EzyFix.DAL.Mappers
             CreateMap<Keyword, KeywordResponse>();
             CreateMap<CreateKeywordRequest, Keyword>();
             CreateMap<UpdateKeywordRequest, Keyword>();
+
+            CreateMap<ScoreColumn, ScoreColumnResponse>();
+            CreateMap<CreateScoreColumnRequest, ScoreColumn>();
+            CreateMap<UpdateScoreColumnRequest, ScoreColumn>();
+
+            CreateMap<ExamGradingCriterion, ExamGradingCriterionResponse>();
+            CreateMap<CreateExamGradingCriterionRequest, ExamGradingCriterion>();
+            CreateMap<UpdateExamGradingCriterionRequest, ExamGradingCriterion>();
+
+            CreateMap<Student, StudentResponse>();
+            CreateMap<CreateStudentRequest, Student>();
+            CreateMap<UpdateStudentRequest, Student>();
+
+            CreateMap<GradingDetail, GradingDetailResponse>();
+            CreateMap<CreateGradingDetailRequest, GradingDetail>();
+            CreateMap<UpdateGradingDetailRequest, GradingDetail>();
+
+            CreateMap<LecturerSubject, LecturerSubjectResponse>();
+            CreateMap<CreateLecturerSubjectRequest, LecturerSubject>();
+            CreateMap<UpdateLecturerSubjectRequest, LecturerSubject>();
 
             CreateMap<Assignment, AssignmentResponse>();
             CreateMap<CreateAssignmentRequest, Assignment>();

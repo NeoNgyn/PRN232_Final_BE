@@ -3,6 +3,7 @@ using System;
 using EzyFix.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EzyFix.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251023142200_UpdateUserAndRoleTablesFixed")]
+    partial class UpdateUserAndRoleTablesFixed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -278,7 +281,7 @@ namespace EzyFix.DAL.Migrations
                         .HasMaxLength(10)
                         .IsUnicode(false)
                         .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnName("lecturer_id");
 
                     b.HasKey("ResultId")
                         .HasName("PK__GradingR__AFB3C316C9F23B79");
@@ -346,7 +349,7 @@ namespace EzyFix.DAL.Migrations
                         .HasMaxLength(10)
                         .IsUnicode(false)
                         .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnName("lecturer_id");
 
                     b.HasKey("LecturerSubjectId")
                         .HasName("PK__Lecturer__E621407CF17AF786");
