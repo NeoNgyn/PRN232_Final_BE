@@ -95,11 +95,11 @@ namespace EzyFix.BLL.Services.Implements
             try
             {
                 // Validate that LecturerId, SubjectId, and SemesterId exist
-                await ValidateLecturerSubjectSemesterExistAsync(createDto.LecturerId, createDto.SubjectId, createDto.SemesterId);
+                await ValidateLecturerSubjectSemesterExistAsync(createDto.UserId, createDto.SubjectId, createDto.SemesterId);
 
                 // Check for duplicate assignment (same LecturerId, SubjectId, and SemesterId)
                 var existingAssignment = await _unitOfWork.GetRepository<LecturerSubject>()
-                    .SingleOrDefaultAsync(predicate: ls => ls.UserId == createDto.LecturerId && 
+                    .SingleOrDefaultAsync(predicate: ls => ls.UserId == createDto.UserId && 
                                                           ls.SubjectId == createDto.SubjectId && 
                                                           ls.SemesterId == createDto.SemesterId);
 
@@ -166,9 +166,9 @@ namespace EzyFix.BLL.Services.Implements
                     }
 
                     // Validate new references if they are being changed
-                    if (updateDto.LecturerId.HasValue || updateDto.SubjectId.HasValue || updateDto.SemesterId.HasValue)
+                    if (updateDto.UserId.HasValue || updateDto.SubjectId.HasValue || updateDto.SemesterId.HasValue)
                     {
-                        var newLecturerId = updateDto.LecturerId ?? lecturerSubject.UserId;
+                        var newLecturerId = updateDto.UserId ?? lecturerSubject.UserId;
                         var newSubjectId = updateDto.SubjectId ?? lecturerSubject.SubjectId;
                         var newSemesterId = updateDto.SemesterId ?? lecturerSubject.SemesterId;
                         

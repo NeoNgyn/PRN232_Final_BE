@@ -10,7 +10,7 @@ namespace EzyFix.DAL.Data.Requests.LecturerSubjects
     public class CreateLecturerSubjectRequest
     {
         [Required(ErrorMessage = "LecturerId không ???c ?? tr?ng.")]
-        public Guid LecturerId { get; set; }
+        public Guid UserId { get; set; }
 
         [Required(ErrorMessage = "SubjectId không ???c ?? tr?ng.")]
         public Guid SubjectId { get; set; }
