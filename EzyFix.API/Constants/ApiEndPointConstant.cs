@@ -203,5 +203,65 @@ namespace EzyFix.API.Constants
             public const string LecturerSubjectsBySubjectEndpoint = $"{Prefix}/subject/{{subjectId}}";
             public const string LecturerSubjectsBySemesterEndpoint = $"{Prefix}/semester/{{semesterId}}";
         }
+
+        public static class Assignments
+        {
+            private const string Prefix = "api/assignments";
+
+            public const string AssignmentsEndpoint = $"{Prefix}";
+            public const string AssignmentEndpointById = $"{Prefix}/{{id}}";
+            public const string UpdateAssignmentEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteAssignmentEndpoint = $"{Prefix}/delete/{{id}}";
+            public const string AssignmentsByStudentEndpoint = $"{Prefix}/student/{{studentId}}";
+            public const string AssignmentsByExamEndpoint = $"{Prefix}/exam/{{examId}}";
+        }
+
+        public static class Files
+        {
+            private const string Prefix = "api/files";
+            public const string FilesEndpoint = $"{Prefix}";
+            public const string FileEndpointById = $"{Prefix}/{{id}}";
+            public const string UpdateFileEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteFileEndpoint = $"{Prefix}/delete/{{id}}";
+        }
+
+        public static class Exams
+        {
+            private const string Prefix = "api/exams";
+
+            public const string ExamsEndpoint = $"{Prefix}";
+            public const string ExamEndpointById = $"{Prefix}/{{id}}";
+            public const string CreateExamEndpoint = $"{Prefix}";
+            public const string UpdateExamEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteExamEndpoint = $"{Prefix}/delete/{{id}}";
+
+            public const string UploadExamFile = $"{Prefix}/{{id}}/upload-file";
+            public const string DownloadExamFile = $"{Prefix}/{{id}}/download";
+            public const string ExtractedPathEndpoint = $"{Prefix}/{{id}}/extracted";
+        }
+
+        public static class Roles
+        {
+            private const string Prefix = "api/roles";
+
+            public const string RolesEndpoint = $"{Prefix}";
+            public const string RoleEndpointById = $"{Prefix}/{{id}}";
+            public const string UpdateRoleEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteRoleEndpoint = $"{Prefix}/delete/{{id}}";
+        }
+
+        public static class ExamKeywords
+        {
+            private const string Prefix = "api/exam-keywords";
+
+            public const string ExamKeywordsEndpoint = $"{Prefix}";
+            public const string ExamKeywordEndpointById = $"{Prefix}/{{id}}";
+            public const string UpdateExamKeywordEndpoint = $"{Prefix}/update/{{id}}";
+            public const string DeleteExamKeywordEndpoint = $"{Prefix}/delete/{{id}}";
+            public const string ExamKeywordsByExamEndpoint = $"{Prefix}/exam/{{examId}}";
+            public const string ExamKeywordsByKeywordEndpoint = $"{Prefix}/keyword/{{keywordId}}";
+            public const string DeleteExamKeywordsByExamEndpoint = $"{Prefix}/exam/{{examId}}/delete-all";
+        }
+
     }
 }
