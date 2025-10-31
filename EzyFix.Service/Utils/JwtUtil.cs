@@ -50,3 +50,58 @@
 //        }
 //    }
 //}
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using EzyFix.DAL.Models; // <-- Sửa lại using này
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using Claim = System.Security.Claims.Claim;
+
+namespace EzyFix.BLL.Utils
+{
+    public class JwtUtil : IJwtUtil
+    {
+        private readonly string _jwtkey, _issuer, _audience;
+        private readonly double _expired;
+
+        public JwtUtil(IConfiguration configuration)
+        {
+            _jwtkey = configuration["Jwt:Key"];
+            _issuer = configuration["Jwt:Issuer"];
+            _audience = configuration["Jwt:Audience"];
+            _expired = double.Parse(configuration["Jwt:TokenValidityInMinutes"]);
+        }
+
+        // Đã sửa lại tham số cho khớp với IJwtUtil (User user, Tuple<string, Guid> tuple, bool flag)
+        public string GenerateJwtToken(User user, Tuple<string, Guid> guidClaimer,string roleName, bool isResetPasswordOnly)
+        {
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            SymmetricSecurityKey secrectKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtkey));
+            var credentials = new SigningCredentials(secrectKey, SecurityAlgorithms.HmacSha256Signature);
+            string issuer = _issuer;
+
+            List<Claim> securityClaims = new List<Claim>()
+            {
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email.ToString()),
+                new Claim(ClaimTypes.Role, user.RoleId.ToString()),
+                new Claim(ClaimTypes.Role, roleName),
+            };
+
+            if (guidClaimer != null)
+                securityClaims.Add(new Claim(guidClaimer.Item1, guidClaimer.Item2.ToString()));
+
+            // Nếu mật khẩu hết hạn, thêm claim đặc biệt
+            if (isResetPasswordOnly)
+            {
+                securityClaims.Add(new Claim("ResetPasswordOnly", "true"));
+            }
+
+            var expires = DateTime.Now.AddMinutes(_expired);
+            var token = new JwtSecurityToken(issuer, _audience, securityClaims, DateTime.Now, expires, credentials);
+
+            return tokenHandler.WriteToken(token);
+        }
+    }
+}
