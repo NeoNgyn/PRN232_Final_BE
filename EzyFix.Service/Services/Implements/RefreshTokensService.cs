@@ -83,7 +83,7 @@ using EzyFix.DAL.Models; // <-- Giả sử namespace này chứa 'RefreshTokens'
 // Using cho các model của bạn// <-- Namespace chứa 'User'
 using EzyFix.DAL.Repositories.Interfaces;
 using System.Security.Cryptography;
-
+using Microsoft.EntityFrameworkCore;
 namespace EzyFix.BLL.Services.Implements
 {
     public class RefreshTokensService : IRefreshTokensService
@@ -129,21 +129,23 @@ namespace EzyFix.BLL.Services.Implements
                     throw new Exception("Invalid or expired refresh token");
                 }
 
-                // === ĐÃ SỬA TỪ ĐÂY ===
+                // Get user with role information
+                var user = await _unitOfWork.GetRepository<User>().SingleOrDefaultAsync(
+                    predicate: u => u.UserId == storedToken.UserId,
+                    include: q => q.Include(u => u.Role)
+                );
 
-                // 1. Đổi GetRepository<Staff> thành GetRepository<User>
-                var user = await _unitOfWork.GetRepository<User>().GetByIdAsync(storedToken.UserId);
+                if (user == null)
+                    throw new Exception("User not found");
 
-                // 2. Sửa lại thông báo lỗi
-                if (user == null) throw new Exception("User not found");
+                // Get role name from user's role
+                string roleName = user.Role?.RoleName ?? "Student"; // Default to Student if no role
 
-                // 3. Sửa lại claim (Giả sử model 'User' của bạn có 'UserId')
+                // Create security claim
                 Tuple<string, Guid> guidSecurityClaim = new Tuple<string, Guid>("UserId", user.UserId);
 
-                // 4. Truyền 'user' (kiểu User) vào JwtUtil, giờ đã khớp
-                return _jwtUtil.GenerateJwtToken(user, guidSecurityClaim, false);
-
-                // === SỬA ĐẾN ĐÂY ===
+                // Generate new JWT token with role name
+                return _jwtUtil.GenerateJwtToken(user, guidSecurityClaim, roleName, false);
             });
         }
 
