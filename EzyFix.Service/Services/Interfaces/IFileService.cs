@@ -1,5 +1,4 @@
-﻿using EzyFix.DAL.Data.Responses.Assignments;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +8,6 @@ namespace EzyFix.BLL.Services.Interfaces
 {
     public interface IFileService
     {
-        Task<byte[]> ExportAssignmentsToExcel(IEnumerable<AssignmentResponse> assignments);
+        //Task<byte[]> ExportAssignmentsToExcel(IEnumerable<AssignmentResponse> assignments);
     }
 }
