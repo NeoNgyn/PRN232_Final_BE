@@ -14,6 +14,7 @@ namespace EzyFix.API.Constants
         {
             public const string AuthEndpoint = ApiEndpoint + "/auth";
             public const string LoginEndpoint = AuthEndpoint + "/login";
+            public const string GoogleLoginEndpoint = AuthEndpoint + "/google-login";
             public const string RegisterEndpoint = AuthEndpoint + "/register";
             public const string RefreshTokenEndpoint = AuthEndpoint + "/refresh-token";
             public const string DeleteRefreshTokenEndpoint = AuthEndpoint + "/delete-refresh-token";

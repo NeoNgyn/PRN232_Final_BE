@@ -30,7 +30,10 @@ public partial class User
 
     public virtual Role Role { get; set; }
 
-    public virtual ICollection<GradingResult> GradingResults { get; set; } = new List<GradingResult>();
+    //public virtual ICollection<GradingResult> GradingResults { get; set; } = new List<GradingResult>();
 
-    public virtual ICollection<LecturerSubject> LecturerSubjects { get; set; } = new List<LecturerSubject>();
+    //public virtual ICollection<LecturerSubject> LecturerSubjects { get; set; } = new List<LecturerSubject>();
+    public virtual ICollection<TeacherAssignment> TeacherAssignments { get; set; } = new List<TeacherAssignment>();
+    public virtual ICollection<Submission> Submissions { get; set; } = new List<Submission>();
+    public virtual ICollection<Violation> Violations { get; set; } = new List<Violation>();
 }

@@ -2,14 +2,22 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EzyFix.DAL.Models;
 
 public partial class Subject
 {
-    public Guid SubjectId { get; set; }
+    [Key]
+    public Guid SubjectId { get; set; } = Guid.NewGuid(); // Đổi sang Guid
 
-    public string Name { get; set; }
+    [Required]
+    [StringLength(20)]
+    public string SubjectCode { get; set; }
 
-    public virtual ICollection<LecturerSubject> LecturerSubjects { get; set; } = new List<LecturerSubject>();
+    [Required]
+    [StringLength(255)]
+    public string SubjectName { get; set; }
+
+    public virtual ICollection<Exam> Exams { get; set; } = new List<Exam>();
 }

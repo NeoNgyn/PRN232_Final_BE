@@ -44,33 +44,33 @@ namespace EzyFix.DAL.Mappers
             CreateMap<CreateSubjectRequest, Subject>();
             CreateMap<UpdateSubjectRequest, Subject>();
 
-            CreateMap<Keyword, KeywordResponse>();
-            CreateMap<CreateKeywordRequest, Keyword>();
-            CreateMap<UpdateKeywordRequest, Keyword>();
+            //CreateMap<Keyword, KeywordResponse>();
+            //CreateMap<CreateKeywordRequest, Keyword>();
+            //CreateMap<UpdateKeywordRequest, Keyword>();
 
-            CreateMap<ScoreColumn, ScoreColumnResponse>();
-            CreateMap<CreateScoreColumnRequest, ScoreColumn>();
-            CreateMap<UpdateScoreColumnRequest, ScoreColumn>();
+            //CreateMap<ScoreColumn, ScoreColumnResponse>();
+            //CreateMap<CreateScoreColumnRequest, ScoreColumn>();
+            //CreateMap<UpdateScoreColumnRequest, ScoreColumn>();
 
-            CreateMap<ExamGradingCriterion, ExamGradingCriterionResponse>();
-            CreateMap<CreateExamGradingCriterionRequest, ExamGradingCriterion>();
-            CreateMap<UpdateExamGradingCriterionRequest, ExamGradingCriterion>();
+            //CreateMap<ExamGradingCriterion, ExamGradingCriterionResponse>();
+            //CreateMap<CreateExamGradingCriterionRequest, ExamGradingCriterion>();
+            //CreateMap<UpdateExamGradingCriterionRequest, ExamGradingCriterion>();
 
             CreateMap<Student, StudentResponse>();
             CreateMap<CreateStudentRequest, Student>();
             CreateMap<UpdateStudentRequest, Student>();
 
-            CreateMap<GradingDetail, GradingDetailResponse>();
-            CreateMap<CreateGradingDetailRequest, GradingDetail>();
-            CreateMap<UpdateGradingDetailRequest, GradingDetail>();
+            //CreateMap<GradingDetail, GradingDetailResponse>();
+            //CreateMap<CreateGradingDetailRequest, GradingDetail>();
+            //CreateMap<UpdateGradingDetailRequest, GradingDetail>();
 
-            CreateMap<LecturerSubject, LecturerSubjectResponse>();
-            CreateMap<CreateLecturerSubjectRequest, LecturerSubject>();
-            CreateMap<UpdateLecturerSubjectRequest, LecturerSubject>();
+            //CreateMap<LecturerSubject, LecturerSubjectResponse>();
+            //CreateMap<CreateLecturerSubjectRequest, LecturerSubject>();
+            //CreateMap<UpdateLecturerSubjectRequest, LecturerSubject>();
 
-            CreateMap<Assignment, AssignmentResponse>();
-            CreateMap<CreateAssignmentRequest, Assignment>();
-            CreateMap<UpdateAssignmentRequest, Assignment>();
+            //CreateMap<Assignment, AssignmentResponse>();
+            //CreateMap<CreateAssignmentRequest, Assignment>();
+            //CreateMap<UpdateAssignmentRequest, Assignment>();
 
             CreateMap<Exam, ExamResponse>();
             CreateMap<CreateExamRequest, Exam>();
@@ -80,9 +80,9 @@ namespace EzyFix.DAL.Mappers
             CreateMap<CreateRoleRequest, Role>();
             CreateMap<UpdateRoleRequest, Role>();
 
-            CreateMap<ExamKeyword, ExamKeywordResponse>();
-            CreateMap<CreateExamKeywordRequest, ExamKeyword>();
-            CreateMap<UpdateExamKeywordRequest, ExamKeyword>();
+            //CreateMap<ExamKeyword, ExamKeywordResponse>();
+            //CreateMap<CreateExamKeywordRequest, ExamKeyword>();
+            //CreateMap<UpdateExamKeywordRequest, ExamKeyword>();
         }
     } 
 }

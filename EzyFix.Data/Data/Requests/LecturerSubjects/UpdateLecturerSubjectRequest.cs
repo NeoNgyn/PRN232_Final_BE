@@ -9,7 +9,7 @@ namespace EzyFix.DAL.Data.Requests.LecturerSubjects
 {
     public class UpdateLecturerSubjectRequest
     {
-        public Guid? LecturerId { get; set; }
+        public Guid? UserId { get; set; }
 
         public Guid? SubjectId { get; set; }
 

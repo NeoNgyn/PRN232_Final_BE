@@ -17,5 +17,9 @@
     <None Include=".dockerignore" />
     <None Include="EzyFix.BLL\Services\Implements\FileService.cs" />
     <None Include="EzyFix.DAL\Data\Responses\Files\ExportResponse.cs" />
+    <None Include="GOOGLE_LOGIN_TESTING_GUIDE.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Database_Scripts\" />
   </ItemGroup>
 </Project>

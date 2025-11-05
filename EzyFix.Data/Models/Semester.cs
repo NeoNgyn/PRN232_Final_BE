@@ -2,18 +2,23 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EzyFix.DAL.Models;
 
+[Table("Semesters")]
 public partial class Semester
 {
-    public Guid SemesterId { get; set; }
+    [Key]
+    public Guid SemesterId { get; set; } = Guid.NewGuid(); // Đổi sang Guid
 
-    public string Name { get; set; }
+    [Required]
+    [StringLength(20)]
+    public string SemesterCode { get; set; }
 
-    public DateOnly? StartDate { get; set; }
+    [StringLength(100)]
+    public string SemesterName { get; set; }
 
-    public DateOnly? EndDate { get; set; }
-
-    public virtual ICollection<LecturerSubject> LecturerSubjects { get; set; } = new List<LecturerSubject>();
+    public virtual ICollection<Exam> Exams { get; set; } = new List<Exam>();
 }

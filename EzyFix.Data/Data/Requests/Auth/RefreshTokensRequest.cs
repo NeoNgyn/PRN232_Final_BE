@@ -1,4 +1,4 @@
-﻿/*
+﻿
 namespace EzyFix.DAL.Data.Requests.Auth
 {
     public class RefreshTokenRequest
@@ -7,4 +7,4 @@ namespace EzyFix.DAL.Data.Requests.Auth
     }
 }
 
-*/
+
