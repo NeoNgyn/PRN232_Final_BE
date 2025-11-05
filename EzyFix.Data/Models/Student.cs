@@ -2,21 +2,24 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EzyFix.DAL.Models;
 
+[Table("Students")]
 public partial class Student
 {
-    public Guid StudentId { get; set; }
+    [Key]
+    public Guid StudentId { get; set; } = Guid.NewGuid();
 
-    public string Name { get; set; }
+    [Required]
+    [StringLength(20)]
+    public string StudentMSSV { get; set; }
 
-    public string Email { get; set; }
-    [Column(TypeName = "timestamp with time zone")]
-    public DateTime? CreatedAt { get; set; }
-    [Column(TypeName = "timestamp with time zone")]
-    public DateTime? UpdatedAt { get; set; }
+    [Required]
+    [StringLength(255)]
+    public string FullName { get; set; }
 
-    public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
+    public virtual ICollection<Submission> Submissions { get; set; } = new List<Submission>();
 }

@@ -2,33 +2,41 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EzyFix.DAL.Models;
 
+[Table("Exams")]
 public partial class Exam
 {
-    public Guid ExamId { get; set; }
+    [Key]
+    public Guid ExamId { get; set; } = Guid.NewGuid(); // Đổi sang Guid
 
-    public string Title { get; set; }
+    public Guid SubjectId { get; set; } // Đổi sang Guid
+    public Guid SemesterId { get; set; } // Đổi sang Guid
 
-    public string FilePath { get; set; }
+    [Required]
+    [StringLength(255)]
+    public string ExamName { get; set; }
 
-    public string ExtractedPath { get; set; }
+    [Required]
+    [StringLength(20)]
+    public string ExamType { get; set; }
 
-    public DateTime? UploadedAt { get; set; }
+    [StringLength(50)]
+    public string ExamPassword { get; set; }
 
-    public Guid LecturerSubjectId { get; set; }
     [Column(TypeName = "timestamp with time zone")]
-    public DateTime? CreatedAt { get; set; }
-    [Column(TypeName = "timestamp with time zone")]
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
+    [ForeignKey("SubjectId")]
+    public virtual Subject Subject { get; set; }
 
-    public virtual ICollection<ExamGradingCriterion> ExamGradingCriteria { get; set; } = new List<ExamGradingCriterion>();
+    [ForeignKey("SemesterId")]
+    public virtual Semester Semester { get; set; }
 
-    public virtual ICollection<ExamKeyword> ExamKeywords { get; set; } = new List<ExamKeyword>();
-
-    public virtual LecturerSubject LecturerSubject { get; set; }
+    public virtual ICollection<TeacherAssignment> TeacherAssignments { get; set; } = new List<TeacherAssignment>();
+    public virtual ICollection<Criteria> Criteria { get; set; } = new List<Criteria>();
+    public virtual ICollection<Submission> Submissions { get; set; } = new List<Submission>();
 }

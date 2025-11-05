@@ -43,16 +43,16 @@ builder.Services.AddSingleton<OtpUtil>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<ISemesterService, SemesterService>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
-builder.Services.AddScoped<IKeywordService, KeywordService>();
-builder.Services.AddScoped<IScoreColumnService, ScoreColumnService>();
-builder.Services.AddScoped<IExamGradingCriterionService, ExamGradingCriterionService>();
-builder.Services.AddScoped<IStudentService, StudentService>();
-builder.Services.AddScoped<IGradingDetailService, GradingDetailService>();
-builder.Services.AddScoped<ILecturerSubjectService, LecturerSubjectService>();
-builder.Services.AddScoped<IAssignmentService, AssignmentService>();
-builder.Services.AddScoped<IExamService, ExamService>();
-builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IExamKeywordService, ExamKeywordService>();
+//builder.Services.AddScoped<IKeywordService, KeywordService>();
+//builder.Services.AddScoped<IScoreColumnService, ScoreColumnService>();
+//builder.Services.AddScoped<IExamGradingCriterionService, ExamGradingCriterionService>();
+//builder.Services.AddScoped<IStudentService, StudentService>();
+//builder.Services.AddScoped<IGradingDetailService, GradingDetailService>();
+//builder.Services.AddScoped<ILecturerSubjectService, LecturerSubjectService>();
+//builder.Services.AddScoped<IAssignmentService, AssignmentService>();
+//builder.Services.AddScoped<IExamService, ExamService>();
+//builder.Services.AddScoped<IRoleService, RoleService>();
+//builder.Services.AddScoped<IExamKeywordService, ExamKeywordService>();
 
 // Auth Services
 builder.Services.AddSingleton<IJwtUtil, JwtUtil>();
