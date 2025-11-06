@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using AcademicService.BLL.Services.Interfaces;
 using AcademicService.DAL.Data.Exceptions;
 using AcademicService.DAL.Data.Requests;
@@ -49,6 +49,38 @@ public class StudentService : IStudentService
 
         return _mapper.Map<StudentResponse>(student);
     }
+
+    public async Task<IEnumerable<StudentResponse>> ImportStudentsFromFileAsync(string filePath, IFileService fileService)
+    {
+        // B1: Đọc JSON từ FileService
+        var studentsFromJson = await fileService.ReadStudentsFromJsonAsync(filePath);
+
+        // B2: Chuẩn bị repository
+        var repository = _unitOfWork.GetRepository<Student>();
+        var importedStudents = new List<Student>();
+
+        foreach (var studentReq in studentsFromJson)
+        {
+            var studentEntity = _mapper.Map<Student>(studentReq);
+
+            // Có thể kiểm tra trùng ID trước khi thêm
+            var existing = await repository.SingleOrDefaultAsync(predicate: s => s.StudentId == studentEntity.StudentId);
+            if (existing == null)
+            {
+                await repository.InsertAsync(studentEntity);
+                importedStudents.Add(studentEntity);
+            }
+            else
+            {
+                _logger.LogWarning($"Student {studentEntity.StudentId} đã tồn tại, bỏ qua.");
+            }
+        }
+
+        await _unitOfWork.CommitAsync();
+
+        return _mapper.Map<IEnumerable<StudentResponse>>(importedStudents);
+    }
+
 
     public async Task<StudentResponse> UpdateStudentAsync(Guid id, UpdateStudentRequest request)
     {
