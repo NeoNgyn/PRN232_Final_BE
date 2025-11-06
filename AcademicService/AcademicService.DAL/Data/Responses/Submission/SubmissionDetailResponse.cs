@@ -1,0 +1,32 @@
+﻿using AcademicService.DAL.Data.Responses.Grade;
+using AcademicService.DAL.Data.Responses.Violation;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AcademicService.DAL.Data.Responses.Submission
+{
+    public class SubmissionDetailResponse
+    {
+        public Guid SubmissionId { get; set; }
+        public Guid ExamId { get; set; }
+        public Guid StudentId { get; set; }
+        public Guid ExaminerId { get; set; }
+        public Guid? SecondExaminerId { get; set; }
+        public string OriginalFileName { get; set; } = string.Empty;
+        public string FilePath { get; set; } = string.Empty;
+        public string GradingStatus { get; set; } = "Pending";
+        [Precision(18, 2)]
+        public decimal? TotalScore { get; set; }
+        [Column(TypeName = "timestamp with time zone")]
+        public DateTime UploadedAt { get; set; }
+        public bool IsApproved { get; set; } = false;
+
+        public List<GradeListResponse> Grades { get; set; } = new List<GradeListResponse>();
+        public List<ViolationListResponse> Violations { get; set; } = new List<ViolationListResponse>();
+    }
+}

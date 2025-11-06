@@ -40,6 +40,7 @@ builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<IExamService, ExamService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+builder.Services.AddScoped<ISubmissionService, SubmissionService>();
 
 // OData
 builder.Services.AddControllers().AddOData(options =>
