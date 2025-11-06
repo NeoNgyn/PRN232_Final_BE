@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzyFix.API", "EzyFix.API\EzyFix.API.csproj", "{22D6FD10-8504-43E1-92A0-DA2F9E1560E6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{1A9C1AC2-891E-418E-A04D-13E5236DB38D} = {1A9C1AC2-891E-418E-A04D-13E5236DB38D}
-	EndProjectSection
-EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{E7F8071D-0997-4621-91C2-43D575CA4802}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzyFix.DAL", "EzyFix.Data\EzyFix.DAL.csproj", "{24228F23-90DB-40CF-8DB7-1A398F416AC8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService.API", "IdentityService\IdentityService.API\IdentityService.API.csproj", "{6B7D8398-21F0-47DE-9A13-959A03BE683A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EzyFix.BLL", "EzyFix.Service\EzyFix.BLL.csproj", "{1A9C1AC2-891E-418E-A04D-13E5236DB38D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{24228F23-90DB-40CF-8DB7-1A398F416AC8} = {24228F23-90DB-40CF-8DB7-1A398F416AC8}
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService.BLL", "IdentityService\IdentityService.BLL\IdentityService.BLL.csproj", "{79D72F4A-5335-46F4-8A3B-9E76E0DBCA19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService.DAL", "IdentityService\IdentityService.DAL\IdentityService.DAL.csproj", "{9DC2B725-400F-4015-A1B2-1C833F9CD381}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcademicService.DAL", "AcademicService\AcademicService.DAL\AcademicService.DAL.csproj", "{F04071AF-BDC0-43B5-A59A-437DC9BD0614}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcademicService.BLL", "AcademicService\AcademicService.BLL\AcademicService.BLL.csproj", "{86C8BB81-653C-4756-A3E8-84B65513B8AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcademicService.API", "AcademicService\AcademicService.API\AcademicService.API.csproj", "{B31EE2B8-5CC2-42BA-BB92-3A4D67EE5306}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,22 +23,34 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{22D6FD10-8504-43E1-92A0-DA2F9E1560E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{22D6FD10-8504-43E1-92A0-DA2F9E1560E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{22D6FD10-8504-43E1-92A0-DA2F9E1560E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{22D6FD10-8504-43E1-92A0-DA2F9E1560E6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E7F8071D-0997-4621-91C2-43D575CA4802}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E7F8071D-0997-4621-91C2-43D575CA4802}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7F8071D-0997-4621-91C2-43D575CA4802}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7F8071D-0997-4621-91C2-43D575CA4802}.Release|Any CPU.Build.0 = Release|Any CPU
-		{24228F23-90DB-40CF-8DB7-1A398F416AC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{24228F23-90DB-40CF-8DB7-1A398F416AC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{24228F23-90DB-40CF-8DB7-1A398F416AC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{24228F23-90DB-40CF-8DB7-1A398F416AC8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1A9C1AC2-891E-418E-A04D-13E5236DB38D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1A9C1AC2-891E-418E-A04D-13E5236DB38D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A9C1AC2-891E-418E-A04D-13E5236DB38D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1A9C1AC2-891E-418E-A04D-13E5236DB38D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B7D8398-21F0-47DE-9A13-959A03BE683A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B7D8398-21F0-47DE-9A13-959A03BE683A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B7D8398-21F0-47DE-9A13-959A03BE683A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B7D8398-21F0-47DE-9A13-959A03BE683A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79D72F4A-5335-46F4-8A3B-9E76E0DBCA19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79D72F4A-5335-46F4-8A3B-9E76E0DBCA19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79D72F4A-5335-46F4-8A3B-9E76E0DBCA19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79D72F4A-5335-46F4-8A3B-9E76E0DBCA19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DC2B725-400F-4015-A1B2-1C833F9CD381}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DC2B725-400F-4015-A1B2-1C833F9CD381}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DC2B725-400F-4015-A1B2-1C833F9CD381}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DC2B725-400F-4015-A1B2-1C833F9CD381}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F04071AF-BDC0-43B5-A59A-437DC9BD0614}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F04071AF-BDC0-43B5-A59A-437DC9BD0614}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F04071AF-BDC0-43B5-A59A-437DC9BD0614}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F04071AF-BDC0-43B5-A59A-437DC9BD0614}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86C8BB81-653C-4756-A3E8-84B65513B8AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86C8BB81-653C-4756-A3E8-84B65513B8AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86C8BB81-653C-4756-A3E8-84B65513B8AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86C8BB81-653C-4756-A3E8-84B65513B8AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B31EE2B8-5CC2-42BA-BB92-3A4D67EE5306}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B31EE2B8-5CC2-42BA-BB92-3A4D67EE5306}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B31EE2B8-5CC2-42BA-BB92-3A4D67EE5306}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B31EE2B8-5CC2-42BA-BB92-3A4D67EE5306}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
