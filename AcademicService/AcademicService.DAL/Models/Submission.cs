@@ -11,7 +11,8 @@ public partial class Submission
 
     public Guid ExamId { get; set; }
     public Guid StudentId { get; set; }
-    public Guid UploadedBy_UserID { get; set; }
+    public Guid ExaminerId { get; set; }
+    public Guid? SecondExaminerId { get; set; }
 
     [Required]
     [StringLength(500)]
@@ -27,6 +28,8 @@ public partial class Submission
 
     [Column(TypeName = "timestamp with time zone")]
     public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
+
+    public bool IsApproved { get; set; } = false;
 
     [ForeignKey("ExamId")]
     public virtual Exam Exam { get; set; } = null!;
