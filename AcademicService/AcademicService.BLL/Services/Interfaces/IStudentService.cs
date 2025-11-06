@@ -10,4 +10,6 @@ public interface IStudentService
     Task<StudentResponse> CreateStudentAsync(CreateStudentRequest request);
     Task<StudentResponse> UpdateStudentAsync(Guid id, UpdateStudentRequest request);
     Task DeleteStudentAsync(Guid id);
+
+    Task<IEnumerable<StudentResponse>> ImportStudentsFromFileAsync(string filePath, IFileService fileService);
 }

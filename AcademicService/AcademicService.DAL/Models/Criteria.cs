@@ -15,7 +15,7 @@ public partial class Criteria
     [StringLength(500)]
     public string CriteriaName { get; set; } = string.Empty;
 
-    [Column(TypeName = "decimal(5, 2)")]
+    [Column(TypeName = "decimal(18, 2)")]
     public decimal MaxScore { get; set; }
 
     public int SortOrder { get; set; }

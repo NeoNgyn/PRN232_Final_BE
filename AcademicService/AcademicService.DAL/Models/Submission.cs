@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,10 +8,10 @@ namespace AcademicService.DAL.Models;
 public partial class Submission
 {
     [Key]
-    public Guid SubmissionId { get; set; } = Guid.NewGuid();
+    public Guid SubmissionId { get; set; }
 
     public Guid ExamId { get; set; }
-    public Guid StudentId { get; set; }
+    public string? StudentId { get; set; }
     public Guid ExaminerId { get; set; }
     public Guid? SecondExaminerId { get; set; }
 
@@ -26,8 +27,11 @@ public partial class Submission
     [StringLength(20)]
     public string GradingStatus { get; set; } = "Pending";
 
+    [Precision(18, 2)]
+    public decimal? TotalScore { get; set; }
+
     [Column(TypeName = "timestamp with time zone")]
-    public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UploadedAt { get; set; } 
 
     public bool IsApproved { get; set; } = false;
 
