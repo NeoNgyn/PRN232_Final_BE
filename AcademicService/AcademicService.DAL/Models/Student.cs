@@ -7,15 +7,13 @@ namespace AcademicService.DAL.Models;
 public partial class Student
 {
     [Key]
-    public Guid StudentId { get; set; } = Guid.NewGuid();
-
-    [Required]
-    [StringLength(20)]
-    public string StudentMSSV { get; set; } = string.Empty;
+    public string StudentId { get; set; } 
 
     [Required]
     [StringLength(255)]
     public string FullName { get; set; } = string.Empty;
+
+    public string? Status { get; set; }
 
     public virtual ICollection<Submission> Submissions { get; set; } = new List<Submission>();
 }
