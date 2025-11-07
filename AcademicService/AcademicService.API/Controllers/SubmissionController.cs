@@ -115,7 +115,7 @@ namespace AcademicService.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DeleteAddress(Guid id)
+        public async Task<IActionResult> DeleteSubmission(Guid id)
         {
             await _submissionService.DeleteSubmissionAsync(id);
             return Ok(ApiResponseBuilder.BuildResponse<object>(

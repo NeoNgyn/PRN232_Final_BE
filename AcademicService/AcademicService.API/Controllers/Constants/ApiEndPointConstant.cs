@@ -53,4 +53,13 @@ public class ApiEndPointConstant
         public const string UpdateCriteriaEndpoint = CriteriaEndpointById + "/update";
         public const string DeleteCriteriaEndpoint = CriteriaEndpointById + "/delete";
     }
+
+    public static class Grades
+    {
+        public const string GradesEndpoint = ApiEndpoint + "/grade";
+        public const string GradeEndpointById = GradesEndpoint + "/{id}";
+        public const string QueryGradeEndpoint = GradesEndpoint + "/query";
+        public const string UpdateGradeEndpoint = GradeEndpointById + "/update";
+        public const string DeleteGradeEndpoint = GradeEndpointById + "/delete";
+    }
 }

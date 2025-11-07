@@ -55,7 +55,7 @@ namespace AcademicService.API.Controllers
             ));
         }
 
-        [HttpGet(ApiEndPointConstant.Criterias.QueryCriteriaEndpoint)]
+        [HttpGet(ApiEndPointConstant.Criterias.CriteriaEndpointById)]
         [ProducesResponseType(typeof(ApiResponse<CriteriaListResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
@@ -100,11 +100,11 @@ namespace AcademicService.API.Controllers
             );
         }
 
-        [HttpPut(ApiEndPointConstant.Criterias.CriteriasEndpoint)]
+        [HttpPut(ApiEndPointConstant.Criterias.UpdateCriteriaEndpoint)]
         [ProducesResponseType(typeof(ApiResponse<CriteriaListResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateSubmission(Guid id, [FromForm] UpdateCriteriaRequest request)
+        public async Task<IActionResult> UpdateCriteria(Guid id, [FromForm] UpdateCriteriaRequest request)
         {
             var updatedCriteria = await _criteriaService.UpdateCriteriaAsync(id, request);
             return Ok(ApiResponseBuilder.BuildResponse(
@@ -118,7 +118,7 @@ namespace AcademicService.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DeleteAddress(Guid id)
+        public async Task<IActionResult> DeleteCriteria(Guid id)
         {
             await _criteriaService.DeleteCriteriaAsync(id);
             return Ok(ApiResponseBuilder.BuildResponse<object>(
