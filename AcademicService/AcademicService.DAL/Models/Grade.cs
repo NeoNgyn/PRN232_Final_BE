@@ -7,12 +7,12 @@ namespace AcademicService.DAL.Models;
 public partial class Grade
 {
     [Key]
-    public Guid GradeId { get; set; } = Guid.NewGuid();
+    public Guid GradeId { get; set; } 
 
     public Guid SubmissionId { get; set; }
     public Guid CriteriaId { get; set; }
 
-    [Column(TypeName = "decimal(5, 2)")]
+    [Column(TypeName = "decimal(18, 2)")]
     public decimal Score { get; set; }
 
     public string? Note { get; set; }
