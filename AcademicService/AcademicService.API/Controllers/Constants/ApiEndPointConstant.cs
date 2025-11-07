@@ -44,4 +44,13 @@ public class ApiEndPointConstant
         public const string UpdateSubmissionEndpoint = SubmissionEndpointById + "/update";
         public const string DeleteSubmissionEndpoint = SubmissionEndpointById + "/delete";
     }
+
+    public static class Criterias
+    {
+        public const string CriteriasEndpoint = ApiEndpoint + "/criteria";
+        public const string CriteriaEndpointById = CriteriasEndpoint + "/{id}";
+        public const string QueryCriteriaEndpoint = CriteriasEndpoint + "/query";
+        public const string UpdateCriteriaEndpoint = CriteriaEndpointById + "/update";
+        public const string DeleteCriteriaEndpoint = CriteriaEndpointById + "/delete";
+    }
 }

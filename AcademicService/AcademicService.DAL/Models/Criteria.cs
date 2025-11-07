@@ -7,7 +7,7 @@ namespace AcademicService.DAL.Models;
 public partial class Criteria
 {
     [Key]
-    public Guid CriteriaId { get; set; } = Guid.NewGuid();
+    public Guid CriteriaId { get; set; } 
 
     public Guid ExamId { get; set; }
 
