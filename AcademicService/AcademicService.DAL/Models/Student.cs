@@ -7,7 +7,7 @@ namespace AcademicService.DAL.Models;
 public partial class Student
 {
     [Key]
-    public string StudentId { get; set; } 
+    public Guid StudentId { get; set; } 
 
     [Required]
     [StringLength(255)]
