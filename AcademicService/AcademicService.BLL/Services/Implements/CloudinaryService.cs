@@ -2,6 +2,7 @@ using AcademicService.BLL.Services.Interfaces;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 
 namespace AcademicService.BLL.Services.Implements;
@@ -17,13 +18,16 @@ public class CloudinaryService : ICloudinaryService
             configuration["Cloudinary:ApiKey"],
             configuration["Cloudinary:ApiSecret"]
         );
+
+        if (string.IsNullOrEmpty(account.Cloud) || string.IsNullOrEmpty(account.ApiKey) || string.IsNullOrEmpty(account.ApiSecret))
+            throw new ArgumentException("Cloudinary configuration is missing");
         _cloudinary = new Cloudinary(account);
     }
 
     public async Task<string> UploadFileAsync(IFormFile file, string folder)
     {
         using var stream = file.OpenReadStream();
-        var uploadParams = new ImageUploadParams
+        var uploadParams = new RawUploadParams
         {
             File = new FileDescription(file.FileName, stream),
             Folder = folder

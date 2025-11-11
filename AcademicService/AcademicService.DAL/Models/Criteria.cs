@@ -7,7 +7,7 @@ namespace AcademicService.DAL.Models;
 public partial class Criteria
 {
     [Key]
-    public Guid CriteriaId { get; set; } = Guid.NewGuid();
+    public Guid CriteriaId { get; set; } 
 
     public Guid ExamId { get; set; }
 
@@ -15,7 +15,7 @@ public partial class Criteria
     [StringLength(500)]
     public string CriteriaName { get; set; } = string.Empty;
 
-    [Column(TypeName = "decimal(5, 2)")]
+    [Column(TypeName = "decimal(18, 2)")]
     public decimal MaxScore { get; set; }
 
     public int SortOrder { get; set; }
