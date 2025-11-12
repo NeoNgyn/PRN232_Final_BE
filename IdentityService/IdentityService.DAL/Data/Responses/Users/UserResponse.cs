@@ -8,6 +8,6 @@ public class UserResponse
     public string LecturerCode { get; set; }
     public bool EmailConfirmed { get; set; }
     public bool? IsActive { get; set; }
-    public string? RoleName { get; set; }
+    public Guid? RoleId { get; set; }
     public DateTime? CreatedAt { get; set; }
 }

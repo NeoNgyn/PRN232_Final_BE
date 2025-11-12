@@ -76,6 +76,12 @@ namespace IdentityService.BLL.Services.Implements
                 if (createUserRequest.Email.Length > 256)
                     throw new BadRequestException("Email cannot exceed 256 characters.");
 
+                if (string.IsNullOrWhiteSpace(createUserRequest.Password))
+                {
+                    _logger.LogInformation("No password provided for {Email}, using default password.", createUserRequest.Email);
+                    createUserRequest.Password = "123456@";
+                }
+                
                 if (createUserRequest.Password.Length < 6)
                     throw new BadRequestException("Password must be at least 6 characters.");
 
@@ -92,13 +98,17 @@ namespace IdentityService.BLL.Services.Implements
                     newUser.EmailConfirmed = false;
                     newUser.IsActive = true;
                     newUser.CreatedAt = DateTime.UtcNow;
-
-                    // Hash password (BCrypt)
+                    
                     newUser.Password = BCrypt.Net.BCrypt.HashPassword(createUserRequest.Password);
 
                     await userRepo.InsertAsync(newUser);
                     await _unitOfWork.CommitAsync();
 
+                    var createdUser = await userRepo.SingleOrDefaultAsync(
+                        predicate: u => u.UserId == newUser.UserId,
+                        include: q => q.Include(u => u.Role)
+                    );
+                    
                     return _mapper.Map<UserResponse>(newUser);
                 });
             }
