@@ -21,5 +21,13 @@ namespace IdentityService.API.Constants
             public const string UpdateRoleEndpoint = RoleEndpointById;
             public const string DeleteRoleEndpoint = RoleEndpointById;
         }
+        
+        public static class Users
+        {
+            public const string UsersEndpoint =  ApiEndpoint + "/users";
+            public const string UserEndpointById = UsersEndpoint + "/{id}";
+            public const string UpdateUserEndpoint = UserEndpointById + "/update";
+            public const string DeleteUserEndpoint = UserEndpointById + "/delete";
+        }
     }
 }
