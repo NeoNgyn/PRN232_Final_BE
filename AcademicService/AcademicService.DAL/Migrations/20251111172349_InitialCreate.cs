@@ -28,7 +28,7 @@ namespace AcademicService.DAL.Migrations
                 name: "Students",
                 columns: table => new
                 {
-                    StudentId = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    StudentId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false, defaultValueSql: "gen_random_uuid()"),
                     FullName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Status = table.Column<string>(type: "text", nullable: true)
                 },
@@ -86,7 +86,7 @@ namespace AcademicService.DAL.Migrations
                     CriteriaId = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     ExamId = table.Column<Guid>(type: "uuid", nullable: false),
                     CriteriaName = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    MaxScore = table.Column<decimal>(type: "numeric(5,2)", nullable: false),
+                    MaxScore = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     SortOrder = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -106,12 +106,13 @@ namespace AcademicService.DAL.Migrations
                 {
                     SubmissionId = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     ExamId = table.Column<Guid>(type: "uuid", nullable: false),
-                    StudentId = table.Column<Guid>(type: "uuid", nullable: false),
+                    StudentId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
                     ExaminerId = table.Column<Guid>(type: "uuid", nullable: false),
                     SecondExaminerId = table.Column<Guid>(type: "uuid", nullable: true),
                     OriginalFileName = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     FilePath = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     GradingStatus = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    TotalScore = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: true),
                     UploadedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsApproved = table.Column<bool>(type: "boolean", nullable: false)
                 },
@@ -158,7 +159,7 @@ namespace AcademicService.DAL.Migrations
                     GradeId = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     SubmissionId = table.Column<Guid>(type: "uuid", nullable: false),
                     CriteriaId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Score = table.Column<decimal>(type: "numeric(5,2)", nullable: false),
+                    Score = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     Note = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>

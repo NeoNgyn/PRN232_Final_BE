@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AcademicService.DAL.Migrations
 {
     [DbContext(typeof(AcademicDbContext))]
-    [Migration("20251106175901_InitialCreate")]
+    [Migration("20251111172349_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -41,7 +41,7 @@ namespace AcademicService.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("MaxScore")
-                        .HasColumnType("decimal(5, 2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("SortOrder")
                         .HasColumnType("integer");
@@ -106,7 +106,7 @@ namespace AcademicService.DAL.Migrations
                         .HasColumnType("text");
 
                     b.Property<decimal>("Score")
-                        .HasColumnType("decimal(5, 2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<Guid>("SubmissionId")
                         .HasColumnType("uuid");
@@ -146,9 +146,10 @@ namespace AcademicService.DAL.Migrations
 
             modelBuilder.Entity("AcademicService.DAL.Models.Student", b =>
                 {
-                    b.Property<Guid>("StudentId")
+                    b.Property<string>("StudentId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)")
                         .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("FullName")
@@ -223,8 +224,14 @@ namespace AcademicService.DAL.Migrations
                     b.Property<Guid?>("SecondExaminerId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("StudentId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<decimal?>("TotalScore")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<DateTime>("UploadedAt")
                         .HasColumnType("timestamp with time zone");
