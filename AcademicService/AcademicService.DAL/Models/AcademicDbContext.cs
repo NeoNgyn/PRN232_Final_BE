@@ -78,7 +78,6 @@ public class AcademicDbContext : DbContext
         modelBuilder.Entity<Student>(entity =>
         {
             entity.Property(e => e.StudentId).HasDefaultValueSql("gen_random_uuid()");
-            
         });
 
         // Submission
