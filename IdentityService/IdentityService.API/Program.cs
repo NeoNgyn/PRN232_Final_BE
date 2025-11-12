@@ -8,6 +8,7 @@ using IdentityService.DAL.Models;
 using IdentityService.DAL.Repositories.Implements;
 using IdentityService.DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -41,6 +42,7 @@ builder.Services.AddSingleton<IJwtUtil, JwtUtil>();
 // Register Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRefreshTokensService, RefreshTokensService>();
 
 // JWT Authentication
@@ -125,6 +127,10 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
+//odata
+builder.Services.AddControllers()
+    .AddOData(opt => opt.Select().Filter().OrderBy().Expand().Count().SetMaxTop(100));
 
 // --------------------- Build App ---------------------
 var app = builder.Build();
