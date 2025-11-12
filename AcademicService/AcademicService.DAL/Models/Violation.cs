@@ -20,8 +20,8 @@ public partial class Violation
     [StringLength(20)]
     public string? Severity { get; set; }
 
-    [Column(TypeName = "decimal(5, 2)")]
-    public decimal? Penalty { get; set; }
+    [Column(TypeName = "decimal(18, 2)")]
+    public decimal Penalty { get; set; }
 
     [Column(TypeName = "timestamp with time zone")]
     public DateTime DetectedAt { get; set; } = DateTime.UtcNow;
