@@ -99,6 +99,11 @@ namespace IdentityService.BLL.Services.Implements
                     await userRepo.InsertAsync(newUser);
                     await _unitOfWork.CommitAsync();
 
+                    var createdUser = await userRepo.SingleOrDefaultAsync(
+                        predicate: u => u.UserId == newUser.UserId,
+                        include: q => q.Include(u => u.Role)
+                    );
+                    
                     return _mapper.Map<UserResponse>(newUser);
                 });
             }
