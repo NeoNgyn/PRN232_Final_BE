@@ -68,7 +68,7 @@ namespace AcademicService.BLL.Services.Implements
 
                     newSubmission.StudentId = fileName;
                     newSubmission.ExaminerId = request.ExaminerId;
-                    newSubmission.OriginalFileName = fileSubmit.FileName;       
+                    newSubmission.OriginalFileName = fileSubmit.FileName;
                     newSubmission.UploadedAt = DateTime.UtcNow;
 
                     var user = _httpContextAccessor.HttpContext?.User;
@@ -187,14 +187,44 @@ namespace AcademicService.BLL.Services.Implements
                 {
                     var submission = (await _unitOfWork.GetRepository<Submission>()
                         .SingleOrDefaultAsync(
-                            predicate: s => s.SubmissionId == id
+                            predicate: s => s.SubmissionId == id,
+                            include: c => c.Include(e => e.Grades).ThenInclude(a => a.Criteria)
+                                            .Include(v => v.Violations)
                         )).ValidateExists(id, "Can't update because this Submission isn't existed!");
-                    
 
-                    _mapper.Map(request, submission);
-                    
+                    var grades = submission.Grades.ToList();
+                    decimal scores = 0;
+                    for (int i = 0; i < grades.Count; i++)
+                    {
+                        scores += grades[i].Score;
+                    }
+
+                    var violations = submission.Violations.ToList();
+                    decimal penalty = 0;
+                    for (int i = 0; i < violations.Count; i++)
+                    {
+                        penalty += violations[i].Penalty;
+                    }
+
+                    var finalScore = scores - penalty;
+
+                   _mapper.Map(request, submission);
+                    submission.TotalScore = finalScore <= 0 ? 0 : finalScore;
+                    submission.GradingStatus = finalScore <= 0 ? "Failed" : "Passed";
 
                     _unitOfWork.GetRepository<Submission>().UpdateAsync(submission);
+
+                    var student = (await _unitOfWork.GetRepository<Student>().SingleOrDefaultAsync(
+                        predicate: s => s.StudentId == submission.StudentId
+                        ));
+
+                    if (student != null)
+                        throw new Exception("Student not found for updating status.");
+
+                    student.Status = submission.TotalScore > 0 ? "Passed" : "Not Passed";
+
+                    _unitOfWork.GetRepository<Student>().UpdateAsync(student);
+
                     await _unitOfWork.CommitAsync();
 
                     return _mapper.Map<SubmissionListResponse>(submission);
