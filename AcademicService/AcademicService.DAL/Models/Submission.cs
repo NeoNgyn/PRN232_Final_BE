@@ -11,7 +11,8 @@ public partial class Submission
     public Guid SubmissionId { get; set; }
 
     public Guid ExamId { get; set; }
-    public string? StudentId { get; set; }
+    [StringLength(450)]
+    public string StudentId { get; set; } = string.Empty;
     public Guid ExaminerId { get; set; }
     public Guid? SecondExaminerId { get; set; }
 
