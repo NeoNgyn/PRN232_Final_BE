@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityService.API.Controllers
 {
+    [ApiController]
     public class RolesController : BaseController<RolesController>
     {
         private readonly IRoleService _roleService;
