@@ -26,6 +26,9 @@ public class CloudinaryService : ICloudinaryService
 
     public async Task<string> UploadFileAsync(IFormFile file, string folder)
     {
+        if (file == null || file.Length == 0)
+            throw new ArgumentException("File is null or empty");
+
         using var stream = file.OpenReadStream();
         var uploadParams = new RawUploadParams
         {
@@ -34,6 +37,10 @@ public class CloudinaryService : ICloudinaryService
         };
 
         var result = await _cloudinary.UploadAsync(uploadParams);
+        
+        if (result == null || result.SecureUrl == null)
+            throw new Exception($"Cloudinary upload failed: {result?.Error?.Message ?? "Unknown error"}");
+            
         return result.SecureUrl.ToString();
     }
 

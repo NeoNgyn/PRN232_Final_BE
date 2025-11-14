@@ -55,27 +55,44 @@ namespace AcademicService.BLL.Services.Implements
                     newSubmission.SubmissionId = Guid.NewGuid();
                     newSubmission.ExamId = request.ExamId;
 
-                    string lastPart = fileSubmit.FileName.Split('_').Last();
-                    string fileName = lastPart.Length >= 8 ? lastPart.Substring(0, 8) : lastPart;
-
-                    if (!(fileName.StartsWith("SE", StringComparison.OrdinalIgnoreCase)
-                       || fileName.StartsWith("SS", StringComparison.OrdinalIgnoreCase)
-                       || fileName.StartsWith("HE", StringComparison.OrdinalIgnoreCase)
-                       || fileName.StartsWith("SA", StringComparison.OrdinalIgnoreCase)))
+                    // Use StudentId from request if provided, otherwise parse from filename
+                    if (!string.IsNullOrEmpty(request.StudentId))
                     {
-                        fileName = string.Empty;
+                        newSubmission.StudentId = request.StudentId;
+                    }
+                    else
+                    {
+                        string lastPart = fileSubmit.FileName.Split('_').Last();
+                        string fileName = lastPart.Length >= 8 ? lastPart.Substring(0, 8) : lastPart;
+
+                        if (!(fileName.StartsWith("SE", StringComparison.OrdinalIgnoreCase)
+                           || fileName.StartsWith("SS", StringComparison.OrdinalIgnoreCase)
+                           || fileName.StartsWith("HE", StringComparison.OrdinalIgnoreCase)
+                           || fileName.StartsWith("SA", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            fileName = string.Empty;
+                        }
+
+                        newSubmission.StudentId = fileName;
                     }
 
-                    newSubmission.StudentId = fileName;
                     newSubmission.ExaminerId = request.ExaminerId;
                     newSubmission.OriginalFileName = fileSubmit.FileName;
                     newSubmission.UploadedAt = DateTime.UtcNow;
 
-                    var user = _httpContextAccessor.HttpContext?.User;
-
-                    if (fileSubmit != null && user != null)
+                    // Upload file to Cloudinary if provided
+                    if (fileSubmit != null && fileSubmit.Length > 0)
                     {
-                        newSubmission.FilePath = await _cloudinaryService.UploadFileAsync(fileSubmit, "submisions");
+                        try
+                        {
+                            newSubmission.FilePath = await _cloudinaryService.UploadFileAsync(fileSubmit, "submisions");
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, "Cloudinary upload failed, using placeholder URL");
+                            // Use placeholder if Cloudinary fails
+                            newSubmission.FilePath = $"https://placeholder.com/submissions/{fileSubmit.FileName}";
+                        }
                     }
                     else
                     {

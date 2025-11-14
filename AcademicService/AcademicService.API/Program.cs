@@ -140,7 +140,8 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+// Comment UseHttpsRedirection for development
+// app.UseHttpsRedirection();
 
 app.UseCors(options =>
 {
