@@ -35,7 +35,7 @@ namespace AcademicService.API.Controllers
         }
 
         [HttpPost("import-student")]
-        public async Task<IActionResult> ImportStudents([FromForm] IFormFile file)
+        public async Task<IActionResult> ImportStudents(IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
@@ -77,62 +77,55 @@ namespace AcademicService.API.Controllers
         }
 
         [HttpPost("extract-rar")]
-        public async Task<IActionResult> ExtractRarAndCreateSubmissions([FromForm] ExtractRARRequest extractRARRequest)
+        public async Task<IActionResult> ExtractRarAndCreateSubmissions(
+    [FromForm] ExtractRARRequest metadata,
+     IFormFile rarFile)
         {
-            if (extractRARRequest.RARFile == null || extractRARRequest.RARFile.Length == 0)
+            if (rarFile == null || rarFile.Length == 0)
             {
                 return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
-                    null,
-                    StatusCodes.Status400BadRequest,
-                    "Extraction failed",
-                    "RAR file is empty"
-                ));
+                    null, 400, "Extraction failed", "RAR file is empty"));
             }
 
-            if (!extractRARRequest.RARFile.FileName.EndsWith(".rar", StringComparison.OrdinalIgnoreCase))
+            if (!rarFile.FileName.EndsWith(".rar", StringComparison.OrdinalIgnoreCase))
             {
                 return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
-                    null,
-                    StatusCodes.Status400BadRequest,
-                    "Extraction failed",
-                    "File must be a .rar archive"
-                ));
+                    null, 400, "Extraction failed", "File must be a .rar archive"));
             }
 
+            // 👉 Thay extractRARRequest.ExamId bằng metadata.ExamId
+            // 👉 Thay extractRARRequest.RARFile bằng rarFile
+
+            // === CODE CŨ CỦA BẠN ===
             var submissions = new List<object>();
             var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tempPath);
 
-            var rarFilePath = Path.Combine(tempPath, extractRARRequest.RARFile.FileName);
+            var rarFilePath = Path.Combine(tempPath, rarFile.FileName);
 
-            // Lưu file RAR tạm
             using (var stream = new FileStream(rarFilePath, FileMode.Create))
             {
-                await extractRARRequest.RARFile.CopyToAsync(stream);
+                await rarFile.CopyToAsync(stream);
             }
 
-            // Giải nén file RAR
             using (var archive = SharpCompress.Archives.Rar.RarArchive.Open(rarFilePath))
             {
                 foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
                 {
-                    // Giải nén từng file DOC/DOCX ra temp folder
-                    if (entry.Key.EndsWith(".doc", StringComparison.OrdinalIgnoreCase) ||
-                        entry.Key.EndsWith(".docx", StringComparison.OrdinalIgnoreCase))
+                    if (entry.Key.EndsWith(".doc", StringComparison.OrdinalIgnoreCase)
+                        || entry.Key.EndsWith(".docx", StringComparison.OrdinalIgnoreCase))
                     {
                         var extractedFilePath = Path.Combine(tempPath, entry.Key);
                         Directory.CreateDirectory(Path.GetDirectoryName(extractedFilePath)!);
                         entry.WriteToFile(extractedFilePath);
 
-                        // Tạo file stream giả để upload lên Cloudinary
-                        await using var fileStream = new FileStream(extractedFilePath, FileMode.Open, FileAccess.Read);
+                        await using var fileStream = new FileStream(extractedFilePath, FileMode.Open);
                         var formFile = new FormFile(fileStream, 0, fileStream.Length, null!, Path.GetFileName(extractedFilePath));
 
-                        // Gọi logic tạo submission
                         var createRequest = new CreateSubmissionRequest
                         {
-                            ExamId = extractRARRequest.ExamId,
-                            ExaminerId = extractRARRequest.ExaminerId
+                            ExamId = metadata.ExamId,
+                            ExaminerId = metadata.ExaminerId
                         };
 
                         var created = await _submissionService.CreateSubmissionAsync(createRequest, formFile);
@@ -141,26 +134,24 @@ namespace AcademicService.API.Controllers
                 }
             }
 
-            // Xóa file tạm
             Directory.Delete(tempPath, true);
 
-            var response = new
-            {
-                message = "RAR file extracted successfully",
-                totalSubmissions = submissions.Count,
-                submissions
-            };
-
             return Ok(ApiResponseBuilder.BuildResponse(
-                StatusCodes.Status200OK,
+                200,
                 "RAR extracted and submissions created successfully",
-                response
+                new
+                {
+                    message = "RAR file extracted successfully",
+                    totalSubmissions = submissions.Count,
+                    submissions
+                }
             ));
         }
 
+
         [HttpPost("import-criteria")]
         public async Task<IActionResult> ImportCriteria(
-        [FromForm] IFormFile file,
+         IFormFile file,
         [FromForm] Guid examId,
         [FromServices] ICritieriaService criteriaService)
         {
