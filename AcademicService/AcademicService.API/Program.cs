@@ -43,6 +43,7 @@ builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddScoped<ISubmissionService, SubmissionService>();
 builder.Services.AddScoped<ICritieriaService, CriteriaService>();
 builder.Services.AddScoped<IGradeService, GradeService>();
+builder.Services.AddScoped<IViolationService, ViolationService>();
 
 // OData
 builder.Services.AddControllers().AddOData(options =>

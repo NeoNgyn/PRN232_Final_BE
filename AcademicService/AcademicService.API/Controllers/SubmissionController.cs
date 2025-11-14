@@ -70,7 +70,7 @@ namespace AcademicService.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<SubmissionListResponse>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CreateSubmission([FromBody] CreateSubmissionRequest request, [FromForm] IFormFile fileSubmit)
+        public async Task<IActionResult> CreateSubmission([FromBody] CreateSubmissionRequest request,  IFormFile fileSubmit)
         {
             var response = await _submissionService.CreateSubmissionAsync(request, fileSubmit);
 

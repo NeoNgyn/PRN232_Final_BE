@@ -80,7 +80,7 @@ namespace IdentityService.BLL.Services.Implements
                         Name = payload.Name ?? payload.Email,
                         EmailConfirmed = payload.EmailVerified,
                         IsActive = true,
-                        RoleId = IdentityService.DAL.RoleConstants.DefaultUserRoleId,
+                        RoleId = IdentityService.DAL.RoleConstants.ExaminerRoleId,
                         Password = null,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow

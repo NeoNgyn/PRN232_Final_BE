@@ -37,12 +37,13 @@ public class CloudinaryService : ICloudinaryService
         };
 
         var result = await _cloudinary.UploadAsync(uploadParams);
-        
-        if (result == null || result.SecureUrl == null)
-            throw new Exception($"Cloudinary upload failed: {result?.Error?.Message ?? "Unknown error"}");
-            
-        return result.SecureUrl.ToString();
+
+        if (result.StatusCode != System.Net.HttpStatusCode.OK)
+            throw new Exception($"Upload failed: {result.Error?.Message}");
+
+        return result.Url?.ToString() ?? throw new Exception("Upload succeeded but Url is null.");
     }
+
 
     public async Task<bool> DeleteFileAsync(string publicId)
     {

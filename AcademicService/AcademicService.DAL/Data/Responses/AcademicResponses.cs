@@ -26,6 +26,6 @@ public class SubjectResponse
 
 public class StudentResponse
 {
-    public Guid StudentId { get; set; }
+    public string StudentId { get; set; }
     public string FullName { get; set; } = string.Empty;
 }

@@ -26,7 +26,7 @@ public class StudentsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetStudentById(Guid id)
+    public async Task<IActionResult> GetStudentById(string id)
     {
         var student = await _studentService.GetStudentByIdAsync(id);
         return Ok(ApiResponseBuilder.BuildResponse(200, "Student retrieved successfully", student));
@@ -41,14 +41,14 @@ public class StudentsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateStudent(Guid id, [FromBody] UpdateStudentRequest request)
+    public async Task<IActionResult> UpdateStudent(string id, [FromBody] UpdateStudentRequest request)
     {
         var student = await _studentService.UpdateStudentAsync(id, request);
         return Ok(ApiResponseBuilder.BuildResponse(200, "Student updated successfully", student));
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteStudent(Guid id)
+    public async Task<IActionResult> DeleteStudent(string id)
     {
         await _studentService.DeleteStudentAsync(id);
         return Ok(ApiResponseBuilder.BuildResponse<object>(200, "Student deleted successfully", null!));

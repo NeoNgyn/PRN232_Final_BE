@@ -62,4 +62,13 @@ public class ApiEndPointConstant
         public const string UpdateGradeEndpoint = GradeEndpointById + "/update";
         public const string DeleteGradeEndpoint = GradeEndpointById + "/delete";
     }
+
+    public static class Violations
+    {
+        public const string ViolationsEndpoint = ApiEndpoint + "/violation";
+        public const string ViolationEndpointById = ViolationsEndpoint + "/{id}";
+        public const string QueryViolationEndpoint = ViolationsEndpoint + "/query";
+        public const string UpdateViolationEndpoint = ViolationEndpointById + "/update";
+        public const string DeleteViolationEndpoint = ViolationEndpointById + "/delete";
+    }
 }

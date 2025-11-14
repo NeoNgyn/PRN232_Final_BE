@@ -35,7 +35,7 @@ namespace AcademicService.API.Controllers
         }
 
         [HttpPost("import-student")]
-        public async Task<IActionResult> ImportStudents([FromForm] IFormFile file)
+        public async Task<IActionResult> ImportStudents(IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
@@ -77,88 +77,57 @@ namespace AcademicService.API.Controllers
         }
 
         [HttpPost("extract-rar")]
-        public async Task<IActionResult> ExtractRarAndCreateSubmissions([FromForm] ExtractRARRequest extractRARRequest)
+        public async Task<IActionResult> ExtractRarAndCreateSubmissions(
+    [FromForm] ExtractRARRequest metadata,
+     IFormFile rarFile)
         {
-            if (extractRARRequest.RARFile == null || extractRARRequest.RARFile.Length == 0)
+            if (rarFile == null || rarFile.Length == 0)
             {
                 return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
-                    null,
-                    StatusCodes.Status400BadRequest,
-                    "Extraction failed",
-                    "RAR file is empty"
-                ));
+                    null, 400, "Extraction failed", "RAR file is empty"));
             }
 
-            var archiveFileName = extractRARRequest.RARFile.FileName.ToLowerInvariant();
-            if (!archiveFileName.EndsWith(".rar") && !archiveFileName.EndsWith(".zip"))
+            if (!rarFile.FileName.EndsWith(".rar", StringComparison.OrdinalIgnoreCase))
             {
                 return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
-                    null,
-                    StatusCodes.Status400BadRequest,
-                    "Invalid file format",
-                    "File must be a .rar or .zip archive"
-                ));
+                    null, 400, "Extraction failed", "File must be a .rar archive"));
             }
 
+            // 👉 Thay extractRARRequest.ExamId bằng metadata.ExamId
+            // 👉 Thay extractRARRequest.RARFile bằng rarFile
+
+            // === CODE CŨ CỦA BẠN ===
             var submissions = new List<object>();
             var errors = new List<string>();
             var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            
-            try
+            Directory.CreateDirectory(tempPath);
+
+            var rarFilePath = Path.Combine(tempPath, rarFile.FileName);
+
+            using (var stream = new FileStream(rarFilePath, FileMode.Create))
             {
-                Directory.CreateDirectory(tempPath);
-                var rarFilePath = Path.Combine(tempPath, extractRARRequest.RARFile.FileName);
+                await rarFile.CopyToAsync(stream);
+            }
 
-                // Save RAR file temporarily
-                using (var stream = new FileStream(rarFilePath, FileMode.Create))
+            using (var archive = SharpCompress.Archives.Rar.RarArchive.Open(rarFilePath))
+            {
+                foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
                 {
-                    await extractRARRequest.RARFile.CopyToAsync(stream);
-                }
-
-                _logger.LogInformation($"Processing archive file: {extractRARRequest.RARFile.FileName}");
-
-                // Extract files - Archive.Open supports both RAR and ZIP
-                using (var archive = ArchiveFactory.Open(rarFilePath))
-                {
-                    foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
+                    if (entry.Key.EndsWith(".doc", StringComparison.OrdinalIgnoreCase)
+                        || entry.Key.EndsWith(".docx", StringComparison.OrdinalIgnoreCase))
                     {
-                        // Process DOC/DOCX files
-                        if (entry.Key != null && (entry.Key.EndsWith(".doc", StringComparison.OrdinalIgnoreCase) ||
-                            entry.Key.EndsWith(".docx", StringComparison.OrdinalIgnoreCase)))
+                        var extractedFilePath = Path.Combine(tempPath, entry.Key);
+                        Directory.CreateDirectory(Path.GetDirectoryName(extractedFilePath)!);
+                        entry.WriteToFile(extractedFilePath);
+
+                        await using var fileStream = new FileStream(extractedFilePath, FileMode.Open);
+                        var formFile = new FormFile(fileStream, 0, fileStream.Length, null!, Path.GetFileName(extractedFilePath));
+
+                        var createRequest = new CreateSubmissionRequest
                         {
-                            try
-                            {
-                                var extractedFilePath = Path.Combine(tempPath, entry.Key);
-                                Directory.CreateDirectory(Path.GetDirectoryName(extractedFilePath)!);
-                                entry.WriteToFile(extractedFilePath);
-
-                                // Parse StudentId from filename
-                                // Expected format: StudentID_Name.docx or similar patterns
-                                var fileName = Path.GetFileNameWithoutExtension(entry.Key);
-                                var studentId = ExtractStudentIdFromFileName(fileName);
-
-                                if (string.IsNullOrEmpty(studentId))
-                                {
-                                    _logger.LogWarning($"Could not extract StudentId from filename: {entry.Key}");
-                                    errors.Add($"Không thể trích xuất mã sinh viên từ file: {entry.Key}");
-                                    continue;
-                                }
-
-                                // Create FormFile for upload
-                                await using var fileStream = new FileStream(extractedFilePath, FileMode.Open, FileAccess.Read);
-                                var formFile = new FormFile(fileStream, 0, fileStream.Length, null!, Path.GetFileName(extractedFilePath))
-                                {
-                                    Headers = new HeaderDictionary(),
-                                    ContentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                };
-
-                                // Create submission
-                                var createRequest = new CreateSubmissionRequest
-                                {
-                                    ExamId = extractRARRequest.ExamId,
-                                    ExaminerId = extractRARRequest.ExaminerId,
-                                    StudentId = studentId
-                                };
+                            ExamId = metadata.ExamId,
+                            ExaminerId = metadata.ExaminerId
+                        };
 
                                 var created = await _submissionService.CreateSubmissionAsync(createRequest, formFile);
                                 submissions.Add(created);
@@ -174,70 +143,24 @@ namespace AcademicService.API.Controllers
                     }
                 }
 
-                // Clean up temp files
-                Directory.Delete(tempPath, true);
+            Directory.Delete(tempPath, true);
 
-                var response = new
+            return Ok(ApiResponseBuilder.BuildResponse(
+                200,
+                "RAR extracted and submissions created successfully",
+                new
                 {
-                    message = "Archive file extracted and processed",
-                    totalFiles = submissions.Count + errors.Count,
-                    successfulSubmissions = submissions.Count,
-                    failedFiles = errors.Count,
-                    submissions,
-                    errors = errors.Any() ? errors : null
-                };
-
-                return Ok(ApiResponseBuilder.BuildResponse(
-                    StatusCodes.Status200OK,
-                    "Archive extracted and submissions created",
-                    response
-                ));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error extracting archive file");
-                
-                // Clean up on error
-                if (Directory.Exists(tempPath))
-                {
-                    try { Directory.Delete(tempPath, true); } catch { }
+                    message = "RAR file extracted successfully",
+                    totalSubmissions = submissions.Count,
+                    submissions
                 }
-
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    ApiResponseBuilder.BuildErrorResponse<object>(
-                        null,
-                        StatusCodes.Status500InternalServerError,
-                        "Extraction failed",
-                        ex.Message
-                    ));
-            }
+            ));
         }
 
-        // Helper method to extract StudentId from filename
-        private string? ExtractStudentIdFromFileName(string fileName)
-        {
-            // Try multiple patterns:
-            // Pattern 1: SE123456_Name or HE123456_Name
-            var match = System.Text.RegularExpressions.Regex.Match(fileName, @"^([A-Z]{2}\d{6})");
-            if (match.Success)
-                return match.Groups[1].Value;
-
-            // Pattern 2: 123456_Name (pure numbers)
-            match = System.Text.RegularExpressions.Regex.Match(fileName, @"^(\d{6,8})");
-            if (match.Success)
-                return match.Groups[1].Value;
-
-            // Pattern 3: Name_SE123456 (ID at the end)
-            match = System.Text.RegularExpressions.Regex.Match(fileName, @"([A-Z]{2}\d{6})");
-            if (match.Success)
-                return match.Groups[1].Value;
-
-            return null;
-        }
 
         [HttpPost("import-criteria")]
         public async Task<IActionResult> ImportCriteria(
-        [FromForm] IFormFile file,
+         IFormFile file,
         [FromForm] Guid examId,
         [FromServices] ICritieriaService criteriaService)
         {
