@@ -29,10 +29,12 @@ public class StudentService : IStudentService
         return _mapper.Map<IEnumerable<StudentResponse>>(students);
     }
 
-    public async Task<StudentResponse?> GetStudentByIdAsync(Guid id)
+    public async Task<StudentResponse?> GetStudentByIdAsync(string id)
     {
         var repository = _unitOfWork.GetRepository<Student>();
-        var student = await repository.GetByIdAsync(id);
+        var student = await repository.SingleOrDefaultAsync(
+                predicate: s => s.StudentId == id
+            );
         if (student == null)
             throw new NotFoundException($"Student with ID {id} not found");
         
@@ -82,10 +84,12 @@ public class StudentService : IStudentService
     }
 
 
-    public async Task<StudentResponse> UpdateStudentAsync(Guid id, UpdateStudentRequest request)
+    public async Task<StudentResponse> UpdateStudentAsync(string id, UpdateStudentRequest request)
     {
         var repository = _unitOfWork.GetRepository<Student>();
-        var student = await repository.GetByIdAsync(id);
+        var student = await repository.SingleOrDefaultAsync(
+                predicate: s => s.StudentId == id
+            );
         if (student == null)
             throw new NotFoundException($"Student with ID {id} not found");
 
@@ -96,10 +100,12 @@ public class StudentService : IStudentService
         return _mapper.Map<StudentResponse>(student);
     }
 
-    public async Task DeleteStudentAsync(Guid id)
+    public async Task DeleteStudentAsync(string id)
     {
         var repository = _unitOfWork.GetRepository<Student>();
-        var student = await repository.GetByIdAsync(id);
+        var student = await repository.SingleOrDefaultAsync(
+                predicate: s => s.StudentId == id
+            );
         if (student == null)
             throw new NotFoundException($"Student with ID {id} not found");
 
