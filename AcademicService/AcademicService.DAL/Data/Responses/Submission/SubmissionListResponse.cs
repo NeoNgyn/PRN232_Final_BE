@@ -13,7 +13,7 @@ namespace AcademicService.DAL.Data.Responses.Submission
     {
         public Guid SubmissionId { get; set; } 
         public Guid ExamId { get; set; }
-        public Guid StudentId { get; set; }
+        public string StudentId { get; set; }
         public Guid ExaminerId { get; set; }
         public Guid? SecondExaminerId { get; set; }
         public string OriginalFileName { get; set; } = string.Empty;
