@@ -49,8 +49,15 @@ namespace AcademicService.BLL.Services.Implements
                 {
                     var newSubmission = _mapper.Map<Submission>(request);
                     var exam = (await _unitOfWork.GetRepository<Exam>()
-                        .SingleOrDefaultAsync(predicate: s => s.ExamId == request.ExamId))
-                        .ValidateExists(request.ExamId, "Exam not found or existed!");
+                        .SingleOrDefaultAsync(
+                        predicate: s => s.ExamId == request.ExamId,
+                        include: c => c.Include(e => e.Semester)
+                                      .Include(su => su.Subject)
+                        ).ValidateExists(request.ExamId, "Exam not found or existed!"));
+
+                    var examName = exam.ExamName;
+                    var semester = exam.Semester.SemesterCode;
+                    var subject = exam.Subject.SubjectCode;
 
                     newSubmission.SubmissionId = Guid.NewGuid();
                     newSubmission.ExamId = request.ExamId;
@@ -75,7 +82,7 @@ namespace AcademicService.BLL.Services.Implements
 
                     if (fileSubmit != null && user != null)
                     {
-                        newSubmission.FilePath = await _cloudinaryService.UploadFileAsync(fileSubmit, "submisions");
+                        newSubmission.FilePath = await _cloudinaryService.UploadFileAsync(fileSubmit, $"FPT/{semester}/{subject}/{examName}");
                     }
                     else
                     {

@@ -6,6 +6,7 @@ using AcademicService.DAL.Data.Responses;
 using AcademicService.DAL.Models;
 using AcademicService.DAL.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace AcademicService.BLL.Services.Implements;
 
@@ -32,7 +33,10 @@ public class ExamService : IExamService
     public async Task<ExamResponse?> GetExamByIdAsync(Guid id)
     {
         var repository = _unitOfWork.GetRepository<Exam>();
-        var exam = await repository.GetByIdAsync(id);
+        var exam = await repository.SingleOrDefaultAsync(
+                predicate: e => e.ExamId == id,
+                include: q => q.Include(e => e.Semester).Include(e => e.Subject)
+            );
         if (exam == null)
             throw new NotFoundException($"Exam with ID {id} not found");
         
