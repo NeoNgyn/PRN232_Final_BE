@@ -35,7 +35,7 @@ namespace AcademicService.API.Controllers
             ));
         }
 
-        [HttpGet(ApiEndPointConstant.Submissions.SubmissionsEndpoint)]
+        [HttpGet(ApiEndPointConstant.Submissions.SubmissionsEndpoint + "/by-exam")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<SubmissionListResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllSubmissionsByExam([FromQuery] Guid examId)
@@ -51,7 +51,7 @@ namespace AcademicService.API.Controllers
             ));
         }
 
-        [HttpGet(ApiEndPointConstant.Submissions.SubmissionsEndpoint)]
+        [HttpGet(ApiEndPointConstant.Submissions.SubmissionsEndpoint + "/by-exam-examiner")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<SubmissionListResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllSubmissionsByExamAndExanminer([FromQuery] Guid examId, [FromQuery] Guid examinerId)

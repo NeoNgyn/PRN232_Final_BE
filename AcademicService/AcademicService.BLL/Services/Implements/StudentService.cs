@@ -64,6 +64,7 @@ public class StudentService : IStudentService
         foreach (var studentReq in studentsFromJson)
         {
             var studentEntity = _mapper.Map<Student>(studentReq);
+            studentEntity.Status = "Active";
 
             // Có thể kiểm tra trùng ID trước khi thêm
             var existing = await repository.SingleOrDefaultAsync(predicate: s => s.StudentId == studentEntity.StudentId);
