@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace AcademicService.DAL.Mappers
 {
-    public class StudentMapper : Profile
+    public class SemesterMapper : Profile
     {
-        public StudentMapper()
+        public SemesterMapper()
         {
-            CreateMap<CreateStudentRequest, Student>();
-            CreateMap<UpdateStudentRequest, Student>().ForAllMembers(opt =>
+            // Semester mappings
+            CreateMap<Semester, SemesterResponse>();
+            CreateMap<CreateSemesterRequest, Semester>();
+            CreateMap<UpdateSemesterRequest, Semester>().ForAllMembers(opt =>
                     opt.Condition((src, dest, srcMember) => srcMember != null)
                 ); ;
-
-            CreateMap<Student, StudentResponse>();
         }
     }
 }

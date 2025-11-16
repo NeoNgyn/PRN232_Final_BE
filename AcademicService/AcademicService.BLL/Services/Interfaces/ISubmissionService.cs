@@ -14,6 +14,8 @@ namespace AcademicService.BLL.Services.Interfaces
     public interface ISubmissionService
     {
         Task<IEnumerable<SubmissionListResponse>> GetAllSubmissionsAsync();
+        Task<IEnumerable<SubmissionDetailResponse>> GetSubmissionsByExamIdAsync(Guid examId);
+        Task<IEnumerable<SubmissionDetailResponse>> GetSubmissionsByExamIdAndExamninerIdAsync(Guid examId, Guid examinerId);
         Task<IEnumerable<SubmissionListResponse>> GetQuerySubmissionsAsync();
         Task<SubmissionDetailResponse> GetSubmissionByIdAsync(Guid id);
         Task<SubmissionListResponse> CreateSubmissionAsync(CreateSubmissionRequest request, IFormFile fileSubmit);

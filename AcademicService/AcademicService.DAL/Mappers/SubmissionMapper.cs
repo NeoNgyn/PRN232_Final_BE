@@ -16,7 +16,9 @@ namespace AcademicService.DAL.Mappers
         {
             
             CreateMap<CreateSubmissionRequest, Submission>();
-            CreateMap<UpdateSubmissionRequest, Submission>();
+            CreateMap<UpdateSubmissionRequest, Submission>().ForAllMembers(opt =>
+                    opt.Condition((src, dest, srcMember) => srcMember != null)
+                ); ;
 
             CreateMap<Submission, SubmissionListResponse>();
             CreateMap<Submission, SubmissionDetailResponse>();

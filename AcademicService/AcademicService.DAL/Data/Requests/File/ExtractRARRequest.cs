@@ -9,7 +9,6 @@ namespace AcademicService.DAL.Data.Requests.File
 {
     public class ExtractRARRequest
     {
-        public IFormFile RARFile { get; set; } 
         public Guid ExamId { get; set; } 
         public Guid ExaminerId { get; set; } 
     }

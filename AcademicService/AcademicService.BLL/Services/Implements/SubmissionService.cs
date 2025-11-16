@@ -1,5 +1,6 @@
-﻿using AcademicService.BLL.Services.Interfaces;
-using AcademicService.BLL.Extension;
+﻿using AcademicService.BLL.Extension;
+using AcademicService.BLL.Hubs;
+using AcademicService.BLL.Services.Interfaces;
 using AcademicService.DAL.Data.Requests;
 using AcademicService.DAL.Data.Requests.Submission;
 using AcademicService.DAL.Data.Responses.Submission;
@@ -8,6 +9,8 @@ using AcademicService.DAL.Repositories.Interfaces;
 using AutoMapper;
 using EzyFix.BLL.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -15,7 +18,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace AcademicService.BLL.Services.Implements
 {
@@ -24,16 +26,20 @@ namespace AcademicService.BLL.Services.Implements
         private readonly ICloudinaryService _cloudinaryService;
         private const string DefaultProfilePicture = "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg";
 
+        private readonly IHubContext<SubmissionHub, ISubmissionHub> _hubContext;
+
         public SubmissionService(
-        IUnitOfWork<AcademicDbContext> unitOfWork,
-        ILogger<SubmissionService> logger,
-        IMapper mapper,
-        IHttpContextAccessor httpContextAccessor,
-        IConfiguration configuration,
-        ICloudinaryService cloudinaryService
-    ) : base(unitOfWork, logger, mapper, httpContextAccessor)
+            IUnitOfWork<AcademicDbContext> unitOfWork,
+            ILogger<SubmissionService> logger,
+            IMapper mapper,
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration,
+            ICloudinaryService cloudinaryService,
+            IHubContext<SubmissionHub, ISubmissionHub> hubContext
+        ) : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
             _cloudinaryService = cloudinaryService;
+            _hubContext = hubContext;
         }
 
         public async Task<SubmissionListResponse> CreateSubmissionAsync(CreateSubmissionRequest request, IFormFile fileSubmit)
@@ -49,8 +55,15 @@ namespace AcademicService.BLL.Services.Implements
                 {
                     var newSubmission = _mapper.Map<Submission>(request);
                     var exam = (await _unitOfWork.GetRepository<Exam>()
-                        .SingleOrDefaultAsync(predicate: s => s.ExamId == request.ExamId))
-                        .ValidateExists(request.ExamId, "Exam not found or existed!");
+                        .SingleOrDefaultAsync(
+                        predicate: s => s.ExamId == request.ExamId,
+                        include: c => c.Include(e => e.Semester)
+                                      .Include(su => su.Subject)
+                        ).ValidateExists(request.ExamId, "Exam not found or existed!"));
+
+                    var examName = exam.ExamName;
+                    var semester = exam.Semester.SemesterCode;
+                    var subject = exam.Subject.SubjectCode;
 
                     newSubmission.SubmissionId = Guid.NewGuid();
                     newSubmission.ExamId = request.ExamId;
@@ -137,7 +150,15 @@ namespace AcademicService.BLL.Services.Implements
                     await _unitOfWork.GetRepository<Submission>().InsertAsync(newSubmission);
                     await _unitOfWork.CommitAsync();
 
-                    return _mapper.Map<SubmissionListResponse>(newSubmission);
+                    await _unitOfWork.CommitAsync();
+
+                    // mapping response
+                    var response = _mapper.Map<SubmissionListResponse>(newSubmission);
+
+                    // 🔥 Gửi realtime cho tất cả client
+                    await _hubContext.Clients.All.SubmissionCreated(response);
+
+                    return response;
                 });
             }
             catch (Exception ex)
@@ -188,6 +209,31 @@ namespace AcademicService.BLL.Services.Implements
             }
         }
 
+        public async Task<IEnumerable<SubmissionDetailResponse>> GetSubmissionsByExamIdAsync(Guid examId)
+        {
+            var submissions = await _unitOfWork.GetRepository<Submission>()
+                .GetListAsync(
+                    predicate: s => s.ExamId == examId,
+                    include: x => x.Include(g => g.Grades)
+                                   .Include(v => v.Violations)
+                );
+
+            return _mapper.Map<IEnumerable<SubmissionDetailResponse>>(submissions);
+        }
+
+        public async Task<IEnumerable<SubmissionDetailResponse>> GetSubmissionsByExamIdAndExamninerIdAsync(Guid examId, Guid examinerId)
+        {
+            var submissions = await _unitOfWork.GetRepository<Submission>()
+                .GetListAsync(
+                    predicate: s => s.ExamId == examId && s.ExaminerId == examinerId,
+                    include: x => x.Include(g => g.Grades)
+                                   .Include(v => v.Violations)
+                );
+
+            return _mapper.Map<IEnumerable<SubmissionDetailResponse>>(submissions);
+        }
+
+
         public async Task<IEnumerable<SubmissionListResponse>> GetQuerySubmissionsAsync()
         {
             try
@@ -213,6 +259,11 @@ namespace AcademicService.BLL.Services.Implements
                         predicate: s => s.SubmissionId == id,
                         include: c => c.Include(e => e.Grades).ThenInclude(a => a.Criteria)
                                         .Include(v => v.Violations)
+                                        .Include(s => s.Student)
+                                        .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Semester)
+                                        .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Subject)
                     )).ValidateExists(id, "Can not find this Submission because it isn't existed");
 
                 return _mapper.Map<SubmissionDetailResponse>(submission);
@@ -277,7 +328,12 @@ namespace AcademicService.BLL.Services.Implements
 
                     await _unitOfWork.CommitAsync();
 
-                    return _mapper.Map<SubmissionListResponse>(submission);
+                    var response = _mapper.Map<SubmissionListResponse>(submission);
+
+                    // 🔥 Gửi realtime: bài đã được chấm
+                    await _hubContext.Clients.All.SubmissionUpdated(response);
+
+                    return response;
                 });
             }
             catch (Exception ex)

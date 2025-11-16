@@ -14,6 +14,7 @@ namespace AcademicService.BLL.Services.Interfaces
     public interface ICritieriaService
     {
         Task<IEnumerable<CriteriaListResponse>> GetAllCriteriasAsync(CriteriaQueryParameter queryParameter);
+        Task<IEnumerable<CriteriaListResponse>> GetCriteriasByExamIdAsync(Guid examId);
         Task<IEnumerable<CriteriaListResponse>> GetQueryCriteriasAsync();
         Task<CriteriaListResponse> GetCriteriaByIdAsync(Guid id);
         Task<CriteriaListResponse> CreateCriteriaAsync(CreateCriteriaRequest request);

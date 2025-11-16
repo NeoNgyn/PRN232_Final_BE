@@ -15,7 +15,9 @@ namespace AcademicService.DAL.Mappers
         public GradeMapper()
         {
             CreateMap<CreateGradeRequest, Grade>();
-            CreateMap<UpdateGradeRequest, Grade>();
+            CreateMap<UpdateGradeRequest, Grade>().ForAllMembers(opt =>
+                    opt.Condition((src, dest, srcMember) => srcMember != null)
+                ); ;
 
             CreateMap<Grade, GradeListResponse>();
         }
