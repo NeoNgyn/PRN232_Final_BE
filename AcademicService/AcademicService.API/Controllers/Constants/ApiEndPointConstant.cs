@@ -51,7 +51,7 @@ public class ApiEndPointConstant
     {
         public const string CriteriasEndpoint = ApiEndpoint + "/criteria";
         public const string CriteriaEndpointById = CriteriasEndpoint + "/{id}";
-        public const string CriteriaEndpointByExamId = CriteriasEndpoint + "/{examId}";
+        public const string CriteriaEndpointByExamId = CriteriasEndpoint + "/exam/{examId}";
         public const string QueryCriteriaEndpoint = CriteriasEndpoint + "/query";
         public const string UpdateCriteriaEndpoint = CriteriaEndpointById + "/update";
         public const string DeleteCriteriaEndpoint = CriteriaEndpointById + "/delete";

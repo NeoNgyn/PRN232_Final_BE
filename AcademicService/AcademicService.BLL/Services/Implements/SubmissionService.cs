@@ -219,11 +219,6 @@ namespace AcademicService.BLL.Services.Implements
                         predicate: s => s.SubmissionId == id,
                         include: c => c.Include(e => e.Grades).ThenInclude(a => a.Criteria)
                                         .Include(v => v.Violations)
-                                        .Include(s => s.Student)
-                                        .Include(e => e.Exam)
-                                            .ThenInclude(e => e.Semester)
-                                        .Include(e => e.Exam)
-                                            .ThenInclude(e => e.Subject)
                     )).ValidateExists(id, "Can not find this Submission because it isn't existed");
 
                 return _mapper.Map<SubmissionDetailResponse>(submission);
@@ -279,7 +274,7 @@ namespace AcademicService.BLL.Services.Implements
                         predicate: s => s.StudentId == submission.StudentId
                         ));
 
-                    if (student != null)
+                    if (student == null)
                         throw new Exception("Student not found for updating status.");
 
                     student.Status = submission.TotalScore > 0 ? "Passed" : "Not Passed";

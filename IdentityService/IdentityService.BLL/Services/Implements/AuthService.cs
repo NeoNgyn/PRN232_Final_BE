@@ -126,6 +126,7 @@ namespace IdentityService.BLL.Services.Implements
                     UserId = user.UserId,
                     Email = user.Email,
                     Name = user.Name,
+                    Role = roleName,
                     AccessToken = accessToken,
                     RefreshToken = null,
                     IsNewUser = isNewUser

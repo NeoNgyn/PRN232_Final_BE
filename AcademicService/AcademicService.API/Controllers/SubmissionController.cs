@@ -131,7 +131,7 @@ namespace AcademicService.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<SubmissionListResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateSubmission(Guid id, [FromForm] UpdateSubmissionRequest request)
+        public async Task<IActionResult> UpdateSubmission(Guid id, [FromBody] UpdateSubmissionRequest request)
         {
             var updatedSubmission = await _submissionService.UpdateSubmissionAsync(id, request);
             return Ok(ApiResponseBuilder.BuildResponse(
