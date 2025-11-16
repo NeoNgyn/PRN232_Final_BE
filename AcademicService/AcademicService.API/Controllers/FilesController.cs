@@ -3,6 +3,7 @@ using AcademicService.BLL.Services.Interfaces;
 using AcademicService.DAL.Data.MetaDatas;
 using AcademicService.DAL.Data.Requests.File;
 using AcademicService.DAL.Data.Requests.Submission;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
 using SharpCompress.Archives;
 
@@ -221,5 +222,118 @@ namespace AcademicService.API.Controllers
                 responseData
             ));
         }
+
+        [HttpGet("export-summary/{examId}")]
+        public async Task<IActionResult> ExportSummaryExcel(
+            Guid examId,
+            [FromServices] ISubmissionService submissionService,
+            [FromServices] ICritieriaService criteriaService)
+        {
+            // 1. Lấy toàn bộ submissions của exam
+            var submissions = await submissionService.GetSubmissionsByExamIdAsync(examId);
+
+            if (!submissions.Any())
+            {
+                return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                     null, 400, "Export failed", "No submissions in this exam"));
+            }
+
+            // 2. Kiểm tra bài nào chưa approve
+            var unapproved = submissions.Where(x => x.IsApproved == false).ToList();
+
+            if (unapproved.Any())
+            {
+                return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
+                   new
+                   {
+                       unapprovedCount = unapproved.Count,
+                       unapprovedList = unapproved.Select(x => new
+                       {
+                           x.SubmissionId,
+                           x.StudentId,
+                           x.OriginalFileName
+                       })
+                   },
+                   400,
+                   "Export failed",
+                   "There are unapproved submissions. Please approve all before exporting."
+                ));
+            }
+
+            // 3. Lấy exam để tạo folder path
+            var exam = await _examService.GetExamByIdAsync(examId);
+            var folder = $"FPT/summary/{exam.Semester.SemesterCode}/{exam.Subject.SubjectCode}/{exam.ExamName}";
+
+            var resultFiles = new List<object>();
+
+            // 4. Lấy danh sách criteria
+            var criteriaList = await criteriaService.GetCriteriasByExamIdAsync(examId);
+
+            foreach (var sub in submissions)
+            {
+                using (var workbook = new XLWorkbook())
+                {
+                    var ws = workbook.Worksheets.Add("Grades");
+
+                    // Header
+                    ws.Cell("A1").Value = "Order";
+                    ws.Cell("B1").Value = "Criteria";
+                    ws.Cell("C1").Value = "Max Score";
+                    ws.Cell("D1").Value = "Student Score";
+
+                    int row = 2;
+
+                    decimal total = 0;
+
+                    foreach (var c in criteriaList.OrderBy(x => x.SortOrder))
+                    {
+                        var grade = sub.Grades.FirstOrDefault(g => g.CriteriaId == c.CriteriaId);
+
+                        ws.Cell(row, 1).Value = c.SortOrder;
+                        ws.Cell(row, 2).Value = c.CriteriaName;
+                        ws.Cell(row, 3).Value = c.MaxScore;
+                        ws.Cell(row, 4).Value = grade?.Score ?? 0;
+
+                        total += grade?.Score ?? 0;
+                        row++;
+                    }
+
+                    // Total row
+                    ws.Cell(row, 3).Value = "TOTAL";
+                    ws.Cell(row, 4).Value = total;
+
+                    // Save to temp file
+                    var tempPath = Path.Combine(Path.GetTempPath(), $"{sub.StudentId}_Student.xlsx");
+                    workbook.SaveAs(tempPath);
+
+                    // Upload lên cloudinary
+                    using var stream = new FileStream(tempPath, FileMode.Open);
+                    var formFile = new FormFile(stream, 0, stream.Length, null!, $"{sub.StudentId}_Student.xlsx");
+
+                    var url = await _cloudinaryService.UploadFileAsync(formFile, folder);
+
+                    resultFiles.Add(new
+                    {
+                        SubmissionId = sub.SubmissionId,
+                        StudentId = sub.StudentId,
+                        Url = url
+                    });
+
+                    System.IO.File.Delete(tempPath);
+                }
+            }
+
+            return Ok(ApiResponseBuilder.BuildResponse(
+                200,
+                "Export successful",
+                new
+                {
+                    examId,
+                    exported = resultFiles.Count,
+                    files = resultFiles
+                }
+            ));
+        }
+
     }
 }
