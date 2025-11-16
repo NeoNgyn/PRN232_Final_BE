@@ -38,6 +38,22 @@ namespace AcademicService.API.Controllers
             ));
         }
 
+        [HttpGet(ApiEndPointConstant.Criterias.CriteriaEndpointByExamId)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<CriteriaListResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetCriteriaByExamId(Guid examId)
+        {
+            var userClaims = User.Claims.Select(c => new { c.Type, c.Value }); //debugging code
+            _logger.LogInformation("User claims: {@Claims}", userClaims);
+
+            var criterias = await _criteriaService.GetCriteriasByExamIdAsync(examId);
+            return Ok(ApiResponseBuilder.BuildResponse(
+                StatusCodes.Status200OK,
+                "Criteria list retrieved successfully",
+                criterias
+            ));
+        }
+
         [HttpGet(ApiEndPointConstant.Criterias.QueryCriteriaEndpoint)]
         [EnableQuery]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<CriteriaListResponse>>), StatusCodes.Status200OK)]
