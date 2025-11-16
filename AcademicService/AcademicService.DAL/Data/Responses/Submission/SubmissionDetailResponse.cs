@@ -26,6 +26,8 @@ namespace AcademicService.DAL.Data.Responses.Submission
         public DateTime UploadedAt { get; set; }
         public bool IsApproved { get; set; } = false;
 
+        public StudentResponse Student { get; set; } 
+        public ExamResponse Exam { get; set; } 
         public List<GradeListResponse> Grades { get; set; } = new List<GradeListResponse>();
         public List<ViolationListResponse> Violations { get; set; } = new List<ViolationListResponse>();
     }
