@@ -15,7 +15,9 @@ namespace AcademicService.DAL.Mappers
         public CriteriaMapper()
         {
             CreateMap<CreateCriteriaRequest, Criteria>();
-            CreateMap<UpdateCriteriaRequest, Criteria>();
+            CreateMap<UpdateCriteriaRequest, Criteria>().ForAllMembers(opt =>
+                    opt.Condition((src, dest, srcMember) => srcMember != null)
+                ); ;
 
             CreateMap<Criteria, CriteriaListResponse>();
         }

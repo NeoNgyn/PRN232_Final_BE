@@ -17,7 +17,9 @@ namespace AcademicService.DAL.Mappers
             // Semester mappings
             CreateMap<Semester, SemesterResponse>();
             CreateMap<CreateSemesterRequest, Semester>();
-            CreateMap<UpdateSemesterRequest, Semester>();
+            CreateMap<UpdateSemesterRequest, Semester>().ForAllMembers(opt =>
+                    opt.Condition((src, dest, srcMember) => srcMember != null)
+                ); ;
         }
     }
 }
