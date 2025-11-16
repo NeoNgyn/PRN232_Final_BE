@@ -2,6 +2,7 @@
 using AcademicService.DAL.Data.Requests.Submission;
 using AcademicService.DAL.Data.Responses;
 using AcademicService.DAL.Data.Responses.Submission;
+using AcademicService.DAL.Models;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace AcademicService.BLL.Services.Interfaces
         Task<IEnumerable<SubmissionListResponse>> GetAllSubmissionsAsync();
         Task<IEnumerable<SubmissionDetailResponse>> GetSubmissionsByExamIdAsync(Guid examId);
         Task<IEnumerable<SubmissionDetailResponse>> GetSubmissionsByExamIdAndExamninerIdAsync(Guid examId, Guid examinerId);
-        Task<IEnumerable<SubmissionListResponse>> GetQuerySubmissionsAsync();
+        IQueryable<Submission> GetQuerySubmissions();
         Task<SubmissionDetailResponse> GetSubmissionByIdAsync(Guid id);
         Task<SubmissionListResponse> CreateSubmissionAsync(CreateSubmissionRequest request, IFormFile fileSubmit);
         Task<SubmissionListResponse> UpdateSubmissionAsync(Guid id, UpdateSubmissionRequest request);
