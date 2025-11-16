@@ -200,20 +200,14 @@ namespace AcademicService.BLL.Services.Implements
         }
 
 
-        public async Task<IEnumerable<SubmissionListResponse>> GetQuerySubmissionsAsync()
+        public IQueryable<Submission> GetQuerySubmissions()
         {
-            try
-            {
-                var submissions = _unitOfWork.GetRepository<Submission>()
-                    .GetQueryable();
-
-                return _mapper.Map<IEnumerable<SubmissionListResponse>>(submissions);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving submission list: {Message}", ex.Message);
-                throw;
-            }
+            return _unitOfWork.GetRepository<Submission>()
+                .GetQueryable(include: x => x.Include(s => s.Student)
+                                             .Include(s => s.Exam)
+                                             .ThenInclude(e => e.Semester)
+                                             .Include(s => s.Exam)
+                                             .ThenInclude(e => e.Subject));
         }
 
         public async Task<SubmissionDetailResponse> GetSubmissionByIdAsync(Guid id)
