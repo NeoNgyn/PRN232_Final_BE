@@ -3,6 +3,8 @@ using AcademicService.BLL.Services.Interfaces;
 using AcademicService.DAL.Data.MetaDatas;
 using AcademicService.DAL.Data.Requests.Submission;
 using AcademicService.DAL.Data.Responses.Submission;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -13,10 +15,12 @@ namespace AcademicService.API.Controllers
     public class SubmissionController : BaseController<SubmissionController>
     {
         private readonly ISubmissionService _submissionService;
+        private readonly IMapper _mapper;
 
-        public SubmissionController(ILogger<SubmissionController> logger, ISubmissionService submissionService) : base(logger)
+        public SubmissionController(ILogger<SubmissionController> logger, ISubmissionService submissionService, IMapper mapper) : base(logger)
         {
             _submissionService = submissionService;
+            _mapper = mapper;
         }
 
         [HttpGet(ApiEndPointConstant.Submissions.SubmissionsEndpoint)]
@@ -35,10 +39,10 @@ namespace AcademicService.API.Controllers
             ));
         }
 
-        [HttpGet(ApiEndPointConstant.Submissions.SubmissionsEndpoint)]
+        [HttpGet(ApiEndPointConstant.Submissions.SubmissionEndpointByExamId)]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<SubmissionListResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllSubmissionsByExam([FromQuery] Guid examId)
+        public async Task<IActionResult> GetAllSubmissionsByExam(Guid examId)
         {
             var userClaims = User.Claims.Select(c => new { c.Type, c.Value }); //debugging code
             _logger.LogInformation("User claims: {@Claims}", userClaims);
@@ -51,10 +55,10 @@ namespace AcademicService.API.Controllers
             ));
         }
 
-        [HttpGet(ApiEndPointConstant.Submissions.SubmissionsEndpoint)]
+        [HttpGet(ApiEndPointConstant.Submissions.SubmissionEndpointByExamIdAndExaminerId)]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<SubmissionListResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllSubmissionsByExamAndExanminer([FromQuery] Guid examId, [FromQuery] Guid examinerId)
+        public async Task<IActionResult> GetAllSubmissionsByExamAndExanminer(Guid examId, Guid examinerId)
         {
             var userClaims = User.Claims.Select(c => new { c.Type, c.Value }); //debugging code
             _logger.LogInformation("User claims: {@Claims}", userClaims);
@@ -69,20 +73,14 @@ namespace AcademicService.API.Controllers
 
         [HttpGet(ApiEndPointConstant.Submissions.QuerySubmissionEndpoint)]
         [EnableQuery]
-        [ProducesResponseType(typeof(ApiResponse<IEnumerable<SubmissionListResponse>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> QuerySubmissions()
+        public IActionResult QuerySubmissions()
         {
-            var userClaims = User.Claims.Select(c => new { c.Type, c.Value }); //debugging code
-            _logger.LogInformation("User claims: {@Claims}", userClaims);
+            var query = _submissionService.GetQuerySubmissions()
+                .ProjectTo<SubmissionListResponse>(_mapper.ConfigurationProvider);
 
-            var submissions = await _submissionService.GetQuerySubmissionsAsync();
-            return Ok(ApiResponseBuilder.BuildResponse(
-                StatusCodes.Status200OK,
-                "Submission list retrieved successfully",
-                submissions
-            ));
+            return Ok(query);
         }
+
 
         [HttpGet(ApiEndPointConstant.Submissions.SubmissionEndpointById)]
         [ProducesResponseType(typeof(ApiResponse<SubmissionDetailResponse>), StatusCodes.Status200OK)]
@@ -133,7 +131,7 @@ namespace AcademicService.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<SubmissionListResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateSubmission(Guid id, [FromForm] UpdateSubmissionRequest request)
+        public async Task<IActionResult> UpdateSubmission(Guid id, [FromBody] UpdateSubmissionRequest request)
         {
             var updatedSubmission = await _submissionService.UpdateSubmissionAsync(id, request);
             return Ok(ApiResponseBuilder.BuildResponse(

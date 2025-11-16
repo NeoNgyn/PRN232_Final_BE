@@ -198,7 +198,13 @@ namespace AcademicService.BLL.Services.Implements
             try
             {
                 var submissions = await _unitOfWork.GetRepository<Submission>()
-                    .GetListAsync();
+                    .GetListAsync(
+                        include: x => x.Include(s => s.Student)
+                                       .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Semester)
+                                        .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Subject)
+                    );
 
                 return _mapper.Map<IEnumerable<SubmissionListResponse>>(submissions);
             }
@@ -216,6 +222,11 @@ namespace AcademicService.BLL.Services.Implements
                     predicate: s => s.ExamId == examId,
                     include: x => x.Include(g => g.Grades)
                                    .Include(v => v.Violations)
+                                   .Include(s => s.Student)
+                                       .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Semester)
+                                        .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Subject)
                 );
 
             return _mapper.Map<IEnumerable<SubmissionDetailResponse>>(submissions);
@@ -228,26 +239,25 @@ namespace AcademicService.BLL.Services.Implements
                     predicate: s => s.ExamId == examId && s.ExaminerId == examinerId,
                     include: x => x.Include(g => g.Grades)
                                    .Include(v => v.Violations)
+                                   .Include(s => s.Student)
+                                       .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Semester)
+                                        .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Subject)
                 );
 
             return _mapper.Map<IEnumerable<SubmissionDetailResponse>>(submissions);
         }
 
 
-        public async Task<IEnumerable<SubmissionListResponse>> GetQuerySubmissionsAsync()
+        public IQueryable<Submission> GetQuerySubmissions()
         {
-            try
-            {
-                var submissions = _unitOfWork.GetRepository<Submission>()
-                    .GetQueryable();
-
-                return _mapper.Map<IEnumerable<SubmissionListResponse>>(submissions);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving submission list: {Message}", ex.Message);
-                throw;
-            }
+            return _unitOfWork.GetRepository<Submission>()
+                .GetQueryable(include: x => x.Include(s => s.Student)
+                                             .Include(s => s.Exam)
+                                             .ThenInclude(e => e.Semester)
+                                             .Include(s => s.Exam)
+                                             .ThenInclude(e => e.Subject));
         }
 
         public async Task<SubmissionDetailResponse> GetSubmissionByIdAsync(Guid id)
@@ -259,11 +269,6 @@ namespace AcademicService.BLL.Services.Implements
                         predicate: s => s.SubmissionId == id,
                         include: c => c.Include(e => e.Grades).ThenInclude(a => a.Criteria)
                                         .Include(v => v.Violations)
-                                        .Include(s => s.Student)
-                                        .Include(e => e.Exam)
-                                            .ThenInclude(e => e.Semester)
-                                        .Include(e => e.Exam)
-                                            .ThenInclude(e => e.Subject)
                     )).ValidateExists(id, "Can not find this Submission because it isn't existed");
 
                 return _mapper.Map<SubmissionDetailResponse>(submission);
@@ -319,7 +324,7 @@ namespace AcademicService.BLL.Services.Implements
                         predicate: s => s.StudentId == submission.StudentId
                         ));
 
-                    if (student != null)
+                    if (student == null)
                         throw new Exception("Student not found for updating status.");
 
                     student.Status = submission.TotalScore > 0 ? "Passed" : "Not Passed";
