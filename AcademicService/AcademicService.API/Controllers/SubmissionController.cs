@@ -35,6 +35,38 @@ namespace AcademicService.API.Controllers
             ));
         }
 
+        [HttpGet(ApiEndPointConstant.Submissions.SubmissionsEndpoint)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<SubmissionListResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAllSubmissionsByExam([FromQuery] Guid examId)
+        {
+            var userClaims = User.Claims.Select(c => new { c.Type, c.Value }); //debugging code
+            _logger.LogInformation("User claims: {@Claims}", userClaims);
+
+            var submissions = await _submissionService.GetSubmissionsByExamIdAsync(examId);
+            return Ok(ApiResponseBuilder.BuildResponse(
+                StatusCodes.Status200OK,
+                "Submission list retrieved successfully",
+                submissions
+            ));
+        }
+
+        [HttpGet(ApiEndPointConstant.Submissions.SubmissionsEndpoint)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<SubmissionListResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAllSubmissionsByExamAndExanminer([FromQuery] Guid examId, [FromQuery] Guid examinerId)
+        {
+            var userClaims = User.Claims.Select(c => new { c.Type, c.Value }); //debugging code
+            _logger.LogInformation("User claims: {@Claims}", userClaims);
+
+            var submissions = await _submissionService.GetSubmissionsByExamIdAndExamninerIdAsync(examId, examinerId);
+            return Ok(ApiResponseBuilder.BuildResponse(
+                StatusCodes.Status200OK,
+                "Submission list retrieved successfully",
+                submissions
+            ));
+        }
+
         [HttpGet(ApiEndPointConstant.Submissions.QuerySubmissionEndpoint)]
         [EnableQuery]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<SubmissionListResponse>>), StatusCodes.Status200OK)]
