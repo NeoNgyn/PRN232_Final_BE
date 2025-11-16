@@ -145,6 +145,31 @@ namespace AcademicService.BLL.Services.Implements
             }
         }
 
+        public async Task<IEnumerable<SubmissionDetailResponse>> GetSubmissionsByExamIdAsync(Guid examId)
+        {
+            var submissions = await _unitOfWork.GetRepository<Submission>()
+                .GetListAsync(
+                    predicate: s => s.ExamId == examId,
+                    include: x => x.Include(g => g.Grades)
+                                   .Include(v => v.Violations)
+                );
+
+            return _mapper.Map<IEnumerable<SubmissionDetailResponse>>(submissions);
+        }
+
+        public async Task<IEnumerable<SubmissionDetailResponse>> GetSubmissionsByExamIdAndExamninerIdAsync(Guid examId, Guid examinerId)
+        {
+            var submissions = await _unitOfWork.GetRepository<Submission>()
+                .GetListAsync(
+                    predicate: s => s.ExamId == examId && s.ExaminerId == examinerId,
+                    include: x => x.Include(g => g.Grades)
+                                   .Include(v => v.Violations)
+                );
+
+            return _mapper.Map<IEnumerable<SubmissionDetailResponse>>(submissions);
+        }
+
+
         public async Task<IEnumerable<SubmissionListResponse>> GetQuerySubmissionsAsync()
         {
             try
