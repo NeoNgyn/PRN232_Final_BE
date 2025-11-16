@@ -72,7 +72,7 @@ namespace AcademicService.BLL.Services.Implements
                         )).ValidateExists(id, "Can not find this Violation because it isn't existed");
 
 
-                    _unitOfWork.GetRepository<Violation>().UpdateAsync(violation);
+                    _unitOfWork.GetRepository<Violation>().DeleteAsync(violation);
                     await _unitOfWork.CommitAsync();
 
                     return true;

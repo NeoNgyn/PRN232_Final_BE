@@ -1,22 +1,14 @@
 ﻿using AcademicService.BLL.Extension;
 using AcademicService.BLL.Services.Interfaces;
 using AcademicService.DAL.Data.Requests.Criteria;
-using AcademicService.DAL.Data.Requests.Submission;
 using AcademicService.DAL.Data.Responses.Criteria;
-using AcademicService.DAL.Data.Responses.Submission;
 using AcademicService.DAL.Models;
 using AcademicService.DAL.Repositories.Interfaces;
 using AutoMapper;
 using EzyFix.BLL.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AcademicService.BLL.Services.Implements
 {
@@ -92,6 +84,24 @@ namespace AcademicService.BLL.Services.Implements
                 var criterias = await _unitOfWork.GetRepository<Criteria>()
                     .GetListAsync(
                         predicate: c => c.ExamId == queryParameter.ExamId
+                    );
+
+                return _mapper.Map<IEnumerable<CriteriaListResponse>>(criterias);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving criteria list: {Message}", ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<CriteriaListResponse>> GetCriteriasByExamIdAsync(Guid examId)
+        {
+            try
+            {
+                var criterias = await _unitOfWork.GetRepository<Criteria>()
+                    .GetListAsync(
+                        predicate: c => c.ExamId == examId
                     );
 
                 return _mapper.Map<IEnumerable<CriteriaListResponse>>(criterias);
