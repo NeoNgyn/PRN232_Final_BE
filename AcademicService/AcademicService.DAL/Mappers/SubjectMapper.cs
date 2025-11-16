@@ -17,7 +17,9 @@ namespace AcademicService.DAL.Mappers
             // Subject mappings
             CreateMap<Subject, SubjectResponse>();
             CreateMap<CreateSubjectRequest, Subject>();
-            CreateMap<UpdateSubjectRequest, Subject>();
+            CreateMap<UpdateSubjectRequest, Subject>().ForAllMembers(opt =>
+                    opt.Condition((src, dest, srcMember) => srcMember != null)
+                ); ;
 
         }
     }

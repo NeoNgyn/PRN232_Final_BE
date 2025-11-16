@@ -15,7 +15,9 @@ namespace AcademicService.DAL.Mappers
         public StudentMapper()
         {
             CreateMap<CreateStudentRequest, Student>();
-            CreateMap<UpdateStudentRequest, Student>();
+            CreateMap<UpdateStudentRequest, Student>().ForAllMembers(opt =>
+                    opt.Condition((src, dest, srcMember) => srcMember != null)
+                ); ;
 
             CreateMap<Student, StudentResponse>();
         }
