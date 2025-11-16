@@ -3,7 +3,6 @@ using AcademicService.BLL.Services.Interfaces;
 using AcademicService.DAL.Data.MetaDatas;
 using AcademicService.DAL.Data.Requests.File;
 using AcademicService.DAL.Data.Requests.Submission;
-using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
 using SharpCompress.Archives;
 
@@ -17,17 +16,15 @@ namespace AcademicService.API.Controllers
         private readonly IStudentService _studentService;
         private readonly ICloudinaryService _cloudinaryService;
         private readonly ISubmissionService _submissionService;
-        private readonly IExamService _examService;
         private readonly ILogger<FilesController> _logger;
 
-        public FilesController(IFileService fileService, IStudentService studentService, ILogger<FilesController> logger, ICloudinaryService cloudinaryService, ISubmissionService submissionService, IExamService examService)
+        public FilesController(IFileService fileService, IStudentService studentService, ILogger<FilesController> logger, ICloudinaryService cloudinaryService, ISubmissionService submissionService)
         {
             _fileService = fileService;
             _studentService = studentService;
             _logger = logger;
             _cloudinaryService = cloudinaryService;
             _submissionService = submissionService;
-            _examService = examService;
         }
 
         [HttpGet("{filePath}")]
@@ -60,7 +57,7 @@ namespace AcademicService.API.Controllers
                 ));
             }
 
-            var fileUrl = await _cloudinaryService.UploadFileAsync(file, "FPT/students");
+            var fileUrl = await _cloudinaryService.UploadFileAsync(file, "academic/students");
 
             var result = await _studentService.ImportStudentsFromFileAsync(fileUrl, _fileService);
 
@@ -103,14 +100,10 @@ namespace AcademicService.API.Controllers
                 ));
             }
 
-
-            // === CODE CŨ CỦA BẠN ===
-
-            // === CODE CŨ CỦA BẠN ===
             var submissions = new List<object>();
             var errors = new List<string>();
             var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            
+
             try
             {
                 Directory.CreateDirectory(tempPath);
@@ -118,6 +111,10 @@ namespace AcademicService.API.Controllers
 
                 // Save archive file temporarily
                 using (var stream = new FileStream(rarFilePath, FileMode.Create))
+                {
+                    await extractRARRequest.RARFile.CopyToAsync(stream);
+                }
+
                 _logger.LogInformation($"Processing archive file: {extractRARRequest.RARFile.FileName}");
 
                 // Extract files - ArchiveFactory supports both RAR and ZIP
@@ -125,11 +122,11 @@ namespace AcademicService.API.Controllers
                 {
                     var totalEntries = archive.Entries.Count(e => !e.IsDirectory);
                     _logger.LogInformation($"Found {totalEntries} files in archive");
-                    
+
                     foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
                     {
                         _logger.LogInformation($"Processing entry: {entry.Key}");
-                        
+
                         // Process DOC/DOCX files
                         if (entry.Key != null && (entry.Key.EndsWith(".doc", StringComparison.OrdinalIgnoreCase) ||
                             entry.Key.EndsWith(".docx", StringComparison.OrdinalIgnoreCase)))
@@ -137,11 +134,11 @@ namespace AcademicService.API.Controllers
                             try
                             {
                                 _logger.LogInformation($"Processing document file: {entry.Key}");
-                                
+
                                 var extractedFilePath = Path.Combine(tempPath, entry.Key);
                                 Directory.CreateDirectory(Path.GetDirectoryName(extractedFilePath)!);
                                 entry.WriteToFile(extractedFilePath);
-                                
+
                                 _logger.LogInformation($"Extracted to: {extractedFilePath}");
 
                                 // Parse StudentId from filename
@@ -154,7 +151,7 @@ namespace AcademicService.API.Controllers
                                     errors.Add($"Không thể trích xuất mã sinh viên từ file: {entry.Key}");
                                     continue;
                                 }
-                                
+
                                 _logger.LogInformation($"Extracted StudentId: {studentId} from file: {fileName}");
 
                                 // Create FormFile for upload
@@ -167,21 +164,17 @@ namespace AcademicService.API.Controllers
 
                                 // Create submission
                                 _logger.LogInformation($"Creating submission for ExamId: {extractRARRequest.ExamId}, ExaminerId: {extractRARRequest.ExaminerId}, StudentId: {studentId}");
-                                
+
                                 var createRequest = new CreateSubmissionRequest
                                 {
                                     ExamId = extractRARRequest.ExamId,
                                     ExaminerId = extractRARRequest.ExaminerId,
                                     StudentId = studentId
                                 };
-                            ExaminerId = metadata.ExaminerId
-                        };
-                            ExaminerId = metadata.ExaminerId
-                        };
 
                                 var created = await _submissionService.CreateSubmissionAsync(createRequest, formFile);
                                 submissions.Add(created);
-                                
+
                                 _logger.LogInformation($"Successfully created submission for student: {studentId}, SubmissionId: {created.SubmissionId}");
                             }
                             catch (Exception ex)
@@ -221,7 +214,7 @@ namespace AcademicService.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error extracting archive file");
-                
+
                 // Clean up on error
                 if (Directory.Exists(tempPath))
                 {
@@ -333,118 +326,5 @@ namespace AcademicService.API.Controllers
                 responseData
             ));
         }
-
-        [HttpGet("export-summary/{examId}")]
-        public async Task<IActionResult> ExportSummaryExcel(
-            Guid examId,
-            [FromServices] ISubmissionService submissionService,
-            [FromServices] ICritieriaService criteriaService)
-        {
-            // 1. Lấy toàn bộ submissions của exam
-            var submissions = await submissionService.GetSubmissionsByExamIdAsync(examId);
-
-            if (!submissions.Any())
-            {
-                return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
-                     null, 400, "Export failed", "No submissions in this exam"));
-            }
-
-            // 2. Kiểm tra bài nào chưa approve
-            var unapproved = submissions.Where(x => x.IsApproved == false).ToList();
-
-            if (unapproved.Any())
-            {
-                return BadRequest(ApiResponseBuilder.BuildErrorResponse<object>(
-                   new
-                   {
-                       unapprovedCount = unapproved.Count,
-                       unapprovedList = unapproved.Select(x => new
-                       {
-                           x.SubmissionId,
-                           x.StudentId,
-                           x.OriginalFileName
-                       })
-                   },
-                   400,
-                   "Export failed",
-                   "There are unapproved submissions. Please approve all before exporting."
-                ));
-            }
-
-            // 3. Lấy exam để tạo folder path
-            var exam = await _examService.GetExamByIdAsync(examId);
-            var folder = $"FPT/summary/{exam.Semester.SemesterCode}/{exam.Subject.SubjectCode}/{exam.ExamName}";
-
-            var resultFiles = new List<object>();
-
-            // 4. Lấy danh sách criteria
-            var criteriaList = await criteriaService.GetCriteriasByExamIdAsync(examId);
-
-            foreach (var sub in submissions)
-            {
-                using (var workbook = new XLWorkbook())
-                {
-                    var ws = workbook.Worksheets.Add("Grades");
-
-                    // Header
-                    ws.Cell("A1").Value = "Order";
-                    ws.Cell("B1").Value = "Criteria";
-                    ws.Cell("C1").Value = "Max Score";
-                    ws.Cell("D1").Value = "Student Score";
-
-                    int row = 2;
-
-                    decimal total = 0;
-
-                    foreach (var c in criteriaList.OrderBy(x => x.SortOrder))
-                    {
-                        var grade = sub.Grades.FirstOrDefault(g => g.CriteriaId == c.CriteriaId);
-
-                        ws.Cell(row, 1).Value = c.SortOrder;
-                        ws.Cell(row, 2).Value = c.CriteriaName;
-                        ws.Cell(row, 3).Value = c.MaxScore;
-                        ws.Cell(row, 4).Value = grade?.Score ?? 0;
-
-                        total += grade?.Score ?? 0;
-                        row++;
-                    }
-
-                    // Total row
-                    ws.Cell(row, 3).Value = "TOTAL";
-                    ws.Cell(row, 4).Value = total;
-
-                    // Save to temp file
-                    var tempPath = Path.Combine(Path.GetTempPath(), $"{sub.StudentId}_Student.xlsx");
-                    workbook.SaveAs(tempPath);
-
-                    // Upload lên cloudinary
-                    using var stream = new FileStream(tempPath, FileMode.Open);
-                    var formFile = new FormFile(stream, 0, stream.Length, null!, $"{sub.StudentId}_Student.xlsx");
-
-                    var url = await _cloudinaryService.UploadFileAsync(formFile, folder);
-
-                    resultFiles.Add(new
-                    {
-                        SubmissionId = sub.SubmissionId,
-                        StudentId = sub.StudentId,
-                        Url = url
-                    });
-
-                    System.IO.File.Delete(tempPath);
-                }
-            }
-
-            return Ok(ApiResponseBuilder.BuildResponse(
-                200,
-                "Export successful",
-                new
-                {
-                    examId,
-                    exported = resultFiles.Count,
-                    files = resultFiles
-                }
-            ));
-        }
-
     }
 }
