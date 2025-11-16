@@ -16,15 +16,17 @@ namespace AcademicService.API.Controllers
         private readonly IStudentService _studentService;
         private readonly ICloudinaryService _cloudinaryService;
         private readonly ISubmissionService _submissionService;
+        private readonly IExamService _examService;
         private readonly ILogger<FilesController> _logger;
 
-        public FilesController(IFileService fileService, IStudentService studentService, ILogger<FilesController> logger, ICloudinaryService cloudinaryService, ISubmissionService submissionService)
+        public FilesController(IFileService fileService, IStudentService studentService, ILogger<FilesController> logger, ICloudinaryService cloudinaryService, ISubmissionService submissionService, IExamService examService)
         {
             _fileService = fileService;
             _studentService = studentService;
             _logger = logger;
             _cloudinaryService = cloudinaryService;
             _submissionService = submissionService;
+            _examService = examService;
         }
 
         [HttpGet("{filePath}")]
@@ -57,7 +59,7 @@ namespace AcademicService.API.Controllers
                 ));
             }
 
-            var fileUrl = await _cloudinaryService.UploadFileAsync(file, "academic/students");
+            var fileUrl = await _cloudinaryService.UploadFileAsync(file, "FPT/students");
 
             var result = await _studentService.ImportStudentsFromFileAsync(fileUrl, _fileService);
 
@@ -93,8 +95,6 @@ namespace AcademicService.API.Controllers
                     null, 400, "Extraction failed", "File must be a .rar archive"));
             }
 
-            // 👉 Thay extractRARRequest.ExamId bằng metadata.ExamId
-            // 👉 Thay extractRARRequest.RARFile bằng rarFile
 
             // === CODE CŨ CỦA BẠN ===
             var submissions = new List<object>();
@@ -121,6 +121,8 @@ namespace AcademicService.API.Controllers
 
                         await using var fileStream = new FileStream(extractedFilePath, FileMode.Open);
                         var formFile = new FormFile(fileStream, 0, fileStream.Length, null!, Path.GetFileName(extractedFilePath));
+
+
 
                         var createRequest = new CreateSubmissionRequest
                         {

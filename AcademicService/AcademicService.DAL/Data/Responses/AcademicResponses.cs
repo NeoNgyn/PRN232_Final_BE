@@ -8,6 +8,8 @@ public class ExamResponse
     public string ExamName { get; set; } = string.Empty;
     public string ExamType { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+    public SemesterResponse Semester { get; set; } 
+    public SubjectResponse Subject { get; set; } 
 }
 
 public class SemesterResponse

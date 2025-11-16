@@ -49,8 +49,15 @@ namespace AcademicService.BLL.Services.Implements
                 {
                     var newSubmission = _mapper.Map<Submission>(request);
                     var exam = (await _unitOfWork.GetRepository<Exam>()
-                        .SingleOrDefaultAsync(predicate: s => s.ExamId == request.ExamId))
-                        .ValidateExists(request.ExamId, "Exam not found or existed!");
+                        .SingleOrDefaultAsync(
+                        predicate: s => s.ExamId == request.ExamId,
+                        include: c => c.Include(e => e.Semester)
+                                      .Include(su => su.Subject)
+                        ).ValidateExists(request.ExamId, "Exam not found or existed!"));
+
+                    var examName = exam.ExamName;
+                    var semester = exam.Semester.SemesterCode;
+                    var subject = exam.Subject.SubjectCode;
 
                     newSubmission.SubmissionId = Guid.NewGuid();
                     newSubmission.ExamId = request.ExamId;
@@ -75,7 +82,7 @@ namespace AcademicService.BLL.Services.Implements
 
                     if (fileSubmit != null && user != null)
                     {
-                        newSubmission.FilePath = await _cloudinaryService.UploadFileAsync(fileSubmit, "submisions");
+                        newSubmission.FilePath = await _cloudinaryService.UploadFileAsync(fileSubmit, $"FPT/{semester}/{subject}/{examName}");
                     }
                     else
                     {
@@ -137,6 +144,31 @@ namespace AcademicService.BLL.Services.Implements
                 throw;
             }
         }
+
+        public async Task<IEnumerable<SubmissionDetailResponse>> GetSubmissionsByExamIdAsync(Guid examId)
+        {
+            var submissions = await _unitOfWork.GetRepository<Submission>()
+                .GetListAsync(
+                    predicate: s => s.ExamId == examId,
+                    include: x => x.Include(g => g.Grades)
+                                   .Include(v => v.Violations)
+                );
+
+            return _mapper.Map<IEnumerable<SubmissionDetailResponse>>(submissions);
+        }
+
+        public async Task<IEnumerable<SubmissionDetailResponse>> GetSubmissionsByExamIdAndExamninerIdAsync(Guid examId, Guid examinerId)
+        {
+            var submissions = await _unitOfWork.GetRepository<Submission>()
+                .GetListAsync(
+                    predicate: s => s.ExamId == examId && s.ExaminerId == examinerId,
+                    include: x => x.Include(g => g.Grades)
+                                   .Include(v => v.Violations)
+                );
+
+            return _mapper.Map<IEnumerable<SubmissionDetailResponse>>(submissions);
+        }
+
 
         public async Task<IEnumerable<SubmissionListResponse>> GetQuerySubmissionsAsync()
         {
