@@ -1,5 +1,4 @@
-using System.Text;
-using System.Text.Json.Serialization;
+using AcademicService.BLL.Hubs;
 using AcademicService.BLL.Services.Implements;
 using AcademicService.BLL.Services.Interfaces;
 using AcademicService.DAL.Models;
@@ -10,6 +9,8 @@ using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +51,9 @@ builder.Services.AddControllers().AddOData(options =>
 {
     options.Select().Filter().OrderBy().Expand().SetMaxTop(100).Count();
 });
+
+// SignalR
+builder.Services.AddSignalR();
 
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -156,6 +160,8 @@ app.UseCors(options =>
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<SubmissionHub>("/hubs/submissions");
 
 app.MapControllers();
 
