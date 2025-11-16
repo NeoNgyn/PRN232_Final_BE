@@ -55,7 +55,7 @@ namespace AcademicService.BLL.Services.Implements
                     newSubmission.SubmissionId = Guid.NewGuid();
                     newSubmission.ExamId = request.ExamId;
 
-                    // Use StudentId from request if provided, otherwise parse from filename
+                    // Use StudentId from request if provided
                     if (!string.IsNullOrEmpty(request.StudentId))
                     {
                         newSubmission.StudentId = request.StudentId;
@@ -74,6 +74,41 @@ namespace AcademicService.BLL.Services.Implements
                         }
 
                         newSubmission.StudentId = fileName;
+                    }
+
+                    // Auto-create student if not exists
+                    // Parse student name from filename: SWD392_PE_SU25_SE184557_MaiHaiNam.docx
+                    var student = await _unitOfWork.GetRepository<Student>()
+                        .SingleOrDefaultAsync(predicate: s => s.StudentId == newSubmission.StudentId);
+                    
+                    if (student == null && !string.IsNullOrEmpty(newSubmission.StudentId))
+                    {
+                        // Extract student name from filename
+                        var fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileSubmit.FileName);
+                        var parts = fileNameWithoutExt.Split('_');
+                        string studentName = "Unknown";
+                        
+                        // Try to find the name part (after StudentId)
+                        for (int i = 0; i < parts.Length; i++)
+                        {
+                            if (parts[i].StartsWith("SE", StringComparison.OrdinalIgnoreCase) && 
+                                parts[i].Length == 8 && i + 1 < parts.Length)
+                            {
+                                studentName = parts[i + 1];
+                                break;
+                            }
+                        }
+                        
+                        // Create new student
+                        var newStudent = new Student
+                        {
+                            StudentId = newSubmission.StudentId,
+                            FullName = studentName,
+                            Status = "Active"
+                        };
+                        
+                        await _unitOfWork.GetRepository<Student>().InsertAsync(newStudent);
+                        _logger.LogInformation($"Auto-created student: {newSubmission.StudentId} - {studentName}");
                     }
 
                     newSubmission.ExaminerId = request.ExaminerId;
@@ -98,8 +133,6 @@ namespace AcademicService.BLL.Services.Implements
                     {
                         newSubmission.FilePath = DefaultProfilePicture;
                     }
-
-
 
                     await _unitOfWork.GetRepository<Submission>().InsertAsync(newSubmission);
                     await _unitOfWork.CommitAsync();

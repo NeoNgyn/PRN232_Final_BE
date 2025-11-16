@@ -117,9 +117,7 @@ namespace IdentityService.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetTeachers()
         {
-            var users = await _userService.GetAllAsync();
-            // Filter users with Teacher role (assuming RoleName = "Teacher")
-            var teachers = users.Where(u => u.RoleId != null).ToList();
+            var teachers = await _userService.GetTeachersAsync();           
             
             return Ok(ApiResponseBuilder.BuildResponse(
                 StatusCodes.Status200OK,

@@ -186,5 +186,27 @@ namespace IdentityService.BLL.Services.Implements
                 throw;
             }
         }
+
+        public Task<IEnumerable<UserResponse>> GetTeachersAsync()
+        {
+            try
+            {
+                return _unitOfWork.ProcessInTransactionAsync(async () =>
+                {
+                    var users = await _unitOfWork.GetRepository<User>()
+                        .GetListAsync(
+                            predicate: u => u.IsActive == true && u.Role.RoleName == "Examiner",
+                            include: q => q.Include(u => u.Role)
+                        );
+
+                    return _mapper.Map<IEnumerable<UserResponse>>(users);
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving teachers list: {Message}", ex.Message);
+                throw;
+            }
+        }
     } 
 }
