@@ -148,7 +148,13 @@ namespace AcademicService.BLL.Services.Implements
             try
             {
                 var submissions = await _unitOfWork.GetRepository<Submission>()
-                    .GetListAsync();
+                    .GetListAsync(
+                        include: x => x.Include(s => s.Student)
+                                       .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Semester)
+                                        .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Subject)
+                    );
 
                 return _mapper.Map<IEnumerable<SubmissionListResponse>>(submissions);
             }
@@ -166,6 +172,11 @@ namespace AcademicService.BLL.Services.Implements
                     predicate: s => s.ExamId == examId,
                     include: x => x.Include(g => g.Grades)
                                    .Include(v => v.Violations)
+                                   .Include(s => s.Student)
+                                       .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Semester)
+                                        .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Subject)
                 );
 
             return _mapper.Map<IEnumerable<SubmissionDetailResponse>>(submissions);
@@ -178,6 +189,11 @@ namespace AcademicService.BLL.Services.Implements
                     predicate: s => s.ExamId == examId && s.ExaminerId == examinerId,
                     include: x => x.Include(g => g.Grades)
                                    .Include(v => v.Violations)
+                                   .Include(s => s.Student)
+                                       .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Semester)
+                                        .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Subject)
                 );
 
             return _mapper.Map<IEnumerable<SubmissionDetailResponse>>(submissions);
