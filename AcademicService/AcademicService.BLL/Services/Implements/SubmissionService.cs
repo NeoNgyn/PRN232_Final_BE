@@ -173,10 +173,10 @@ namespace AcademicService.BLL.Services.Implements
                     include: x => x.Include(g => g.Grades)
                                    .Include(v => v.Violations)
                                    .Include(s => s.Student)
-                                       .Include(e => e.Exam)
-                                            .ThenInclude(e => e.Semester)
-                                        .Include(e => e.Exam)
-                                            .ThenInclude(e => e.Subject)
+                                   .Include(e => e.Exam)
+                                        .ThenInclude(e => e.Semester)
+                                   .Include(e => e.Exam)
+                                        .ThenInclude(e => e.Subject)
                 );
 
             return _mapper.Map<IEnumerable<SubmissionDetailResponse>>(submissions);
@@ -190,10 +190,10 @@ namespace AcademicService.BLL.Services.Implements
                     include: x => x.Include(g => g.Grades)
                                    .Include(v => v.Violations)
                                    .Include(s => s.Student)
-                                       .Include(e => e.Exam)
-                                            .ThenInclude(e => e.Semester)
-                                        .Include(e => e.Exam)
-                                            .ThenInclude(e => e.Subject)
+                                   .Include(e => e.Exam)
+                                       .ThenInclude(e => e.Semester)
+                                   .Include(e => e.Exam)
+                                       .ThenInclude(e => e.Subject)
                 );
 
             return _mapper.Map<IEnumerable<SubmissionDetailResponse>>(submissions);
@@ -219,6 +219,11 @@ namespace AcademicService.BLL.Services.Implements
                         predicate: s => s.SubmissionId == id,
                         include: c => c.Include(e => e.Grades).ThenInclude(a => a.Criteria)
                                         .Include(v => v.Violations)
+                                        .Include(s => s.Student)
+                                        .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Semester)
+                                        .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Subject)
                     )).ValidateExists(id, "Can not find this Submission because it isn't existed");
 
                 return _mapper.Map<SubmissionDetailResponse>(submission);

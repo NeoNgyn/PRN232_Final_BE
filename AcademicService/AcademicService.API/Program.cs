@@ -145,8 +145,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
-
+// CORS MUST BE FIRST (before UseHttpsRedirection)
 app.UseCors(options =>
 {
     options.SetIsOriginAllowed(origin =>
@@ -157,6 +156,8 @@ app.UseCors(options =>
           .AllowAnyHeader()
           .AllowCredentials();
 });
+
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
