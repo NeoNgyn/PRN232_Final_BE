@@ -40,6 +40,8 @@ public class ApiEndPointConstant
     {
         public const string SubmissionsEndpoint = ApiEndpoint + "/submission";
         public const string SubmissionEndpointById = SubmissionsEndpoint + "/{id}";
+        public const string SubmissionEndpointByExamId = SubmissionsEndpoint + "/{examId}";
+        public const string SubmissionEndpointByExamIdAndExaminerId = SubmissionsEndpoint + "/{examId}/{examinerId}";
         public const string QuerySubmissionEndpoint = SubmissionsEndpoint + "/query";
         public const string UpdateSubmissionEndpoint = SubmissionEndpointById + "/update";
         public const string DeleteSubmissionEndpoint = SubmissionEndpointById + "/delete";

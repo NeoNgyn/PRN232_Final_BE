@@ -19,7 +19,9 @@ namespace AcademicService.DAL.Mappers
     .ForMember(dest => dest.Semester, opt => opt.MapFrom(src => src.Semester))
     .ForMember(dest => dest.Subject, opt => opt.MapFrom(src => src.Subject));
             CreateMap<CreateExamRequest, Exam>();
-            CreateMap<UpdateExamRequest, Exam>();
+            CreateMap<UpdateExamRequest, Exam>().ForAllMembers(opt =>
+                    opt.Condition((src, dest, srcMember) => srcMember != null)
+                ); ;
         }
     }
 }

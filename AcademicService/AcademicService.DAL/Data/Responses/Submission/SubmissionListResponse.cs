@@ -24,5 +24,8 @@ namespace AcademicService.DAL.Data.Responses.Submission
         [Column(TypeName = "timestamp with time zone")]
         public DateTime UploadedAt { get; set; } 
         public bool IsApproved { get; set; } = false;
+
+        public StudentResponse Student { get; set; }
+        public ExamResponse Exam { get; set; }
     }
 }
