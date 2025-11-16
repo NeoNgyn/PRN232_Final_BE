@@ -35,10 +35,10 @@ namespace AcademicService.API.Controllers
             ));
         }
 
-        [HttpGet(ApiEndPointConstant.Submissions.SubmissionsEndpoint)]
+        [HttpGet(ApiEndPointConstant.Submissions.SubmissionEndpointByExamId)]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<SubmissionListResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllSubmissionsByExam([FromQuery] Guid examId)
+        public async Task<IActionResult> GetAllSubmissionsByExam(Guid examId)
         {
             var userClaims = User.Claims.Select(c => new { c.Type, c.Value }); //debugging code
             _logger.LogInformation("User claims: {@Claims}", userClaims);
@@ -51,10 +51,10 @@ namespace AcademicService.API.Controllers
             ));
         }
 
-        [HttpGet(ApiEndPointConstant.Submissions.SubmissionsEndpoint)]
+        [HttpGet(ApiEndPointConstant.Submissions.SubmissionEndpointByExamIdAndExaminerId)]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<SubmissionListResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllSubmissionsByExamAndExanminer([FromQuery] Guid examId, [FromQuery] Guid examinerId)
+        public async Task<IActionResult> GetAllSubmissionsByExamAndExanminer(Guid examId, Guid examinerId)
         {
             var userClaims = User.Claims.Select(c => new { c.Type, c.Value }); //debugging code
             _logger.LogInformation("User claims: {@Claims}", userClaims);
