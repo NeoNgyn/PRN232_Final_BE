@@ -16,5 +16,6 @@ namespace AcademicService.DAL.Data.Requests.Submission
         // public string? StudentId { get; set; }
         public string? GradingStatus { get; set; }
         public decimal? TotalScore { get; set; }
+        public bool? IsApproved { get; set; }
     }
 }

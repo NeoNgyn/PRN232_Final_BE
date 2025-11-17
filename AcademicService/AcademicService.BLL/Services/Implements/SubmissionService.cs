@@ -133,7 +133,7 @@ namespace AcademicService.BLL.Services.Implements
                     {
                         try
                         {
-                            newSubmission.FilePath = await _cloudinaryService.UploadFileAsync(fileSubmit, "submisions");
+                            newSubmission.FilePath = await _cloudinaryService.UploadFileAsync(fileSubmit, $"FPT/Submissions/{semester}/{subject}/{examName}");
                         }
                         catch (Exception ex)
                         {
