@@ -234,9 +234,10 @@ namespace AcademicService.BLL.Services.Implements
 
         public async Task<IEnumerable<SubmissionDetailResponse>> GetSubmissionsByExamIdAndExamninerIdAsync(Guid examId, Guid examinerId)
         {
+            // Teacher có thể thấy bài được assign cho họ như ExaminerId (chấm lần 1) hoặc SecondExaminerId (chấm lần 2)
             var submissions = await _unitOfWork.GetRepository<Submission>()
                 .GetListAsync(
-                    predicate: s => s.ExamId == examId && s.ExaminerId == examinerId,
+                    predicate: s => s.ExamId == examId && (s.ExaminerId == examinerId || s.SecondExaminerId == examinerId),
                     include: x => x.Include(g => g.Grades)
                                    .Include(v => v.Violations)
                                    .Include(s => s.Student)
