@@ -9,10 +9,13 @@ namespace AcademicService.DAL.Data.Requests.Submission
 {
     public class UpdateSubmissionRequest
     {
-        public Guid? ExamId { get; set; }
+        // ExamId KHÔNG được phép thay đổi sau khi tạo submission
+        // public Guid? ExamId { get; set; }
         public Guid? SecondExaminerId { get; set; }
-        public string? StudentId { get; set; } = string.Empty;
+        // StudentId KHÔNG nên thay đổi sau khi tạo submission
+        // public string? StudentId { get; set; }
         public string? GradingStatus { get; set; }
         public decimal? TotalScore { get; set; }
+        public bool? IsApproved { get; set; }
     }
 }

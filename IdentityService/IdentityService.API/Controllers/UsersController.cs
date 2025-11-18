@@ -111,5 +111,19 @@ namespace IdentityService.API.Controllers
                 null
             ));
         }
+        
+        [HttpGet("teachers")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<UserResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetTeachers()
+        {
+            var teachers = await _userService.GetTeachersAsync();           
+            
+            return Ok(ApiResponseBuilder.BuildResponse(
+                StatusCodes.Status200OK,
+                "Teachers list retrieved successfully",
+                teachers
+            ));
+        }
     }
 }

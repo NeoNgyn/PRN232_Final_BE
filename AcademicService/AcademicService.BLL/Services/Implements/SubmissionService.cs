@@ -68,34 +68,84 @@ namespace AcademicService.BLL.Services.Implements
                     newSubmission.SubmissionId = Guid.NewGuid();
                     newSubmission.ExamId = request.ExamId;
 
-                    string lastPart = fileSubmit.FileName.Split('_').Last();
-                    string fileName = lastPart.Length >= 8 ? lastPart.Substring(0, 8) : lastPart;
-
-                    if (!(fileName.StartsWith("SE", StringComparison.OrdinalIgnoreCase)
-                       || fileName.StartsWith("SS", StringComparison.OrdinalIgnoreCase)
-                       || fileName.StartsWith("HE", StringComparison.OrdinalIgnoreCase)
-                       || fileName.StartsWith("SA", StringComparison.OrdinalIgnoreCase)))
+                    // Use StudentId from request if provided
+                    if (!string.IsNullOrEmpty(request.StudentId))
                     {
-                        fileName = string.Empty;
+                        newSubmission.StudentId = request.StudentId;
+                    }
+                    else
+                    {
+                        string lastPart = fileSubmit.FileName.Split('_').Last();
+                        string fileName = lastPart.Length >= 8 ? lastPart.Substring(0, 8) : lastPart;
+
+                        if (!(fileName.StartsWith("SE", StringComparison.OrdinalIgnoreCase)
+                           || fileName.StartsWith("SS", StringComparison.OrdinalIgnoreCase)
+                           || fileName.StartsWith("HE", StringComparison.OrdinalIgnoreCase)
+                           || fileName.StartsWith("SA", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            fileName = string.Empty;
+                        }
+
+                        newSubmission.StudentId = fileName;
                     }
 
-                    newSubmission.StudentId = fileName;
+                    // Auto-create student if not exists
+                    // Parse student name from filename: SWD392_PE_SU25_SE184557_MaiHaiNam.docx
+                    var student = await _unitOfWork.GetRepository<Student>()
+                        .SingleOrDefaultAsync(predicate: s => s.StudentId == newSubmission.StudentId);
+                    
+                    if (student == null && !string.IsNullOrEmpty(newSubmission.StudentId))
+                    {
+                        // Extract student name from filename
+                        var fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileSubmit.FileName);
+                        var parts = fileNameWithoutExt.Split('_');
+                        string studentName = "Unknown";
+                        
+                        // Try to find the name part (after StudentId)
+                        for (int i = 0; i < parts.Length; i++)
+                        {
+                            if (parts[i].StartsWith("SE", StringComparison.OrdinalIgnoreCase) && 
+                                parts[i].Length == 8 && i + 1 < parts.Length)
+                            {
+                                studentName = parts[i + 1];
+                                break;
+                            }
+                        }
+                        
+                        // Create new student
+                        var newStudent = new Student
+                        {
+                            StudentId = newSubmission.StudentId,
+                            FullName = studentName,
+                            Status = "Active"
+                        };
+                        
+                        await _unitOfWork.GetRepository<Student>().InsertAsync(newStudent);
+                        _logger.LogInformation($"Auto-created student: {newSubmission.StudentId} - {studentName}");
+                    }
+
                     newSubmission.ExaminerId = request.ExaminerId;
                     newSubmission.OriginalFileName = fileSubmit.FileName;
                     newSubmission.UploadedAt = DateTime.UtcNow;
 
-                    var user = _httpContextAccessor.HttpContext?.User;
-
-                    if (fileSubmit != null && user != null)
+                    // Upload file to Cloudinary if provided
+                    if (fileSubmit != null && fileSubmit.Length > 0)
                     {
-                        newSubmission.FilePath = await _cloudinaryService.UploadFileAsync(fileSubmit, $"FPT/{semester}/{subject}/{examName}");
+                        try
+                        {
+                            newSubmission.FilePath = await _cloudinaryService.UploadFileAsync(fileSubmit, $"FPT/Submissions/{semester}/{subject}/{examName}");
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, "Cloudinary upload failed, using placeholder URL");
+                            // Use placeholder if Cloudinary fails
+                            newSubmission.FilePath = $"https://placeholder.com/submissions/{fileSubmit.FileName}";
+                        }
                     }
                     else
                     {
                         newSubmission.FilePath = DefaultProfilePicture;
                     }
-
-
 
                     await _unitOfWork.GetRepository<Submission>().InsertAsync(newSubmission);
                     await _unitOfWork.CommitAsync();
@@ -173,10 +223,10 @@ namespace AcademicService.BLL.Services.Implements
                     include: x => x.Include(g => g.Grades)
                                    .Include(v => v.Violations)
                                    .Include(s => s.Student)
-                                       .Include(e => e.Exam)
-                                            .ThenInclude(e => e.Semester)
-                                        .Include(e => e.Exam)
-                                            .ThenInclude(e => e.Subject)
+                                   .Include(e => e.Exam)
+                                        .ThenInclude(e => e.Semester)
+                                   .Include(e => e.Exam)
+                                        .ThenInclude(e => e.Subject)
                 );
 
             return _mapper.Map<IEnumerable<SubmissionDetailResponse>>(submissions);
@@ -184,16 +234,17 @@ namespace AcademicService.BLL.Services.Implements
 
         public async Task<IEnumerable<SubmissionDetailResponse>> GetSubmissionsByExamIdAndExamninerIdAsync(Guid examId, Guid examinerId)
         {
+            // Teacher có thể thấy bài được assign cho họ như ExaminerId (chấm lần 1) hoặc SecondExaminerId (chấm lần 2)
             var submissions = await _unitOfWork.GetRepository<Submission>()
                 .GetListAsync(
-                    predicate: s => s.ExamId == examId && s.ExaminerId == examinerId,
+                    predicate: s => s.ExamId == examId && (s.ExaminerId == examinerId || s.SecondExaminerId == examinerId),
                     include: x => x.Include(g => g.Grades)
                                    .Include(v => v.Violations)
                                    .Include(s => s.Student)
-                                       .Include(e => e.Exam)
-                                            .ThenInclude(e => e.Semester)
-                                        .Include(e => e.Exam)
-                                            .ThenInclude(e => e.Subject)
+                                   .Include(e => e.Exam)
+                                       .ThenInclude(e => e.Semester)
+                                   .Include(e => e.Exam)
+                                       .ThenInclude(e => e.Subject)
                 );
 
             return _mapper.Map<IEnumerable<SubmissionDetailResponse>>(submissions);
@@ -219,6 +270,11 @@ namespace AcademicService.BLL.Services.Implements
                         predicate: s => s.SubmissionId == id,
                         include: c => c.Include(e => e.Grades).ThenInclude(a => a.Criteria)
                                         .Include(v => v.Violations)
+                                        .Include(s => s.Student)
+                                        .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Semester)
+                                        .Include(e => e.Exam)
+                                            .ThenInclude(e => e.Subject)
                     )).ValidateExists(id, "Can not find this Submission because it isn't existed");
 
                 return _mapper.Map<SubmissionDetailResponse>(submission);

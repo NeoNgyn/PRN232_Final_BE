@@ -141,7 +141,8 @@ app.UseSwaggerUI();
 
 app.UseMiddleware<ResetPasswordOnlyMiddleware>();
 
-app.UseHttpsRedirection();
+// Comment UseHttpsRedirection for development
+// app.UseHttpsRedirection();
 
 app.UseCors(options =>
 {

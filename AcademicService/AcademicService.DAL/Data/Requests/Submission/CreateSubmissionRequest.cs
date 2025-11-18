@@ -13,5 +13,6 @@ namespace AcademicService.DAL.Data.Requests.Submission
         public Guid ExamId { get; set; }
         [Required]
         public Guid ExaminerId { get; set; }
+        public string? StudentId { get; set; }
     }
 }

@@ -26,6 +26,9 @@ public class CloudinaryService : ICloudinaryService
 
     public async Task<string> UploadFileAsync(IFormFile file, string folder)
     {
+        if (file == null || file.Length == 0)
+            throw new ArgumentException("File is null or empty");
+
         using var stream = file.OpenReadStream();
         var uploadParams = new RawUploadParams
         {
