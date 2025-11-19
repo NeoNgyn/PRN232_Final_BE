@@ -9,12 +9,14 @@ using AcademicService.DAL.Repositories.Interfaces;
 using AutoMapper;
 using EzyFix.BLL.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -93,13 +95,14 @@ namespace AcademicService.BLL.Services.Implements
                     // Parse student name from filename: SWD392_PE_SU25_SE184557_MaiHaiNam.docx
                     var student = await _unitOfWork.GetRepository<Student>()
                         .SingleOrDefaultAsync(predicate: s => s.StudentId == newSubmission.StudentId);
-                    
+
+                    string studentName = student?.FullName ?? "Unknown";
+
                     if (student == null && !string.IsNullOrEmpty(newSubmission.StudentId))
                     {
                         // Extract student name from filename
                         var fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileSubmit.FileName);
                         var parts = fileNameWithoutExt.Split('_');
-                        string studentName = "Unknown";
                         
                         // Try to find the name part (after StudentId)
                         for (int i = 0; i < parts.Length; i++)
@@ -128,12 +131,48 @@ namespace AcademicService.BLL.Services.Implements
                     newSubmission.OriginalFileName = fileSubmit.FileName;
                     newSubmission.UploadedAt = DateTime.UtcNow;
 
+                    
+                    string studentFolder = $"{newSubmission.StudentId}_{studentName}";
+                    string baseCloudPath = $"FPT/Submissions/{semester}/{subject}/{examName}/{studentFolder}";
+
                     // Upload file to Cloudinary if provided
                     if (fileSubmit != null && fileSubmit.Length > 0)
                     {
                         try
                         {
-                            newSubmission.FilePath = await _cloudinaryService.UploadFileAsync(fileSubmit, $"FPT/Submissions/{semester}/{subject}/{examName}");
+                            newSubmission.FilePath =
+                                await _cloudinaryService.UploadFileAsync(
+                                    fileSubmit,
+                                    baseCloudPath
+                                );
+
+                            // ========== EXTRACT IMAGES FROM DOCX ==========
+                            var tempFilePath = Path.GetTempFileName();
+                            using (var stream = new FileStream(tempFilePath, FileMode.Create))
+                            {
+                                await fileSubmit.CopyToAsync(stream);
+                            }
+
+                            // Extract images → temp folder
+                            var extractedImages = ExtractImagesFromDocx(tempFilePath, Path.GetTempPath());
+
+                            // Upload từng ảnh
+                            var imageUrls = new List<string>();
+
+                            foreach (var imgPath in extractedImages)
+                            {
+                                await using var fs = new FileStream(imgPath, FileMode.Open, FileAccess.Read);
+
+                                string url = await _cloudinaryService.UploadStreamAsync(
+                                    fs,
+                                    Path.GetFileName(imgPath),
+                                    $"{baseCloudPath}/Figures"
+                                );
+
+                                imageUrls.Add(url);
+                            }
+
+                            _logger.LogInformation($"Uploaded {imageUrls.Count} figure images for {newSubmission.StudentId}");
                         }
                         catch (Exception ex)
                         {
@@ -353,5 +392,31 @@ namespace AcademicService.BLL.Services.Implements
                 throw;
             }
         }
+
+        private List<string> ExtractImagesFromDocx(string docxPath, string tempFolder)
+        {
+            var imagePaths = new List<string>();
+            var figuresPath = Path.Combine(tempFolder, "Figures");
+
+            Directory.CreateDirectory(figuresPath);
+
+            using (var archive = ZipFile.OpenRead(docxPath))
+            {
+                foreach (var entry in archive.Entries)
+                {
+                    if (entry.FullName.StartsWith("word/media/"))
+                    {
+                        var fileName = Path.GetFileName(entry.FullName);
+                        var outputPath = Path.Combine(figuresPath, fileName);
+
+                        entry.ExtractToFile(outputPath, overwrite: true);
+                        imagePaths.Add(outputPath);
+                    }
+                }
+            }
+
+            return imagePaths;
+        }
+
     }
 }

@@ -44,6 +44,19 @@ public class CloudinaryService : ICloudinaryService
         return result.Url?.ToString() ?? throw new Exception("Upload succeeded but Url is null.");
     }
 
+    public async Task<string> UploadStreamAsync(Stream fileStream, string fileName, string folder)
+    {
+        var uploadParams = new RawUploadParams
+        {
+            File = new FileDescription(fileName, fileStream),
+            Folder = folder
+        };
+
+        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+        return uploadResult.SecureUrl?.AbsoluteUri;
+    }
+
+
 
     public async Task<bool> DeleteFileAsync(string publicId)
     {
