@@ -125,5 +125,19 @@ namespace IdentityService.API.Controllers
                 teachers
             ));
         }
+
+        [HttpGet("moderators")]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<UserResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetModerators()
+        {
+            var moderators = await _userService.GetModeratorsAsync();           
+            
+            return Ok(ApiResponseBuilder.BuildResponse(
+                StatusCodes.Status200OK,
+                "Moderators list retrieved successfully",
+                moderators
+            ));
+        }
     }
 }

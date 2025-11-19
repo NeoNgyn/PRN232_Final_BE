@@ -208,5 +208,27 @@ namespace IdentityService.BLL.Services.Implements
                 throw;
             }
         }
+
+        public Task<IEnumerable<UserResponse>> GetModeratorsAsync()
+        {
+            try
+            {
+                return _unitOfWork.ProcessInTransactionAsync(async () =>
+                {
+                    var users = await _unitOfWork.GetRepository<User>()
+                        .GetListAsync(
+                            predicate: u => u.IsActive == true && u.Role.RoleName == "Moderator",
+                            include: q => q.Include(u => u.Role)
+                        );
+
+                    return _mapper.Map<IEnumerable<UserResponse>>(users);
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving moderators list: {Message}", ex.Message);
+                throw;
+            }
+        }
     } 
 }
