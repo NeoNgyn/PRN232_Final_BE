@@ -6,4 +6,6 @@ public interface ICloudinaryService
 {
     Task<string> UploadFileAsync(IFormFile file, string folder);
     Task<bool> DeleteFileAsync(string publicId);
+    Task<string> UploadStreamAsync(Stream fileStream, string fileName, string folder);
+
 }
